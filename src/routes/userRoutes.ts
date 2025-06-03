@@ -1,0 +1,114 @@
+import express from 'express';
+import { registerUser, getUsers, getUserById, getUserByUsername, login, updateUserRole, updateUser, unActiveUser, unActive, deleteByAdmin } from '../controllers/userController'
+import { authenticate } from '../middleware/authenticate';
+import { authorizeRoles } from '../middleware/authorize';
+const router = express.Router();
+
+// ToDo: handle errors in middlewares, expireIn for jwt
+// ToDo: not any one can regists as a employee only admin can do it
+
+// ToDo: Favorites or Saved Pets, 
+// POST /user/favorites/:petTag
+// GET /user/favorites
+// DELETE /user/favorites/:petTag
+// Add optional hard delete for admins:
+
+router.post('/user', registerUser); //? Done
+router.post('/login', login); //? Done
+
+router.get('/user',authenticate ,getUsers); //? Done
+router.get('/user/id/:id',authenticate,authorizeRoles('admin'),  getUserById); //? Done
+router.get('/user/username/:username',authenticate, getUserByUsername); //? Done
+router.patch('/user/alter', authenticate, updateUser); //? Done
+router.patch('/user/role/:username', authenticate, authorizeRoles('admin'), updateUserRole) //? Done
+
+router.delete('/user/unactive/:username',authenticate, authorizeRoles('admin'), unActiveUser); //? Done
+router.delete('/user/unactive', authenticate, unActive); //? Done
+
+router.delete('/user/delete/id/:id', authenticate, authorizeRoles('admin'), deleteByAdmin);
+router.delete('/user/delete/username/:username', authenticate, authorizeRoles('admin'), deleteByAdmin);
+// router.get('/user/order');
+
+export default router;
+
+
+// router.get('/test', authenticate, (req: Request, res: Response) => {
+//     res.send(req.user);
+// })
+
+
+// ┌────────────────────────┐
+// │   1. User Registers    │  ← /register (POST)
+// └────────────────────────┘
+//           │
+//           ▼
+// [Client sends username, email, password, role]
+//           │
+//           ▼
+// 📦 Controller (`registerUser`)
+//     └─ Calls `hashing(password)`
+//     └─ Calls `saveUser()` with hashed password
+//           │
+//           ▼
+// 💾 MongoDB stores user securely
+//           │
+//           ▼
+// ✅ Respond with: username, email, role, address (no password)
+
+// ────────────────────────────────────────────────────────────
+
+// ┌────────────────────────┐
+// │     2. User Logs In    │  ← /login (POST)
+// └────────────────────────┘
+//           │
+//           ▼
+// [Client sends username and password]
+//           │
+//           ▼
+// 📦 Controller (`login`)
+//     └─ Calls `findUserByUsername()`
+//     └─ Calls `verifyPassword()` using bcrypt
+//     └─ If correct:
+//         └─ 🔐 `generateToken(userId)` using JWT_SECRET
+//           │
+//           ▼
+// 🎟️ Token returned to client
+// {
+//    token: "...",
+//    user: { username, role, email, ... }
+// }
+
+// Client stores token in localStorage or sends it in header:
+// Authorization: Bearer <token>
+
+// ────────────────────────────────────────────────────────────
+
+// ┌──────────────────────────────────────────────┐
+// │ 3. Access Protected Route (GET /users)       │
+// └──────────────────────────────────────────────┘
+//           │
+//           ▼
+// 🛡️ Middleware: `authenticate`
+//     └─ Reads `Authorization` header
+//     └─ Extracts and verifies JWT using `jwt.verify()`
+//     └─ Gets `userId` from payload
+//     └─ Calls `findUserById(userId)`
+//     └─ Sets `req.user = user`
+//           │
+//           ▼
+// ✅ If verified → call next()
+// ❌ If invalid or expired → 401 Unauthorized
+
+// ────────────────────────────────────────────────────────────
+
+// ┌────────────────────────┐
+// │ 4. Controller Handles  │
+// └────────────────────────┘
+//           │
+//           ▼
+// 📦 Controller (e.g., `getUsers`)
+//     └─ Uses `req.user` info (authenticated user)
+//     └─ Can also restrict by role (e.g. only admin)
+//           │
+//           ▼
+// 📨 Responds with protected data
