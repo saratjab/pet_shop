@@ -12,12 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.filterAgePrice = exports.updatePets = exports.savePet = exports.filter = exports.findPetByPetTag = exports.findPetById = exports.findAllPets = void 0;
+exports.deletePets = exports.findAllPetsByAdmin = exports.filterAgePrice = exports.updatePets = exports.savePet = exports.filter = exports.findPetByPetTag = exports.findPetById = exports.findAllPets = void 0;
 const petModel_1 = __importDefault(require("../models/petModel"));
 const findAllPets = () => __awaiter(void 0, void 0, void 0, function* () {
-    const pets = yield petModel_1.default.find({});
+    const pets = yield petModel_1.default.find({ isAdopted: false });
     if (pets.length === 0)
-        throw new Error('no pets found');
+        throw Error('no pets found');
     return pets;
 });
 exports.findAllPets = findAllPets;
@@ -29,7 +29,7 @@ const findPetById = (id) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.findPetById = findPetById;
 const findPetByPetTag = (petTag) => __awaiter(void 0, void 0, void 0, function* () {
-    const pet = yield petModel_1.default.findOne({ petTag });
+    const pet = yield petModel_1.default.findOne({ petTag: petTag, isAdopted: false });
     if (!pet)
         throw Error('pet not found');
     return pet;
@@ -56,9 +56,8 @@ exports.filter = filter;
 const savePet = (user) => __awaiter(void 0, void 0, void 0, function* () {
     const newPet = new petModel_1.default(user);
     const savedPet = yield newPet.save();
-    if (!savedPet) {
+    if (!savedPet)
         throw Error(`Error saving user`);
-    }
     return savedPet;
 });
 exports.savePet = savePet;
@@ -91,11 +90,27 @@ const filterAgePrice = (_a) => __awaiter(void 0, [_a], void 0, function* ({ from
     else if (to) {
         query[by] = { $lte: to };
     }
-    console.log(query);
     const pets = yield petModel_1.default.find(query);
     if (pets.length === 0)
         throw Error('no pets found');
     return pets;
 });
 exports.filterAgePrice = filterAgePrice;
+const findAllPetsByAdmin = () => __awaiter(void 0, void 0, void 0, function* () {
+    const pets = yield petModel_1.default.find({});
+    if (pets.length === 0)
+        throw Error('no pets found');
+    return pets;
+});
+exports.findAllPetsByAdmin = findAllPetsByAdmin;
+const deletePets = (id, petTag) => __awaiter(void 0, void 0, void 0, function* () {
+    if (id) {
+        yield petModel_1.default.findByIdAndDelete(id);
+    }
+    if (petTag) {
+        const petD = yield (0, exports.findPetByPetTag)(petTag);
+        yield petModel_1.default.findByIdAndDelete(petD.id);
+    }
+});
+exports.deletePets = deletePets;
 //# sourceMappingURL=petService.js.map

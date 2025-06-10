@@ -23,9 +23,7 @@ export const findUserByUsername = async (username: string): Promise<HydratedDocu
 export const saveUser = async (user: IUser): Promise<HydratedDocument<IUser>> => {
     const newUser = new User( user );
     const savedUser = await newUser.save();
-    if(!savedUser){
-        throw Error(`Error saving user`);
-    }
+    if(!savedUser) throw Error(`Error saving user`);
     return savedUser;
 }
 
@@ -35,7 +33,7 @@ export const verifyPassword = async (password: string, user: IUser): Promise<boo
     return isMatch;
 }
 
-export const updateUserInof = async (user: IUser, password: string | undefined, email: string | undefined, address: string | undefined): Promise<IUser> => {
+export const updateUserInfo = async (user: IUser, password: string | undefined, email: string | undefined, address: string | undefined): Promise<IUser> => {
     if(password) user.password = password;
     if(email) user.email = email;
     if(address) user.address = address;
