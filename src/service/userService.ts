@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import User, { IUser } from '../models/userModel';
+import User, { IUser, UUser } from '../models/userModel';
 import { HydratedDocument } from 'mongoose';
 
 export const findAllUsers = async (): Promise<HydratedDocument<IUser>[]> => {
@@ -38,6 +38,11 @@ export const updateUserInfo = async (user: IUser, password: string | undefined, 
     if(email) user.email = email;
     if(address) user.address = address;
 
+    return await user.save();
+}
+
+export const update = async (user: IUser, UUser: UUser): Promise<IUser> => {
+    Object.assign(user, UUser);
     return await user.save();
 }
 

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteByAdmin = exports.unActive = exports.unActiveUser = exports.updateUserRole = exports.updateUser = exports.getUserByUsername = exports.getUserById = exports.getUsers = exports.registerUser = exports.login = void 0;
+exports.updated = exports.deleteByAdmin = exports.unActive = exports.unActiveUser = exports.getUserByUsername = exports.getUserById = exports.getUsers = exports.registerEmployee = exports.registerUser = exports.login = void 0;
 const userService_1 = require("../service/userService");
 const jwt_1 = require("../utils/jwt");
 const handleErrors_1 = require("../utils/handleErrors");
@@ -53,6 +53,24 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.registerUser = registerUser;
+const registerEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const newEmp = req.body;
+        req.body.role = 'employee';
+        const savedEmp = yield (0, userService_1.saveUser)(newEmp);
+        res.status(201).json({
+            username: savedEmp.username,
+            role: savedEmp.role,
+            email: savedEmp.email,
+            address: savedEmp.address
+        });
+    }
+    catch (err) {
+        const errors = (0, handleErrors_1.handleError)(err);
+        res.status(400).json(errors);
+    }
+});
+exports.registerEmployee = registerEmployee;
 const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const users = yield (0, userService_1.findAllUsers)();
@@ -103,47 +121,6 @@ const getUserByUsername = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.getUserByUsername = getUserByUsername;
-const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    try {
-        const { password, email, address } = req.body;
-        const user = yield (0, userService_1.findUserById)((_a = req.user) === null || _a === void 0 ? void 0 : _a.id);
-        const updatedUser = yield (0, userService_1.updateUserInfo)(user, password, email, address);
-        res.status(200).json({
-            username: updatedUser.username,
-            role: updatedUser.role,
-            email: updatedUser.email,
-            address: updatedUser.address
-        });
-    }
-    catch (err) {
-        const errors = (0, handleErrors_1.handleError)(err);
-        res.status(400).json(errors);
-    }
-});
-exports.updateUser = updateUser;
-const updateUserRole = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const username = req.params.username;
-        const { role } = req.body;
-        const user = yield (0, userService_1.findUserByUsername)(username);
-        user.role = role;
-        yield (0, userService_1.saveUser)(user);
-        res.status(200).json({
-            message: 'User role updated',
-            user: {
-                id: user._id,
-                username: user.username,
-                role: user.role
-            }
-        });
-    }
-    catch (err) {
-        const errors = (0, handleErrors_1.handleError)(err);
-        res.status(500).json(errors);
-    }
-});
-exports.updateUserRole = updateUserRole;
 const unActiveUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = yield (0, userService_1.findUserByUsername)(req.params.username);
@@ -174,15 +151,18 @@ exports.unActive = unActive;
 const deleteByAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let user;
+        let option;
         if (req.originalUrl.includes('id')) {
             user = yield (0, userService_1.findUserById)(req.params.id);
+            option = 'id';
         }
         else {
             user = yield (0, userService_1.findUserByUsername)(req.params.username);
+            option = 'username';
         }
         user.isActive = false;
         yield user.save();
-        res.send(200).json({ message: `${req.params.id} has been deleted` });
+        res.send(200).json({ message: `${req.params.option} has been deleted` });
     }
     catch (err) {
         const errors = (0, handleErrors_1.handleError)(err);
@@ -190,4 +170,29 @@ const deleteByAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.deleteByAdmin = deleteByAdmin;
+const updated = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        let UUser;
+        if (req.originalUrl.includes('role')) {
+            UUser = yield (0, userService_1.update)(yield (0, userService_1.findUserByUsername)(req.params.username), req.body);
+        }
+        else {
+            if (req.body.role)
+                throw Error(`You can't change your role`);
+            UUser = yield (0, userService_1.update)(yield (0, userService_1.findUserById)((_a = req.user) === null || _a === void 0 ? void 0 : _a.id), req.body);
+        }
+        res.status(200).json({
+            username: UUser.username,
+            role: UUser.role,
+            email: UUser.email,
+            address: UUser.address
+        });
+    }
+    catch (err) {
+        const errors = (0, handleErrors_1.handleError)(err);
+        res.status(500).json(errors);
+    }
+});
+exports.updated = updated;
 //# sourceMappingURL=userController.js.map

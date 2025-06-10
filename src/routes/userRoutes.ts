@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerUser, getUsers, getUserById, getUserByUsername, login, updateUserRole, updateUser, unActiveUser, unActive, deleteByAdmin, registerEmployee } from '../controllers/userController'
+import { registerUser, getUsers, getUserById, getUserByUsername, login, updated, unActiveUser, unActive, deleteByAdmin, registerEmployee } from '../controllers/userController'
 import { authenticate } from '../middleware/authenticate';
 import { authorizeRoles } from '../middleware/authorize';
 const router = express.Router();
@@ -19,8 +19,8 @@ router.post('/user/employee', authenticate, authorizeRoles('admin'), registerEmp
 router.get('/user',authenticate ,getUsers); 
 router.get('/user/id/:id',authenticate,authorizeRoles('admin'),  getUserById); 
 router.get('/user/username/:username',authenticate, getUserByUsername); 
-router.patch('/user/alter', authenticate, updateUser); 
-router.patch('/user/role/:username', authenticate, authorizeRoles('admin'), updateUserRole) 
+router.patch('/user/alter', authenticate, updated); 
+router.patch('/user/role/:username', authenticate, authorizeRoles('admin'), updated); 
 
 router.delete('/user/unactive/:username',authenticate, authorizeRoles('admin'), unActiveUser); 
 router.delete('/user/unactive', authenticate, unActive); 
