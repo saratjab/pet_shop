@@ -23,9 +23,7 @@ export const findUserByUsername = async (username: string): Promise<HydratedDocu
 export const saveUser = async (user: IUser): Promise<HydratedDocument<IUser>> => {
     const newUser = new User( user );
     const savedUser = await newUser.save();
-    if(!savedUser){
-        throw Error(`Error saving user`);
-    }
+    if(!savedUser) throw Error(`Error saving user`);
     return savedUser;
 }
 

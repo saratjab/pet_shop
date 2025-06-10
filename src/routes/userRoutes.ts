@@ -1,29 +1,29 @@
 import express from 'express';
-import { registerUser, getUsers, getUserById, getUserByUsername, login, updateUserRole, updateUser, unActiveUser, unActive, deleteByAdmin } from '../controllers/userController'
+import { registerUser, getUsers, getUserById, getUserByUsername, login, updateUserRole, updateUser, unActiveUser, unActive, deleteByAdmin, registerEmployee } from '../controllers/userController'
 import { authenticate } from '../middleware/authenticate';
 import { authorizeRoles } from '../middleware/authorize';
 const router = express.Router();
 
-// ToDo: handle errors in middlewares, expireIn for jwt
-// ToDo: not any one can regists as a employee only admin can do it
+// ToDo: handle errors in middlewares
 
-// ToDo: Favorites or Saved Pets, 
+// ToDo: Favorites or Saved Pets
 // POST /user/favorites/:petTag
 // GET /user/favorites
 // DELETE /user/favorites/:petTag
 // Add optional hard delete for admins:
 
-router.post('/user', registerUser); //? Done
-router.post('/login', login); //? Done
+router.post('/user', registerUser); 
+router.post('/login', login); 
+router.post('/user/employee', authenticate, authorizeRoles('admin'), registerEmployee);
 
-router.get('/user',authenticate ,getUsers); //? Done
-router.get('/user/id/:id',authenticate,authorizeRoles('admin'),  getUserById); //? Done
-router.get('/user/username/:username',authenticate, getUserByUsername); //? Done
-router.patch('/user/alter', authenticate, updateUser); //? Done
-router.patch('/user/role/:username', authenticate, authorizeRoles('admin'), updateUserRole) //? Done
+router.get('/user',authenticate ,getUsers); 
+router.get('/user/id/:id',authenticate,authorizeRoles('admin'),  getUserById); 
+router.get('/user/username/:username',authenticate, getUserByUsername); 
+router.patch('/user/alter', authenticate, updateUser); 
+router.patch('/user/role/:username', authenticate, authorizeRoles('admin'), updateUserRole) 
 
-router.delete('/user/unactive/:username',authenticate, authorizeRoles('admin'), unActiveUser); //? Done
-router.delete('/user/unactive', authenticate, unActive); //? Done
+router.delete('/user/unactive/:username',authenticate, authorizeRoles('admin'), unActiveUser); 
+router.delete('/user/unactive', authenticate, unActive); 
 
 router.delete('/user/delete/id/:id', authenticate, authorizeRoles('admin'), deleteByAdmin);
 router.delete('/user/delete/username/:username', authenticate, authorizeRoles('admin'), deleteByAdmin);
