@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updatePet = exports.fromTo = exports.filterPets = exports.getPetByPetTag = exports.getPetById = exports.getPets = exports.registerPet = void 0;
+exports.deletePet = exports.getPetsByAdmin = exports.updatePet = exports.fromTo = exports.filterPets = exports.getPetByPetTag = exports.getPetById = exports.getPets = exports.registerPet = void 0;
 const petService_1 = require("../service/petService");
 const handleErrors_1 = require("../utils/handleErrors");
 const registerPet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -44,7 +44,6 @@ const getPets = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             price: pet.price,
             description: pet.description,
             gender: pet.gender,
-            isAdopted: pet.isAdopted ? 'Yes' : 'No'
         })));
     }
     catch (err) {
@@ -84,7 +83,6 @@ const getPetByPetTag = (req, res) => __awaiter(void 0, void 0, void 0, function*
             price: pet.price,
             description: pet.description,
             gender: pet.gender,
-            isAdopted: pet.isAdopted ? 'Yes' : 'No'
         });
     }
     catch (err) {
@@ -180,4 +178,40 @@ const updatePet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.updatePet = updatePet;
+const getPetsByAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const pets = yield (0, petService_1.findAllPetsByAdmin)();
+        res.status(200).json(pets.map(pet => ({
+            petTag: pet.petTag,
+            name: pet.name,
+            kind: pet.kind,
+            age: pet.age,
+            price: pet.price,
+            description: pet.description,
+            gender: pet.gender,
+            isAdopted: pet.isAdopted ? 'Yes' : 'No'
+        })));
+    }
+    catch (err) {
+        const errors = (0, handleErrors_1.handleError)(err);
+        res.status(404).json(errors);
+    }
+});
+exports.getPetsByAdmin = getPetsByAdmin;
+const deletePet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        if (req.originalUrl.includes('id')) {
+            yield (0, petService_1.deletePets)(req.params.id);
+        }
+        else {
+            yield (0, petService_1.deletePets)(undefined, req.params.petTag);
+        }
+        res.status(204).json({ message: 'you deleted a pet' });
+    }
+    catch (err) {
+        const errors = (0, handleErrors_1.handleError)(err);
+        res.status(400).json(errors);
+    }
+});
+exports.deletePet = deletePet;
 //# sourceMappingURL=petController.js.map

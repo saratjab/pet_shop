@@ -108,7 +108,7 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const { password, email, address } = req.body;
         const user = yield (0, userService_1.findUserById)((_a = req.user) === null || _a === void 0 ? void 0 : _a.id);
-        const updatedUser = yield (0, userService_1.updateUserInof)(user, password, email, address);
+        const updatedUser = yield (0, userService_1.updateUserInfo)(user, password, email, address);
         res.status(200).json({
             username: updatedUser.username,
             role: updatedUser.role,

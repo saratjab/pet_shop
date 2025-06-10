@@ -1,6 +1,6 @@
 import { Response, Request } from 'express';
 import  { IUser } from '../models/userModel';
-import { saveUser, findAllUsers, findUserById, findUserByUsername, verifyPassword, updateUserInof } from '../service/userService';
+import { saveUser, findAllUsers, findUserById, findUserByUsername, verifyPassword, updateUserInfo } from '../service/userService';
 import { generateToken } from '../utils/jwt';
 import { handleError } from '../utils/handleErrors';
 import { HydratedDocument } from 'mongoose';
@@ -101,7 +101,7 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
     try{
         const {password, email, address} = req.body;
         const user = await findUserById(req.user?.id);
-        const updatedUser = await updateUserInof(user, password, email, address);
+        const updatedUser = await updateUserInfo(user, password, email, address);
         res.status(200).json({
             username: updatedUser.username,
             role: updatedUser.role,
