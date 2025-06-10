@@ -1,14 +1,17 @@
 import Adopt, { IAdopt } from '../models/adoptModel';
-import { IPet } from '../models/petModel';
+import Pets, { IPet } from '../models/petModel';
 import { HydratedDocument } from 'mongoose';
 import { findUserById } from '../service/userService';
 import { findPetById } from '../service/petService';
 import { ObjectId } from 'mongodb';
 
 export const isPetValid = async (pets: string[]): Promise<HydratedDocument<IPet>[]> => {
-    const petsData = await Promise.all(
-        pets.map(async pet => await findPetById( pet ))
-    )
+    // const petsData = await Promise.all(
+    //     pets.map(async pet => await findPetById( pet ))
+    // )
+    const petsData = await Pets.find({
+        _id: { $in: pets }
+    });
     if(petsData.some( p => !p || p.isAdopted )){
         throw Error('One or more pets not found or already adopted');
     }
@@ -23,11 +26,15 @@ export const isCustomerOld = async (user_id: string): Promise<boolean> => {
 
 export const makePetsTrueAndGetTotal = async (pets: IPet[]): Promise<number> => {
     let total = 0;
-    await Promise.all(pets.map(async pet => {
-        pet.isAdopted = true;
-        total += pet.price;
-        pet.save();
-    }))
+    // await Promise.all(pets.map(async pet => {
+    //     pet.isAdopted = true;
+    //     total += pet.price;
+    //     pet.save();
+    // }))
+    await Pets.updateMany(
+        { _id: { $in: pets.map(pet => pet.id)}},
+        { $set: { isAdopted: false}}
+    );
     return total;
 }
 
