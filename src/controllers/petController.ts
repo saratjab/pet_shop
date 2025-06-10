@@ -23,7 +23,7 @@ export const registerPet = async (req: Request, res: Response): Promise<void> =>
         const errors = handleError(err);
         res.status(400).json( errors );
     }
-} //* Done
+} 
 
 export const getPets = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -42,7 +42,7 @@ export const getPets = async (req: Request, res: Response): Promise<void> => {
         const errors = handleError(err);
         res.json(404).json( errors );
     }
-} //* Done
+} 
 
 export const getPetById = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -62,7 +62,7 @@ export const getPetById = async (req: Request, res: Response): Promise<void> => 
         const errors = handleError(err);
         res.status(404).json( errors );
     }
-} //* Done
+} 
 
 export const getPetByPetTag = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -80,7 +80,7 @@ export const getPetByPetTag = async (req: Request, res: Response): Promise<void>
         const errors = handleError(err);
         res.status(404).json( errors );
     }
-} //* Done
+} 
 
 export const filterPets = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -110,7 +110,7 @@ export const filterPets = async (req: Request, res: Response): Promise<void> => 
         const errors = handleError(err);
         res.status(400).json( errors );
     }
-} //* Done
+} 
 
 export const fromTo = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -141,7 +141,7 @@ export const fromTo = async (req: Request, res: Response): Promise<void> => {
         const errors = handleError(err);
         res.status(400).json( errors );
     }
-} //* Done
+} 
 
 export const updatePet = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -169,7 +169,7 @@ export const updatePet = async (req: Request, res: Response): Promise<void> => {
         const errors = handleError(err);
         res.status(400).json( errors );
     }
-} //* Done
+} 
 
 export const getPetsByAdmin = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -188,7 +188,7 @@ export const getPetsByAdmin = async (req: Request, res: Response): Promise<void>
         const errors = handleError(err);
         res.status(404).json( errors );
     }
-} // ToDo: test
+} 
 
 export const deletePet = async (req: Request, res: Response): Promise<void> => {
     try{
