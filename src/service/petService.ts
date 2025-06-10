@@ -65,7 +65,6 @@ by: string}) : Promise<HydratedDocument<IPet>[]> => {
     else if(to){
         query[by] = {$lte: to};
     }
-    console.log(query)
     const pets = await Pets.find(query);
     if(pets.length === 0) throw Error('no pets found');
     return pets;

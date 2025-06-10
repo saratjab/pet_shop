@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserInof = exports.verifyPassword = exports.saveUser = exports.findUserByUsername = exports.findUserById = exports.findAllUsers = void 0;
+exports.updateUserInfo = exports.verifyPassword = exports.saveUser = exports.findUserByUsername = exports.findUserById = exports.findAllUsers = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const findAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -52,7 +52,7 @@ const verifyPassword = (password, user) => __awaiter(void 0, void 0, void 0, fun
     return isMatch;
 });
 exports.verifyPassword = verifyPassword;
-const updateUserInof = (user, password, email, address) => __awaiter(void 0, void 0, void 0, function* () {
+const updateUserInfo = (user, password, email, address) => __awaiter(void 0, void 0, void 0, function* () {
     if (password)
         user.password = password;
     if (email)
@@ -61,5 +61,5 @@ const updateUserInof = (user, password, email, address) => __awaiter(void 0, voi
         user.address = address;
     return yield user.save();
 });
-exports.updateUserInof = updateUserInof;
+exports.updateUserInfo = updateUserInfo;
 //# sourceMappingURL=userService.js.map

@@ -35,7 +35,7 @@ export const verifyPassword = async (password: string, user: IUser): Promise<boo
     return isMatch;
 }
 
-export const updateUserInof = async (user: IUser, password: string | undefined, email: string | undefined, address: string | undefined): Promise<IUser> => {
+export const updateUserInfo = async (user: IUser, password: string | undefined, email: string | undefined, address: string | undefined): Promise<IUser> => {
     if(password) user.password = password;
     if(email) user.email = email;
     if(address) user.address = address;
