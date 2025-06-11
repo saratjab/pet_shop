@@ -13,6 +13,16 @@ export interface IUser extends mongoose.Document {
   createdAt?: Date;
   updatedAt?: Date;
 }
+export interface UUser extends mongoose.Document {
+  username?: string;
+  role?: "admin" | "customer" | "employee";
+  password?: string;
+  email?: string;
+  address?: string;
+  isActive?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
 const userSchema = new mongoose.Schema<IUser>({
     username: {

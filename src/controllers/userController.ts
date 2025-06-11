@@ -1,13 +1,13 @@
 import { Response, Request } from 'express';
 import  { IUser } from '../models/userModel';
-import { saveUser, findAllUsers, findUserById, findUserByUsername, verifyPassword, updateUserInof } from '../service/userService';
+import { saveUser, findAllUsers, findUserById, findUserByUsername, verifyPassword, updateUserInfo, update } from '../service/userService';
 import { generateToken } from '../utils/jwt';
 import { handleError } from '../utils/handleErrors';
 import { HydratedDocument } from 'mongoose';
 
 export const login = async (req: Request, res: Response): Promise<void> => {
     try{
-        const {username, password} = req.body;
+        const { username, password } = req.body;
         const user = await findUserByUsername(username);
         const match = await verifyPassword(password, user);
 
@@ -26,7 +26,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         const errors = handleError(err);
         res.status(400).json( errors );
     }
-} // ToDo: don't show token 
+}
 
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -44,7 +44,25 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
         const errors = handleError(err);
         res.status(400).json( errors ) ;
     }
-} //* Done
+}
+
+export const registerEmployee = async (req: Request, res: Response): Promise<void> => {
+    try{
+        const newEmp = req.body;
+        req.body.role = 'employee';
+        const savedEmp = await saveUser(newEmp);
+        res.status(201).json({
+            username: savedEmp.username,
+            role: savedEmp.role,
+            email: savedEmp.email,
+            address: savedEmp.address
+        });   
+        
+    }catch(err: any){
+        const errors = handleError(err);
+        res.status(400).json( errors ) ;
+    }
+}
 
 export const getUsers = async (req: Request, res: Response):Promise<void> => {
     try{
@@ -60,7 +78,7 @@ export const getUsers = async (req: Request, res: Response):Promise<void> => {
         const errors = handleError(err);
         res.status(404).json( errors );
     } 
-} //* Done
+} 
 
 export const getUserById = async (req: Request, res: Response):Promise<void> =>{
     try{
@@ -79,7 +97,7 @@ export const getUserById = async (req: Request, res: Response):Promise<void> =>{
         const errors = handleError(err);
         res.status(404).json( errors )
     }
-} //* Done
+} 
 
 export const getUserByUsername = async (req: Request, res: Response):Promise<void> =>{
     try{
@@ -95,48 +113,47 @@ export const getUserByUsername = async (req: Request, res: Response):Promise<voi
        const errors = handleError(err);
        res.status(404).json( errors );
     }
-} //* Done
+} 
 
-export const updateUser = async (req: Request, res: Response): Promise<void> => {
-    try{
-        const {password, email, address} = req.body;
-        const user = await findUserById(req.user?.id);
-        const updatedUser = await updateUserInof(user, password, email, address);
-        res.status(200).json({
-            username: updatedUser.username,
-            role: updatedUser.role,
-            email: updatedUser.email,
-            address: updatedUser.address
-        })
-    }
-    catch(err: any){
-        const errors = handleError(err);
-        res.status(400).json( errors );
-    }
-} //* Done
+// export const updateUser = async (req: Request, res: Response): Promise<void> => {
+//     try{
+//         const {password, email, address} = req.body;
+//         const user = await findUserById(req.user?.id);
+//         const updatedUser = await updateUserInfo(user, password, email, address);
+//         res.status(200).json({
+//             username: updatedUser.username,
+//             role: updatedUser.role,
+//             email: updatedUser.email,
+//             address: updatedUser.address
+//         })
+//     }
+//     catch(err: any){
+//         const errors = handleError(err);
+//         res.status(400).json( errors );
+//     }
+// } 
 
-export const updateUserRole = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const username = req.params.username;
-        const { role } = req.body;
-        const user = await findUserByUsername(username);
-
-        user.role = role;
-        await saveUser(user);
-        res.status(200).json({
-            message: 'User role updated',
-            user: {
-                id: user._id,
-                username: user.username,
-                role: user.role
-            }
-        })
-    }
-    catch(err: any){
-        const errors = handleError(err);
-        res.status(500).json( errors );
-    }
-} //* Done
+// export const updateUserRole = async (req: Request, res: Response): Promise<void> => {
+//     try {
+//         const username = req.params.username;
+//         const { role } = req.body;
+//         const user = await findUserByUsername(username);
+//         user.role = role;
+//         await saveUser(user);
+//         res.status(200).json({
+//             message: 'User role updated',
+//             user: {
+//                 id: user._id,
+//                 username: user.username,
+//                 role: user.role
+//             }
+//         })
+//     }
+//     catch(err: any){
+//         const errors = handleError(err);
+//         res.status(500).json( errors );
+//     }
+// } 
 
 export const unActiveUser = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -148,7 +165,7 @@ export const unActiveUser = async (req: Request, res: Response): Promise<void> =
         const errors = handleError(err);
         res.status(404).json( errors );
     }
-} //* Done
+} 
 
 export const unActive = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -160,21 +177,46 @@ export const unActive = async (req: Request, res: Response): Promise<void> => {
         const errors = handleError(err);
         res.status(404).json( errors );
     }
-} //* Done
+} 
 
 export const deleteByAdmin = async (req: Request, res: Response): Promise<void> => {
     try{
         let user: HydratedDocument<IUser>;
+        let option: string;
         if(req.originalUrl.includes('id')){
             user = await findUserById(req.params.id);
+            option = 'id';
         }else{
             user = await findUserByUsername(req.params.username);
+            option = 'username';
         }
         user.isActive = false;
         await user.save();
-        res.send(200).json({ message: `${req.params.id} has been deleted`});
+        res.send(200).json({ message: `${req.params.option} has been deleted`});
     }catch(err: any){
         const errors = handleError(err);
         res.status(400).json( errors );
     }
-} // ToDo: test
+} 
+
+export const updated = async (req: Request, res: Response): Promise<void> => {
+    try{
+        let UUser: IUser;
+        if(req.originalUrl.includes('role')){
+            UUser = await update(await findUserByUsername(req.params.username), req.body);
+        }
+        else {
+            if(req.body.role) throw Error(`You can't change your role`);
+            UUser = await update(await findUserById(req.user?.id), req.body);
+        }
+        res.status(200).json({
+            username: UUser.username,
+            role: UUser.role,
+            email: UUser.email,
+            address: UUser.address
+        })
+    }catch(err: any){
+        const errors = handleError(err);
+        res.status(500).json( errors );
+    }
+}
