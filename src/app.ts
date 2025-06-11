@@ -22,8 +22,8 @@ mongoose.connect(mongoUrl)
     .then(data => app.listen(3000, () => console.log('Server started')))
     .catch(err => new Error(err));
 
-// // ToDo: know more about this 
-// const db = mongoose.connection.db;
+// // ToDo: know more about thiso 
+// const db = mongoose.connectin.db;
 
 // const usersCollection = db?.collection('users');
 // const petsCollection = db?.collection('pets');

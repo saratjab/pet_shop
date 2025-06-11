@@ -23,7 +23,7 @@ export const registerPet = async (req: Request, res: Response): Promise<void> =>
         const errors = handleError(err);
         res.status(400).json( errors );
     }
-} //* Done
+} 
 
 export const getPets = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -42,7 +42,7 @@ export const getPets = async (req: Request, res: Response): Promise<void> => {
         const errors = handleError(err);
         res.json(404).json( errors );
     }
-} //* Done
+} 
 
 export const getPetById = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -62,7 +62,7 @@ export const getPetById = async (req: Request, res: Response): Promise<void> => 
         const errors = handleError(err);
         res.status(404).json( errors );
     }
-} //* Done
+} 
 
 export const getPetByPetTag = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -80,7 +80,7 @@ export const getPetByPetTag = async (req: Request, res: Response): Promise<void>
         const errors = handleError(err);
         res.status(404).json( errors );
     }
-} //* Done
+} 
 
 export const filterPets = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -110,7 +110,7 @@ export const filterPets = async (req: Request, res: Response): Promise<void> => 
         const errors = handleError(err);
         res.status(400).json( errors );
     }
-} //* Done
+} 
 
 export const fromTo = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -141,19 +141,17 @@ export const fromTo = async (req: Request, res: Response): Promise<void> => {
         const errors = handleError(err);
         res.status(400).json( errors );
     }
-} //* Done
+} 
 
 export const updatePet = async (req: Request, res: Response): Promise<void> => {
     try{
-        let pet: IPet;
+        let updatedPet: IPet;
         if(req.originalUrl.includes('id')){
-            pet = await findPetById(req.params.id);
+            updatedPet = await updatePets(await findPetById(req.params.id), req.body);
         }
         else{
-            pet = await findPetByPetTag(req.params.petTag);
+            updatedPet = await updatePets(await findPetById(req.params.petTag), req.body);
         }
-        const uPet = req.body;
-        const updatedPet = await updatePets(pet, uPet);
         res.status(200).json({
             petTag: updatedPet.petTag,
             name: updatedPet.name,
@@ -169,7 +167,7 @@ export const updatePet = async (req: Request, res: Response): Promise<void> => {
         const errors = handleError(err);
         res.status(400).json( errors );
     }
-} //* Done
+} 
 
 export const getPetsByAdmin = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -188,14 +186,14 @@ export const getPetsByAdmin = async (req: Request, res: Response): Promise<void>
         const errors = handleError(err);
         res.status(404).json( errors );
     }
-} // ToDo: test
+} 
 
 export const deletePet = async (req: Request, res: Response): Promise<void> => {
     try{
         if(req.originalUrl.includes('id')){
-            await deletePets(req.params.id);
+            await deletePets(req.body.id);
         }else{
-            await deletePets(undefined, req.params.petTag);
+            await deletePets(undefined, req.body.petTag);
         }
         res.status(204).json({message: 'you deleted a pet'})
     }catch(err: any){

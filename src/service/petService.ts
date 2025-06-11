@@ -40,14 +40,7 @@ export const savePet = async (user: IPet): Promise<HydratedDocument<IPet>> => {
 }
 
 export const updatePets = async (pet: IPet ,petP : UPet): Promise<HydratedDocument<IPet>> => {
-    if(petP.name)pet.name = petP.name;
-    if(petP.kind)pet.kind = petP.kind;
-    if(petP.age)pet.age = petP.age;
-    if(petP.price)pet.price = petP.price;
-    if(petP.description)pet.description = petP.description;
-    if(petP.gender)pet.gender = petP.gender;
-    if(petP.isAdopted)pet.isAdopted = petP.isAdopted;
-    
+    Object.assign(pet, petP);
     return await savePet(pet);
 }
 
@@ -76,12 +69,15 @@ export const findAllPetsByAdmin = async (): Promise<HydratedDocument<IPet>[]> =>
     return pets;
 }
 
-export const deletePets = async (id?: string, petTag?: string): Promise<void> => {
+export const deletePets = async (id?: string[], petTag?: string[]): Promise<void> => {
     if(id){
-        await Pets.findByIdAndDelete(id);
+        await Pets.deleteMany({
+            _id: { $in: id }
+        });
     }
     if(petTag){
-        const petD = await findPetByPetTag(petTag);
-        await Pets.findByIdAndDelete(petD.id);
+        await Pets.deleteMany({
+            petTag: { $in: petTag }
+        });
     }
 }
