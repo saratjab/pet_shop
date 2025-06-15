@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserInfo = exports.verifyPassword = exports.saveUser = exports.findUserByUsername = exports.findUserById = exports.findAllUsers = void 0;
+exports.update = exports.updateUserInfo = exports.verifyPassword = exports.saveUser = exports.findUserByUsername = exports.findUserById = exports.findAllUsers = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const findAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -39,9 +39,8 @@ exports.findUserByUsername = findUserByUsername;
 const saveUser = (user) => __awaiter(void 0, void 0, void 0, function* () {
     const newUser = new userModel_1.default(user);
     const savedUser = yield newUser.save();
-    if (!savedUser) {
+    if (!savedUser)
         throw Error(`Error saving user`);
-    }
     return savedUser;
 });
 exports.saveUser = saveUser;
@@ -62,4 +61,9 @@ const updateUserInfo = (user, password, email, address) => __awaiter(void 0, voi
     return yield user.save();
 });
 exports.updateUserInfo = updateUserInfo;
+const update = (user, UUser) => __awaiter(void 0, void 0, void 0, function* () {
+    Object.assign(user, UUser);
+    return yield user.save();
+});
+exports.update = update;
 //# sourceMappingURL=userService.js.map

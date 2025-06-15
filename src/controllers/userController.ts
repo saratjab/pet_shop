@@ -1,6 +1,6 @@
 import { Response, Request } from 'express';
 import  { IUser } from '../models/userModel';
-import { saveUser, findAllUsers, findUserById, findUserByUsername, verifyPassword, updateUserInfo } from '../service/userService';
+import { saveUser, findAllUsers, findUserById, findUserByUsername, verifyPassword, updateUserInfo, update } from '../service/userService';
 import { generateToken } from '../utils/jwt';
 import { handleError } from '../utils/handleErrors';
 import { HydratedDocument } from 'mongoose';
@@ -115,46 +115,45 @@ export const getUserByUsername = async (req: Request, res: Response):Promise<voi
     }
 } 
 
-export const updateUser = async (req: Request, res: Response): Promise<void> => {
-    try{
-        const {password, email, address} = req.body;
-        const user = await findUserById(req.user?.id);
-        const updatedUser = await updateUserInfo(user, password, email, address);
-        res.status(200).json({
-            username: updatedUser.username,
-            role: updatedUser.role,
-            email: updatedUser.email,
-            address: updatedUser.address
-        })
-    }
-    catch(err: any){
-        const errors = handleError(err);
-        res.status(400).json( errors );
-    }
-} 
+// export const updateUser = async (req: Request, res: Response): Promise<void> => {
+//     try{
+//         const {password, email, address} = req.body;
+//         const user = await findUserById(req.user?.id);
+//         const updatedUser = await updateUserInfo(user, password, email, address);
+//         res.status(200).json({
+//             username: updatedUser.username,
+//             role: updatedUser.role,
+//             email: updatedUser.email,
+//             address: updatedUser.address
+//         })
+//     }
+//     catch(err: any){
+//         const errors = handleError(err);
+//         res.status(400).json( errors );
+//     }
+// } 
 
-export const updateUserRole = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const username = req.params.username;
-        const { role } = req.body;
-        const user = await findUserByUsername(username);
-
-        user.role = role;
-        await saveUser(user);
-        res.status(200).json({
-            message: 'User role updated',
-            user: {
-                id: user._id,
-                username: user.username,
-                role: user.role
-            }
-        })
-    }
-    catch(err: any){
-        const errors = handleError(err);
-        res.status(500).json( errors );
-    }
-} 
+// export const updateUserRole = async (req: Request, res: Response): Promise<void> => {
+//     try {
+//         const username = req.params.username;
+//         const { role } = req.body;
+//         const user = await findUserByUsername(username);
+//         user.role = role;
+//         await saveUser(user);
+//         res.status(200).json({
+//             message: 'User role updated',
+//             user: {
+//                 id: user._id,
+//                 username: user.username,
+//                 role: user.role
+//             }
+//         })
+//     }
+//     catch(err: any){
+//         const errors = handleError(err);
+//         res.status(500).json( errors );
+//     }
+// } 
 
 export const unActiveUser = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -199,3 +198,25 @@ export const deleteByAdmin = async (req: Request, res: Response): Promise<void> 
         res.status(400).json( errors );
     }
 } 
+
+export const updated = async (req: Request, res: Response): Promise<void> => {
+    try{
+        let UUser: IUser;
+        if(req.originalUrl.includes('role')){
+            UUser = await update(await findUserByUsername(req.params.username), req.body);
+        }
+        else {
+            if(req.body.role) throw Error(`You can't change your role`);
+            UUser = await update(await findUserById(req.user?.id), req.body);
+        }
+        res.status(200).json({
+            username: UUser.username,
+            role: UUser.role,
+            email: UUser.email,
+            address: UUser.address
+        })
+    }catch(err: any){
+        const errors = handleError(err);
+        res.status(500).json( errors );
+    }
+}
