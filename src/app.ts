@@ -23,7 +23,7 @@ mongoose.connect(mongoUrl)
     .catch(err => new Error(err));
 
 // // ToDo: know more about thiso 
-// const db = mongoose.connectin.db;
+// const db = mongoose.connection.db;
 
 // const usersCollection = db?.collection('users');
 // const petsCollection = db?.collection('pets');
