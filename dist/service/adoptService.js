@@ -14,11 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cancelingPets = exports.meakPetsFalse = exports.payments = exports.getMoney = exports.findMyPets = exports.findAdoptById = exports.findAllAdopts = exports.saveAdopt = exports.makePetsTrueAndGetTotal = exports.isCustomerOld = exports.isPetValid = void 0;
 const adoptModel_1 = __importDefault(require("../models/adoptModel"));
+const petModel_1 = __importDefault(require("../models/petModel"));
 const userService_1 = require("../service/userService");
 const petService_1 = require("../service/petService");
 const mongodb_1 = require("mongodb");
 const isPetValid = (pets) => __awaiter(void 0, void 0, void 0, function* () {
-    const petsData = yield Promise.all(pets.map((pet) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, petService_1.findPetById)(pet); })));
+    const petsData = yield petModel_1.default.find({
+        _id: { $in: pets }
+    });
     if (petsData.some(p => !p || p.isAdopted)) {
         throw Error('One or more pets not found or already adopted');
     }
@@ -34,11 +37,7 @@ const isCustomerOld = (user_id) => __awaiter(void 0, void 0, void 0, function* (
 exports.isCustomerOld = isCustomerOld;
 const makePetsTrueAndGetTotal = (pets) => __awaiter(void 0, void 0, void 0, function* () {
     let total = 0;
-    yield Promise.all(pets.map((pet) => __awaiter(void 0, void 0, void 0, function* () {
-        pet.isAdopted = true;
-        total += pet.price;
-        pet.save();
-    })));
+    yield petModel_1.default.updateMany({ _id: { $in: pets.map(pet => pet.id) } }, { $set: { isAdopted: false } });
     return total;
 });
 exports.makePetsTrueAndGetTotal = makePetsTrueAndGetTotal;

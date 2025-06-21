@@ -62,20 +62,7 @@ const savePet = (user) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.savePet = savePet;
 const updatePets = (pet, petP) => __awaiter(void 0, void 0, void 0, function* () {
-    if (petP.name)
-        pet.name = petP.name;
-    if (petP.kind)
-        pet.kind = petP.kind;
-    if (petP.age)
-        pet.age = petP.age;
-    if (petP.price)
-        pet.price = petP.price;
-    if (petP.description)
-        pet.description = petP.description;
-    if (petP.gender)
-        pet.gender = petP.gender;
-    if (petP.isAdopted)
-        pet.isAdopted = petP.isAdopted;
+    Object.assign(pet, petP);
     return yield (0, exports.savePet)(pet);
 });
 exports.updatePets = updatePets;
@@ -105,11 +92,14 @@ const findAllPetsByAdmin = () => __awaiter(void 0, void 0, void 0, function* () 
 exports.findAllPetsByAdmin = findAllPetsByAdmin;
 const deletePets = (id, petTag) => __awaiter(void 0, void 0, void 0, function* () {
     if (id) {
-        yield petModel_1.default.findByIdAndDelete(id);
+        yield petModel_1.default.deleteMany({
+            _id: { $in: id }
+        });
     }
     if (petTag) {
-        const petD = yield (0, exports.findPetByPetTag)(petTag);
-        yield petModel_1.default.findByIdAndDelete(petD.id);
+        yield petModel_1.default.deleteMany({
+            petTag: { $in: petTag }
+        });
     }
 });
 exports.deletePets = deletePets;

@@ -9,7 +9,7 @@ const authenticate_1 = require("../middleware/authenticate");
 const authorize_1 = require("../middleware/authorize");
 const router = express_1.default.Router();
 router.post('/pets', authenticate_1.authenticate, (0, authorize_1.authorizeRoles)('admin', 'employee'), petController_1.registerPet);
-router.get('/pets', authenticate_1.authenticate, petController_1.getPets);
+router.get('/pets', petController_1.getPets);
 router.get('/pets/admin', authenticate_1.authenticate, (0, authorize_1.authorizeRoles)('admin'), petController_1.getPetsByAdmin);
 router.get('/pets/id/:id', authenticate_1.authenticate, (0, authorize_1.authorizeRoles)('admin'), petController_1.getPetById);
 router.get('/pets/petTag/:petTag', authenticate_1.authenticate, petController_1.getPetByPetTag);

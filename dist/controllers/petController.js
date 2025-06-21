@@ -152,15 +152,13 @@ const fromTo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.fromTo = fromTo;
 const updatePet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let pet;
+        let updatedPet;
         if (req.originalUrl.includes('id')) {
-            pet = yield (0, petService_1.findPetById)(req.params.id);
+            updatedPet = yield (0, petService_1.updatePets)(yield (0, petService_1.findPetById)(req.params.id), req.body);
         }
         else {
-            pet = yield (0, petService_1.findPetByPetTag)(req.params.petTag);
+            updatedPet = yield (0, petService_1.updatePets)(yield (0, petService_1.findPetById)(req.params.petTag), req.body);
         }
-        const uPet = req.body;
-        const updatedPet = yield (0, petService_1.updatePets)(pet, uPet);
         res.status(200).json({
             petTag: updatedPet.petTag,
             name: updatedPet.name,
@@ -201,10 +199,10 @@ exports.getPetsByAdmin = getPetsByAdmin;
 const deletePet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         if (req.originalUrl.includes('id')) {
-            yield (0, petService_1.deletePets)(req.params.id);
+            yield (0, petService_1.deletePets)(req.body.id);
         }
         else {
-            yield (0, petService_1.deletePets)(undefined, req.params.petTag);
+            yield (0, petService_1.deletePets)(undefined, req.body.petTag);
         }
         res.status(204).json({ message: 'you deleted a pet' });
     }
