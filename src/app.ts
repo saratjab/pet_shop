@@ -6,9 +6,11 @@ import petRoutes from './routes/petRoutes';
 import adoptRoutes from './routes/adoptRoutes';
 import dotenv from 'dotenv';
 dotenv.config();
+import cors from 'cors';
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 app.use('/api', userRoutes);  
 app.use('/api', petRoutes);  
