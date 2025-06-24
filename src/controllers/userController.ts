@@ -2,7 +2,7 @@ import { Response, Request } from 'express';
 import  { IUser } from '../models/userModel';
 import { saveUser, findAllUsers, findUserById, findUserByUsername, verifyPassword, update } from '../service/userService';
 
-import { generateToken } from '../utils/jwt';
+import { generateRefreshToken, generateToken } from '../utils/jwt';
 import { handleError } from '../utils/handleErrors';
 import { HydratedDocument } from 'mongoose';
 
@@ -13,6 +13,12 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         const match = await verifyPassword(password, user);
 
         const token: string = generateToken(user.id);
+        const refreshToken = generateRefreshToken(user.id);
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
+        
         res.status(200).json({
             token: token,
             user: {
