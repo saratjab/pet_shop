@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 export const generateToken = (userId: string) => {
     return jwt.sign({userId}, process.env.ACCESS_TOKEN_SECRET! , {
-        expiresIn: "1d" 
+        expiresIn: "1H" 
     }); // ToDo: change the expiresIn
 
     //? jwt.sign(payload, secret, options);
@@ -18,4 +18,11 @@ export const generateToken = (userId: string) => {
     //? generates a jwt token that contains the user's id and is valid for 20 min
     //? that token can be sent to the client (browser, mobile app)
     //? on the future requests, the client includes this token so the server knows who they are
+}
+
+export const generateRefreshToken = (userId: string) => {
+    return jwt.sign({ userId }, 
+        process.env.REFRESH_TOKEN_SECRET! ,
+        { expiresIn: "5D" }
+    );
 }
