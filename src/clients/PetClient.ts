@@ -1,14 +1,34 @@
-import axios from "axios";
 import { IPet } from "../models/petModel";
+import { BaseClient } from "./BaseClient";
+import { localStorage } from "../utils/localStorage";
 
-const BaseURL = 'http://localhost:3000/api';
+const client = new BaseClient();
 
 export const getAllPets = async (): Promise<IPet[]> => {
     try{
-        const response = await axios.get<IPet[]>(`${BaseURL}/pets`);
+        const response = await client.get<IPet[]>(`/pets`);
         return response.data;
     }catch(err){
         console.error('Error in getAllPets:', err);
+        throw err;
+    }
+}
+
+export const registerPet = async(pet: {
+    petTag: string,
+    name: string,
+    kind: string,
+    age: number,
+    price: number,
+    description?: string,
+    gender: string,
+    isAdopted: boolean
+}) =>{
+    try{
+        const savedPet = await client.post<IPet>('/pets', pet);
+        return savedPet.data;
+    }catch(err){
+        console.error('Error in registerPet', err);
         throw err;
     }
 }

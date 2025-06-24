@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from 'express';
 import { findUserById } from "../service/userService";
+import { handleError } from "../utils/handleErrors";
 
 declare global {
     namespace Express {
@@ -10,44 +11,63 @@ declare global {
     }
 } //? This extends the Express Request interface globally so you can safely attach a user object to it
 
-export const authenticate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+// export const authenticate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
-    const authHeader = req.header('Authorization'); // it looks for the Authorization header in the incoming request
-    //? Authorization: Bearer <token>
+//     const authHeader = req.header('Authorization'); // it looks for the Authorization header in the incoming request
+//     //? Authorization: Bearer <token>
     
-    const token = authHeader?.split(' ')[1]; //? ['Bearer', '<token>']
-    if(!token){ //! it must have token
-        res.status(401).json({message: 'No token'});
-        return;
-    } 
+//     const token = authHeader?.split(' ')[1]; //? ['Bearer', '<token>']
+//     if(!token){ //! it must have token
+//         res.status(401).json({message: 'No token'});
+//         return;
+//     } 
     
+//     try{
+//         const payload = jwt.verify(token, process.env.JWT_SECRET!) as {userId : string};
+//         //? verify the token using the secret key
+//         //? if the token is valid, it extracts the userId from the payload
+//         //! if not valid (expired, wrong secret) it throws an error
+
+//         const user = await findUserById(payload.userId);
+//         req.user = user; 
+
+//         //! attaches the user object to the request
+//         //? this makes the user available in any controllers or middleware that comes after this 
+//         next(); // if every thing is valid call the next function 
+//     }
+//     catch(err: any){
+//         console.error("JWT Verification Error:", err.message);
+//         res.status(401).json({ message: 'Unauthorized' });
+//     }
+
+//     //? this middleware checks if a request is authenticated by validation the jwt token
+//     //! this function is used to protect routes
+//     // reads the jwt token from the request header
+//     // verify the token using secret key 
+//     // Finds the user from the DB using the id token
+//     // attaches the user to req.user so you can access them later 
+
+// }
+
+export const authenticate = async (req:  Request, res: Response, next: NextFunction): Promise<void> => {
+    const authHeader = req.headers['authorization'] || req.get('Authorization');
+    const token = authHeader?.split(' ')[1];
+    if(!token){
+        res.status(401).json({ message: 'Invalide token format' });
+        return
+    }
+
     try{
         const payload = jwt.verify(token, process.env.JWT_SECRET!) as {userId : string};
-        //? verify the token using the secret key
-        //? if the token is valid, it extracts the userId from the payload
-        //! if not valid (expired, wrong secret) it throws an error
-
         const user = await findUserById(payload.userId);
-        req.user = user; 
-
-        //! attaches the user object to the request
-        //? this makes the user available in any controllers or middleware that comes after this 
-        next(); // if every thing is valid call the next function 
+        req.user = user;
+        next();
     }
     catch(err: any){
-        console.error("JWT Verification Error:", err.message);
+        const errors = handleError(err);
         res.status(401).json({ message: 'Unauthorized' });
     }
-
-    //? this middleware checks if a request is authenticated by validation the jwt token
-    //! this function is used to protect routes
-    // reads the jwt token from the request header
-    // verify the token using secret key 
-    // Finds the user from the DB using the id token
-    // attaches the user to req.user so you can access them later 
-
 }
-
 // import { Request, Response, NextFunction } from 'express';
 // import jwt from 'jsonwebtoken';
 
