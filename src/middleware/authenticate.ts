@@ -93,3 +93,23 @@ export const authenticate = async (req:  Request, res: Response, next: NextFunct
 //         res.status(403).json({ message: 'Invalid token' });
 //     }
 // };
+
+
+export const verifyRefreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> =>{
+    const token = req.cookies.refreshToken;
+
+    if(!token) {
+        res.status(401).json({ message: 'Refresh Token missing' });
+        return;
+    }
+    try{
+        const payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET!) as { userId: string};
+        const user = await findUserById(payload.userId);
+        req.user = user;
+        next;
+    }
+    catch(err: any){
+        const errors = handleError(err);
+        res.status(401).json({ message: 'Unauthorized' });
+    }
+}
