@@ -1,6 +1,7 @@
 import { localStorage } from '../utils/localStorage';
 import { IUser } from '../models/userModel';
 import { BaseClient } from './BaseClient';
+import { resolveTypeReferenceDirective } from 'typescript';
 
 interface TokenTake {
     token: string,
@@ -63,6 +64,18 @@ export const refreshing = async () => {
         localStorage.setItem('token', accessToken);
         return accessToken;
     }catch(err){
+        console.error('Error in refreshing', err);
+        throw err;
+    }
+}
+
+export const logingOut = async () => {
+    try{
+        const response = await client.post('logout');
+        console.log('Success log out');
+        return;
+    }
+    catch(err){
         console.error('Error in refreshing', err);
         throw err;
     }

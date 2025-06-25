@@ -31,27 +31,33 @@ export class BaseClient {
                 return config;
             }
         );
+
         this.client.interceptors.response.use(
             (response) => response,
             async (error) => {
-                const originalRequest = error.config;
+                const config = error.config;
 
-                if(error.response?.status === 401 && !originalRequest._retry){
-                    originalRequest._retry = true;
-                    
-                    const res = await this.client.post<{ accessToken: string}>('/refresh-token');
+                if(config.url?.includes('/refresh-token')) {
+                  return Promise.reject(error);
+                }
+                if(error.response?.status === 401 && !config._retry){
+                    config._retry = true;
 
-                    const newAccessToken = res.data.accessToken;
-                    localStorage.setItem('token', newAccessToken);
+                    try{
+                        const response = await this.client.post<{ accessToken: string}>('/refresh-token');
+                        const newAccessToken = response.data.accessToken;
+                        
+                        localStorage.setItem('token', newAccessToken);
+                        config.headers['Authorization'] = `Bearer ${newAccessToken}`;
 
-                    originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-
-                    return axios(originalRequest);
+                        return this.client(config);
+                    }catch(err) {
+                        console.error('Refresh Token failed');
+                        return Promise.reject(err);
+                    }
                 }
                 return Promise.reject(error);
-            }
-        );
-
+            });
     }
 
     public get<T>(url: string, config?: AxiosRequestConfig){

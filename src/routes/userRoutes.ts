@@ -1,6 +1,6 @@
 import express from 'express';
 import { registerUser, getUsers, getUserById, getUserByUsername, login, updated, unActiveUser, unActive, deleteByAdmin, registerEmployee } from '../controllers/userController'
-import { refreshToken } from '../controllers/authControllers';
+import { logOut, refreshToken } from '../controllers/authControllers';
 import { verifyRefreshToken } from '../middleware/authenticate';
 import { authenticate } from '../middleware/authenticate';
 import { authorizeRoles } from '../middleware/authorize';
@@ -17,8 +17,9 @@ const router = express.Router();
 router.post('/user', registerUser); 
 router.post('/login', login); 
 router.post('/refresh-token', verifyRefreshToken, refreshToken);
-router.post('/user/employee', authenticate, authorizeRoles('admin'), registerEmployee);
+router.post('/logout', verifyRefreshToken, logOut);
 
+router.post('/user/employee', authenticate, authorizeRoles('admin'), registerEmployee);
 router.get('/user',authenticate ,getUsers); 
 router.get('/user/id/:id',authenticate,authorizeRoles('admin'),  getUserById); 
 router.get('/user/username/:username',authenticate, getUserByUsername); 

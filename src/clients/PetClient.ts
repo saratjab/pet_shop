@@ -8,7 +8,7 @@ export const getAllPets = async (): Promise<IPet[]> => {
         const response = await client.get<IPet[]>(`/pets`);
         return response.data;
     }catch(err){
-        console.error('Error in getAllPets:', err);
+        console.error('Error in getAllPets');
         throw err;
     }
 }
