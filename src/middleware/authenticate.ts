@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { findUserById } from "../service/userService";
 import { handleError } from "../utils/handleErrors";
 import { localStorage } from "../utils/localStorage";
+import Blacklist from "../models/blacklist";
 
 declare global {
     namespace Express {
@@ -60,6 +61,12 @@ export const authenticate = async (req:  Request, res: Response, next: NextFunct
 
     try{
         const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as {userId : string};
+
+        const blacklistToken = await Blacklist.findOne({ token });
+        if(blacklistToken) {
+            res.status(401).json({ message: 'Token is blacklisted'});
+        }
+
         const user = await findUserById(payload.userId);
         req.user = user;
         next();
@@ -104,6 +111,12 @@ export const verifyRefreshToken = async (req: Request, res: Response, next: Next
     }
     try{
         const payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET!) as { userId: string};
+        
+        const blacklistToken = await Blacklist.findOne({ token });
+        if(blacklistToken) {
+            res.status(401).json({ message: 'Token is blacklisted'});
+        }
+
         const user = await findUserById(payload.userId);
         req.user = user;
         next();

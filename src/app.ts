@@ -8,6 +8,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 import cors from 'cors';
+import { startTokenCleanupJob } from './utils/tokenClenaup';
 
 const app = express();
 app.use(cors());
@@ -25,6 +26,8 @@ if(!mongoUrl){
 mongoose.connect(mongoUrl)
     .then(data => app.listen(3000, () => console.log('Server started')))
     .catch(err => new Error(err));
+
+startTokenCleanupJob();
 
 // // ToDo: know more about thiso 
 // const db = mongoose.connection.db;
