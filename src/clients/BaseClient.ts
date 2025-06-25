@@ -31,27 +31,26 @@ export class BaseClient {
                 return config;
             }
         );
-        // this.client.interceptors.response.use(
-        //     (response) => response,
-        //     async (error) => {
-        //         const originalRequest = error.config;
-                
-        //         if(error.response?.status === 401 && !originalRequest._retry){
-        //             originalRequest._retry = true;
+        this.client.interceptors.response.use(
+            (response) => response,
+            async (error) => {
+                const originalRequest = error.config;
+
+                if(error.response?.status === 401 && !originalRequest._retry){
+                    originalRequest._retry = true;
                     
-        //             const refreshToken = localStorage.getItem('refreshToken');
-        //             const res = await axios.post('/api/refresh-token', { token: refreshToken });
+                    const res = await this.client.post<{ accessToken: string}>('/refresh-token');
 
-        //             const newAccessToken = res.data.accessToken;
-        //             localStorage.setItem('token', newAccessToken);
+                    const newAccessToken = res.data.accessToken;
+                    localStorage.setItem('token', newAccessToken);
 
-        //             originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+                    originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
 
-        //             return axios(originalRequest);
-        //         }
-        //         return Promise.reject(error);
-        //     }
-        // );
+                    return axios(originalRequest);
+                }
+                return Promise.reject(error);
+            }
+        );
 
     }
 
