@@ -16,7 +16,7 @@ const router = express.Router();
 
 router.post('/user', registerUser); 
 router.post('/login', login); 
-router.post('/auth/refresh', verifyRefreshToken, refreshToken);
+router.post('/refresh-token', verifyRefreshToken, refreshToken);
 router.post('/user/employee', authenticate, authorizeRoles('admin'), registerEmployee);
 
 router.get('/user',authenticate ,getUsers); 

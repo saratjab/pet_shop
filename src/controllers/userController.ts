@@ -14,13 +14,15 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
         const token: string = generateToken(user.id);
         const refreshToken = generateRefreshToken(user.id);
-        res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
-        
+        // res.cookie('refreshToken', refreshToken, {
+        //     httpOnly: true,
+        //     maxAge: 1 * 24 * 60 * 60 * 1000,
+        //     sameSite: 'strict',
+        //     secure: false
+        // });
         res.status(200).json({
             token: token,
+            refreshToken: refreshToken,
             user: {
                 username: username,
                 role: user.role,

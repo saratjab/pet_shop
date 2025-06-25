@@ -1,6 +1,9 @@
 import axios from 'axios';
-import type { AxiosInstance, AxiosRequestConfig } from 'axios'; 
 import { localStorage } from '../utils/localStorage';
+
+type AxiosInstance = ReturnType<typeof axios.create>;
+type AxiosRequestConfig = NonNullable<Parameters<typeof axios.get>[1]>;
+
 
 export class BaseClient {
     private client: AxiosInstance;
@@ -15,9 +18,13 @@ export class BaseClient {
             },
             // withCredentials: true,
         });
+
         this.client.interceptors.request.use(
             (config) => { //* config is a plain JavaScript object that represents the full Axios request before it’s sent.
                 const token = localStorage.getItem('token');
+                if(!config.headers){
+                    config.headers = {};
+                }
                 if(token){
                     config.headers['Authorization'] = `Bearer ${token}`;
                 }
@@ -47,14 +54,12 @@ export class BaseClient {
         // );
 
     }
-// access token refresh token 
-// refresh token secret key expire time 
-// 
+
     public get<T>(url: string, config?: AxiosRequestConfig){
         return this.client.get<T>(url, config);
     }
 
-    public post<T>(url: string, data: any, config?: AxiosRequestConfig){
+    public post<T>(url: string, data?: any, config?: AxiosRequestConfig){
         return this.client.post<T>(url, data, config);
     }
 

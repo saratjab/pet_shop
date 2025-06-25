@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from 'express';
 import { findUserById } from "../service/userService";
 import { handleError } from "../utils/handleErrors";
+import { localStorage } from "../utils/localStorage";
 
 declare global {
     namespace Express {
@@ -50,7 +51,7 @@ declare global {
 // }
 
 export const authenticate = async (req:  Request, res: Response, next: NextFunction): Promise<void> => {
-    const authHeader = req.headers['authorization'] || req.get('Authorization');
+    const authHeader = req.headers['authorization'] ;
     const token = authHeader?.split(' ')[1];
     if(!token){
         res.status(401).json({ message: 'Invalide token format' });
@@ -58,7 +59,7 @@ export const authenticate = async (req:  Request, res: Response, next: NextFunct
     }
 
     try{
-        const payload = jwt.verify(token, process.env.JWT_SECRET!) as {userId : string};
+        const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as {userId : string};
         const user = await findUserById(payload.userId);
         req.user = user;
         next();
@@ -96,8 +97,7 @@ export const authenticate = async (req:  Request, res: Response, next: NextFunct
 
 
 export const verifyRefreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> =>{
-    const token = req.cookies.refreshToken;
-
+    const token = localStorage.getItem('refreshToken');
     if(!token) {
         res.status(401).json({ message: 'Refresh Token missing' });
         return;
@@ -106,7 +106,7 @@ export const verifyRefreshToken = async (req: Request, res: Response, next: Next
         const payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET!) as { userId: string};
         const user = await findUserById(payload.userId);
         req.user = user;
-        next;
+        next();
     }
     catch(err: any){
         const errors = handleError(err);

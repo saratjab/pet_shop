@@ -1,6 +1,5 @@
 import { IPet } from "../models/petModel";
 import { BaseClient } from "./BaseClient";
-import { localStorage } from "../utils/localStorage";
 
 const client = new BaseClient();
 

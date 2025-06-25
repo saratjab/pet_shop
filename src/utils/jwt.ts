@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 export const generateToken = (userId: string) => {
     return jwt.sign({userId}, process.env.ACCESS_TOKEN_SECRET! , {
-        expiresIn: "1H" 
+        expiresIn: "30S" 
     }); // ToDo: change the expiresIn
 
     //? jwt.sign(payload, secret, options);
@@ -23,6 +23,6 @@ export const generateToken = (userId: string) => {
 export const generateRefreshToken = (userId: string) => {
     return jwt.sign({ userId }, 
         process.env.REFRESH_TOKEN_SECRET! ,
-        { expiresIn: "5D" }
+        { expiresIn: "1d" }
     );
 }
