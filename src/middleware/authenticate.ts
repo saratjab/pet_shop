@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { findUserById } from "../service/userService";
 import { handleError } from "../utils/handleErrors";
 import { localStorage } from "../utils/localStorage";
-import Blacklist from "../models/blacklist";
+import Blacklist from "../models/blacklistModel";
 
 declare global {
     namespace Express {

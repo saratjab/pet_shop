@@ -71,12 +71,12 @@ export const refreshing = async () => {
 
 export const logingOut = async () => {
     try{
-        const response = await client.post('logout');
+        const response = await client.post('/logout');
         console.log('Success log out');
         return;
     }
     catch(err){
-        console.error('Error in refreshing', err);
+        console.error('Error in Log Out', err);
         throw err;
     }
 }

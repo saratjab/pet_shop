@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
 export interface IBlacklist extends Document {
-    token: string,
-    expiresAt: string
+    token: string;
+    expiresAt: string;
 }
 
 const blacklistSchema = new mongoose.Schema({
-    tokne: { 
+    token: { 
         type: String,
         required: true
     },
