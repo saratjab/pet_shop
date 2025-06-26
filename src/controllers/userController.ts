@@ -9,17 +9,14 @@ import { HydratedDocument } from 'mongoose';
 export const login = async (req: Request, res: Response): Promise<void> => {
     try{
         const { username, password } = req.body;
+        if(!username || !password) {
+            throw Error('username and password are requried')
+        }
         const user = await findUserByUsername(username);
-        const match = await verifyPassword(password, user);
+        await verifyPassword(password, user);
 
         const token: string = generateToken(user.id);
         const refreshToken = generateRefreshToken(user.id);
-        // res.cookie('refreshToken', refreshToken, {
-        //     httpOnly: true,
-        //     maxAge: 1 * 24 * 60 * 60 * 1000,
-        //     sameSite: 'strict',
-        //     secure: false
-        // });
         res.status(200).json({
             token: token,
             refreshToken: refreshToken,
@@ -40,6 +37,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
     try{
         const newUser = req.body;
+        if(!(newUser.role === 'customer' || newUser.role === '')){
+            throw Error(`Invalid role. You can only register as a customer.`)
+        }
         req.body.role = 'customer';
         const savedUser = await saveUser(newUser);
         res.status(201).json({
@@ -58,6 +58,9 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
 export const registerEmployee = async (req: Request, res: Response): Promise<void> => {
     try{
         const newEmp = req.body;
+        if(!(newEmp.role === 'employee' || !newEmp.role)){
+            throw Error(`Invalid role. As an admin, you can only register employees.`)
+        }
         req.body.role = 'employee';
         const savedEmp = await saveUser(newEmp);
         res.status(201).json({
@@ -123,46 +126,6 @@ export const getUserByUsername = async (req: Request, res: Response):Promise<voi
        res.status(404).json( errors );
     }
 } 
-
-// export const updateUser = async (req: Request, res: Response): Promise<void> => {
-//     try{
-//         const {password, email, address} = req.body;
-//         const user = await findUserById(req.user?.id);
-//         const updatedUser = await updateUserInfo(user, password, email, address);
-//         res.status(200).json({
-//             username: updatedUser.username,
-//             role: updatedUser.role,
-//             email: updatedUser.email,
-//             address: updatedUser.address
-//         })
-//     }
-//     catch(err: any){
-//         const errors = handleError(err);
-//         res.status(400).json( errors );
-//     }
-// } 
-
-// export const updateUserRole = async (req: Request, res: Response): Promise<void> => {
-//     try {
-//         const username = req.params.username;
-//         const { role } = req.body;
-//         const user = await findUserByUsername(username);
-//         user.role = role;
-//         await saveUser(user);
-//         res.status(200).json({
-//             message: 'User role updated',
-//             user: {
-//                 id: user._id,
-//                 username: user.username,
-//                 role: user.role
-//             }
-//         })
-//     }
-//     catch(err: any){
-//         const errors = handleError(err);
-//         res.status(500).json( errors );
-//     }
-// } 
 
 export const unActiveUser = async (req: Request, res: Response): Promise<void> => {
     try{

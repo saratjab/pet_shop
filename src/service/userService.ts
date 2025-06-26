@@ -42,11 +42,24 @@ export const updateUserInfo = async (user: IUser, password: string | undefined, 
 }
 
 export const update = async (user: IUser, UUser: UUser): Promise<IUser> => {
+    if(UUser.username && typeof UUser.username !== 'string'){
+        throw Error(`username should be string`);
+    }
+    if(UUser.role && typeof UUser.role !== 'string'){
+        throw Error(`role should be string`);
+    }
+    if(UUser.password && typeof UUser.password !== 'string'){
+        throw Error(`password should be string`);
+    }
+    if(UUser.email && typeof UUser.email !== 'string'){
+        throw Error(`email should be string`);
+    }
+    if(UUser.address && typeof UUser.address !== 'string'){
+        throw Error(`address should be string`);
+    }
+    if(UUser.isActive && typeof UUser.isActive !== 'boolean'){
+        throw Error(`isActive should be boolean`);
+    }
     Object.assign(user, UUser);
     return await user.save();
 }
-
-// export const hashing = async (password: string): Promise<string> => {
-//     const hashed = await bcrypt.hash(password, 10);
-//     return hashed; //! instead of hashing using this we can use schma.pre('save')
-// }
