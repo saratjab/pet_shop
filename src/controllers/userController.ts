@@ -1,7 +1,6 @@
 import { Response, Request } from 'express';
 import  { IUser } from '../models/userModel';
 import { saveUser, findAllUsers, findUserById, findUserByUsername, verifyPassword, update } from '../service/userService';
-
 import { generateRefreshToken, generateToken } from '../utils/jwt';
 import { handleError } from '../utils/handleErrors';
 import { HydratedDocument } from 'mongoose';
@@ -37,6 +36,24 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
     try{
         const newUser = req.body;
+        if(!newUser.username || typeof newUser.username !== 'string'){
+            throw Error(`username required and should be string`);
+        }
+        if(newUser.role && typeof newUser.role !== 'string'){
+            throw Error(`role should be string`);
+        }
+        if(!newUser.password || typeof newUser.password !== 'string'){
+            throw Error(`password requried and should be string`);
+        }
+        if(!newUser.email || typeof newUser.email !== 'string'){
+            throw Error(`email required and should be string`);
+        }
+        if(newUser.address && typeof newUser.address !== 'string'){
+            throw Error(`address should be string`);
+        }
+        if(newUser.isActive && typeof newUser.isActive !== 'boolean'){
+            throw Error(`isActive should be boolean`);
+        }
         if(!(newUser.role === 'customer' || newUser.role === '')){
             throw Error(`Invalid role. You can only register as a customer.`)
         }
@@ -58,6 +75,24 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
 export const registerEmployee = async (req: Request, res: Response): Promise<void> => {
     try{
         const newEmp = req.body;
+        if(!newEmp.username || typeof newEmp.username !== 'string'){
+            throw Error(`username required and should be string`);
+        }
+        if(newEmp.role && typeof newEmp.role !== 'string'){
+            throw Error(`role should be string`);
+        }
+        if(!newEmp.password || typeof newEmp.password !== 'string'){
+            throw Error(`password requried and should be string`);
+        }
+        if(!newEmp.email || typeof newEmp.email !== 'string'){
+            throw Error(`email required and should be string`);
+        }
+        if(newEmp.address && typeof newEmp.address !== 'string'){
+            throw Error(`address should be string`);
+        }
+        if(newEmp.isActive && typeof newEmp.isActive !== 'boolean'){
+            throw Error(`isActive should be boolean`);
+        }
         if(!(newEmp.role === 'employee' || !newEmp.role)){
             throw Error(`Invalid role. As an admin, you can only register employees.`)
         }
@@ -173,13 +208,32 @@ export const deleteByAdmin = async (req: Request, res: Response): Promise<void> 
 
 export const updated = async (req: Request, res: Response): Promise<void> => {
     try{
+        const user = req.body;
+        if(user.username && typeof user.username !== 'string'){
+            throw Error(`username should be string`);
+        }
+        if(user.role && typeof user.role !== 'string'){
+            throw Error(`role should be string`);
+        }
+        if(user.password && typeof user.password !== 'string'){
+            throw Error(`password should be string`);
+        }
+        if(user.email && typeof user.email !== 'string'){
+            throw Error(`email should be string`);
+        }
+        if(user.address && typeof user.address !== 'string'){
+            throw Error(`address should be string`);
+        }
+        if(user.isActive && typeof user.isActive !== 'boolean'){
+            throw Error(`isActive should be boolean`);
+        }
         let UUser: IUser;
         if(req.originalUrl.includes('role')){
-            UUser = await update(await findUserByUsername(req.params.username), req.body);
+            UUser = await update(await findUserByUsername(req.params.username), user);
         }
         else {
-            if(req.body.role) throw Error(`You can't change your role`);
-            UUser = await update(await findUserById(req.user?.id), req.body);
+            if(user.role) throw Error(`You can't change your role`);
+            UUser = await update(await findUserById(req.user?.id), user);
         }
         res.status(200).json({
             username: UUser.username,

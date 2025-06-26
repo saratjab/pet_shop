@@ -22,6 +22,6 @@ export const logOut = async (req: Request, res: Response): Promise<void> => {
         res.status(200).json({ message: 'Logged out successfully' })
     }catch(err: any){
         const errors = handleError(err);
-        res.status(400).json( errors );
+        res.status(500).json( errors );
     }
 }

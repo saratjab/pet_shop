@@ -1,12 +1,35 @@
-import Pets, { IPet } from '../models/petModel';
+import { IPet } from '../models/petModel';
 import { Request, Response } from 'express';
 import { findAllPets, savePet, findPetById, findPetByPetTag, filter, filterAgePrice, updatePets, findAllPetsByAdmin, deletePets } from '../service/petService';
 import { handleError } from '../utils/handleErrors';
-import { HydratedDocument } from 'mongoose';
 
 export const registerPet = async (req: Request, res: Response): Promise<void> => { 
     try {
         const newPet: IPet = req.body;
+        if (!newPet.petTag || typeof newPet.petTag !== 'string') {
+            throw Error('petTag is required and must be a string');
+        }
+        if (!newPet.name || typeof newPet.name !== 'string') {
+            throw Error('Name is required and must be a string');
+        }
+        if (!newPet.kind || typeof newPet.kind !== 'string') {
+            throw Error('Kind is required and must be a string');
+        }
+        if (typeof newPet.age !== 'number' || newPet.age <= 0) {
+            throw Error('Age is required and must be a positive number');
+        }
+        if (typeof newPet.price !== 'number' || newPet.price <= 0) {
+            throw Error('Price is required and must be a positive number');
+        }
+        if (newPet.description !== undefined && typeof newPet.description !== 'string') {
+            throw Error('Description must be a string');
+        }
+        if (!newPet.gender || typeof newPet.gender !== 'string') {
+            throw Error('Gender is required and must be a string');
+        }
+        if (newPet.isAdopted !== undefined && typeof newPet.isAdopted !== 'boolean') {
+            throw Error('isAdopted must be a boolean');
+        }
         const savedPet = await savePet(newPet);
         res.status(201).json({
             petTag: savedPet.petTag,
@@ -117,11 +140,17 @@ export const fromTo = async (req: Request, res: Response): Promise<void> => {
         const from = req.query.from ? parseInt(req.query.from as string) : null;
         const to = req.query.to ? parseInt(req.query.to as string) : null;
 
+        if ((from !== null && (isNaN(from) || from <= 0)) || (to !== null && (isNaN(to) || to <= 0))) {
+            throw Error(`Qurey parameters 'from' and 'to' must be a valid numbers`)
+        }
         let by = '';
-        if(req.originalUrl.includes('age')){
+        if(req.originalUrl.includes('/age')){
             by = 'age';
-        }else if(req.originalUrl.includes('price')){
+        }else if(req.originalUrl.includes('/price')){
             by = 'price';
+        }
+        else{
+            throw Error(`Invalid filter type. URL must include 'age' or 'pice'`)
         }
 
         const pets = await filterAgePrice({ from, to, by });
@@ -145,12 +174,37 @@ export const fromTo = async (req: Request, res: Response): Promise<void> => {
 
 export const updatePet = async (req: Request, res: Response): Promise<void> => {
     try{
+        const pet = req.body;
+        if (pet.petTag && typeof pet.petTag !== 'string') {
+            throw Error('petTag must be a string');
+        }
+        if (pet.name && typeof pet.name !== 'string') {
+            throw Error('Name is must be a string');
+        }
+        if (pet.kind && typeof pet.kind !== 'string') {
+            throw Error('Kind is must be a string');
+        }
+        if (pet.age !== undefined && (typeof pet.age !== 'number' || pet.age <= 0)) {
+            throw Error('age must be a positive number');
+        }
+        if (pet.price !== undefined && (typeof pet.price !== 'number' || pet.price <= 0)) {
+            throw Error('price must be a positive number');
+        }
+        if (pet.description !== undefined && typeof pet.description !== 'string') {
+            throw Error('Description must be a string');
+        }
+        if (pet.gender && typeof pet.gender !== 'string') {
+            throw Error('Gender and must be a string');
+        }
+        if (pet.isAdopted !== undefined && typeof pet.isAdopted !== 'boolean') {
+            throw Error('isAdopted must be a boolean');
+        }
         let updatedPet: IPet;
         if(req.originalUrl.includes('id')){
-            updatedPet = await updatePets(await findPetById(req.params.id), req.body);
+            updatedPet = await updatePets(await findPetById(req.params.id), pet);
         }
         else{
-            updatedPet = await updatePets(await findPetById(req.params.petTag), req.body);
+            updatedPet = await updatePets(await findPetById(req.params.petTag), pet);
         }
         res.status(200).json({
             petTag: updatedPet.petTag,

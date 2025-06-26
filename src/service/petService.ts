@@ -1,5 +1,5 @@
 import Pets, { IPet, UPet } from '../models/petModel';
-import { HydratedDocument, Query } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 
 export const findAllPets = async (): Promise<HydratedDocument<IPet>[]> => {
     const pets = await Pets.find({ isAdopted: false });
@@ -32,10 +32,10 @@ export const filter = async (option: {kind?: string, age?: number, price?: numbe
     return pets;
 }
 
-export const savePet = async (user: IPet): Promise<HydratedDocument<IPet>> => {
-    const newPet = new Pets(user);
+export const savePet = async (pet: IPet): Promise<HydratedDocument<IPet>> => {
+    const newPet = new Pets(pet);
     const savedPet = await newPet.save();
-    if(!savedPet) throw Error(`Error saving user`);
+    if(!savedPet) throw Error(`Error saving pet`);
     return savedPet;
 }
 

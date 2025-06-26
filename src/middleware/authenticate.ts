@@ -5,6 +5,9 @@ import { handleError } from "../utils/handleErrors";
 import { localStorage } from "../utils/localStorage";
 import Blacklist from "../models/blacklistModel";
 
+const refresshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
+const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+
 declare global {
     namespace Express {
         interface Request{
@@ -60,7 +63,7 @@ export const authenticate = async (req:  Request, res: Response, next: NextFunct
     }
 
     try{
-        const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as {userId : string};
+        const payload = jwt.verify(token, accessTokenSecret!) as {userId : string};
 
         const blacklistToken = await Blacklist.findOne({ token });
         if(blacklistToken) {
@@ -110,7 +113,7 @@ export const verifyRefreshToken = async (req: Request, res: Response, next: Next
         return;
     }
     try{
-        const payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET!) as { userId: string};
+        const payload = jwt.verify(token, refresshTokenSecret!) as { userId: string};
         
         const blacklistToken = await Blacklist.findOne({ token });
         if(blacklistToken) {
