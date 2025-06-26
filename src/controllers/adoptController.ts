@@ -1,10 +1,22 @@
 import { Request, Response } from 'express';
 import { findAllAdopts, saveAdopt, findMyPets, getMoney, payments, cancelingPets, findAdoptById } from '../service/adoptService';
 import { handleError } from '../utils/handleErrors';
+import { TypeFlags } from 'typescript';
 
 export const adoption = async (req: Request, res: Response): Promise<void> => {
     try{
-        const savedAdopt = await saveAdopt(req.user.id, req.body);
+        const user_id = req.user.id;
+        if(!user_id){
+            throw Error('User not found');
+        }
+        const adopt = req.body;
+        if(adopt.pets.length === 0 || !adopt.pets){
+            throw Error('You should choose pets');
+        }
+        if(adopt.payMoney && (typeof adopt.payMoney !== 'number' || adopt.payMoney <= 0)){
+            throw Error('payMoney should be a positive number');
+        }
+        const savedAdopt = await saveAdopt(user_id, adopt);
         res.status(201).json({
             user_id: savedAdopt.user_id,
             pets: savedAdopt.pets,
@@ -16,7 +28,7 @@ export const adoption = async (req: Request, res: Response): Promise<void> => {
         const errors = handleError(err);
         res.status(400).json( errors );
     }
-} //* Done
+} 
 
 export const getAdoptions = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -32,11 +44,15 @@ export const getAdoptions = async (req: Request, res: Response): Promise<void> =
         const errors = handleError(err);
         res.status(404).json( errors );
     }
-} //* Done
+}
 
 export const getMyPets = async (req: Request, res: Response): Promise<void> => {
     try{
-        const pets = await findMyPets(req.user?.id);
+        const user_id = req.user.id;
+        if(!user_id){
+            throw Error('User not found');
+        }
+        const pets = await findMyPets(user_id);
         res.status(200).json({    
             user_id: pets.user_id,
             pets: pets.pets,
@@ -48,32 +64,46 @@ export const getMyPets = async (req: Request, res: Response): Promise<void> => {
         const errors = handleError(err);
         res.status(404).json( errors );
     }
-} //* Done
+}
 
 export const getRemains = async (req: Request, res: Response): Promise<void> => {
     try{
-        const infoPay = await getMoney(req.user?.id);
+        const user_id = req.user.id;
+        if(!user_id){
+            throw Error('User not found');
+        }
+        const infoPay = await getMoney(user_id);
         res.status(200).json( infoPay );
     }catch(err: any){
         const errors = handleError(err);
         res.status(400).json( errors );
     }
-} //* Done
+}
 
 export const payment = async (req: Request, res: Response): Promise<void> => {
     try{
         const money = req.body.payMoney;
-        const pays = await payments(req.user?.id, money);
+        if(money && (typeof money !== 'number' || money <= 0)){
+            throw Error('money should be a positve number')
+        }
+        const user_id = req.user.id;
+        if(!user_id){
+            throw Error('User not found');
+        }
+        const pays = await payments(user_id, money);
         res.status(200).json( pays );
     }catch(err: any){
         const errors = handleError(err);
         res.status(400).json( errors );
     }
-} //* Done
+} 
 
 export const cancelPets = async (req: Request, res: Response): Promise<void> => {
     try{
         const pets = req.body.pets;
+        if(pets.length === 0 || !pets){
+            throw Error('You should choose pets');
+        }
         const user_id = req.user?.id;
         const adopt = await cancelingPets(user_id, pets);
         res.status(200).json( adopt );
@@ -81,11 +111,15 @@ export const cancelPets = async (req: Request, res: Response): Promise<void> => 
         const errors = handleError(err);
         res.status(400).json( errors );
     }
-} //* Done
+} 
 
 export const getAdoption = async (req: Request, res: Response): Promise<void> => {
     try{
-        const adopt = await findAdoptById(req.body.adopt_id);
+        const adopt_id = req.body.adopt_id;
+        if(!adopt_id){
+            throw Error('adopt id is required to get the adoption')
+        }
+        const adopt = await findAdoptById(adopt_id);
         res.status(200).json({
             user_id: adopt.user_id,
             pets: adopt.pets,
