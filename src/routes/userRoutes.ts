@@ -4,6 +4,8 @@ import { logOut, refreshToken } from '../controllers/authControllers';
 import { verifyRefreshToken } from '../middleware/authenticate';
 import { authenticate } from '../middleware/authenticate';
 import { authorizeRoles } from '../middleware/authorize';
+import { validate } from '../middleware/validate';
+import { loginSchema, registerSchema } from '../schemas/userSchema';
 const router = express.Router();
 
 // ToDo: handle errors in middlewares
@@ -14,8 +16,8 @@ const router = express.Router();
 // DELETE /user/favorites/:petTag
 // Add optional hard delete for admins:
 
-router.post('/user', registerUser); 
-router.post('/login', login); 
+router.post('/user', validate(registerSchema), registerUser); 
+router.post('/login', validate(loginSchema), login); 
 router.post('/refresh-token', verifyRefreshToken, refreshToken);
 router.post('/logout', verifyRefreshToken, logOut);
 
