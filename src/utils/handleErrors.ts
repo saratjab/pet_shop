@@ -20,7 +20,7 @@ interface ValidationErrorObject  {
     [key: string]: string | number | boolean | undefined | string[]; //? to handle dynamic key
 } // ToDo: add the adopt 
 
-export const handleError = (error: { name: string, errors: {path:string, message: string}[], message?: string, keyValue?: string }): ValidationErrorObject => {
+export const handleError = (error: { name: string, errors: {path:string, message: string, received: string}[], message?: string, keyValue?: string }): ValidationErrorObject => {
     let errorsObj: ValidationErrorObject = {} ;
     const name: string = error.name;
     if(name === 'ValidationError'){
@@ -50,7 +50,12 @@ export const handleError = (error: { name: string, errors: {path:string, message
     else if(name === 'ZodError'){
         errorsObj['ZodError'] = [];
         Object.values(error.errors).forEach((err) => {
-            errorsObj['ZodError']?.push(err.message);
+            if(err.received === 'undefined'){
+                errorsObj['ZodError']?.push(err.path + ' ' + err.message);
+            }
+            else{
+                errorsObj['ZodError']?.push(err.message);
+            }
         })
     }
     else {
