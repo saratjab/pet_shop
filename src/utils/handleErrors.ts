@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import errorMap from "zod/dist/types/v3/locales/en";
 
 interface ValidationErrorObject  {
     username?: string,
@@ -12,10 +13,11 @@ interface ValidationErrorObject  {
     gender?: 'M' | 'F';
     isAdopted?: boolean;
     Error?: string,
-    ID?: string
+    ID?: string,
+    ZodError?: string[],
 
     //! index signature 
-    [key: string]: string | number | boolean | undefined; //? to handle dynamic key
+    [key: string]: string | number | boolean | undefined | string[]; //? to handle dynamic key
 } // ToDo: add the adopt 
 
 export const handleError = (error: { name: string, errors: {path:string, message: string}[], message?: string, keyValue?: string }): ValidationErrorObject => {
@@ -44,6 +46,12 @@ export const handleError = (error: { name: string, errors: {path:string, message
 
     else if(name === 'TokenExpiredError') {
         errorsObj['Error'] = 'Token expired';
+    }
+    else if(name === 'ZodError'){
+        errorsObj['ZodError'] = [];
+        Object.values(error.errors).forEach((err) => {
+            errorsObj['ZodError']?.push(err.message);
+        })
     }
     else {
         errorsObj['Error'] = 'Some error occure'
