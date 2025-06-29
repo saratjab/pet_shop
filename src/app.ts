@@ -1,14 +1,13 @@
-// check
 import express from 'express';
 import mongoose from "mongoose";
 import userRoutes from './routes/userRoutes';
 import petRoutes from './routes/petRoutes';
 import adoptRoutes from './routes/adoptRoutes';
 import dotenv from 'dotenv';
+import { z } from 'zod';
 
 dotenv.config();
 import cors from 'cors';
-// import { startTokenCleanupJob } from './utils/tokenClenaup';
 
 const app = express();
 app.use(cors());
@@ -26,12 +25,3 @@ if(!mongoUrl){
 mongoose.connect(mongoUrl)
     .then(data => app.listen(3000, () => console.log('Server started')))
     .catch(err => new Error(err));
-
-// startTokenCleanupJob();
-
-// // ToDo: know more about thiso 
-// const db = mongoose.connection.db;
-
-// const usersCollection = db?.collection('users');
-// const petsCollection = db?.collection('pets');
-// const adoptsCollection = db?.collection('adopts');
