@@ -4,9 +4,8 @@ import { findUserById } from "../service/userService";
 import { handleError } from "../utils/handleErrors";
 import { localStorage } from "../utils/localStorage";
 import Blacklist from "../models/blacklistModel";
+import { accessTokenSecret, refresshTokenSecret } from "../app";
 
-const refresshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
-const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 
 declare global {
     namespace Express {
@@ -61,15 +60,14 @@ export const authenticate = async (req:  Request, res: Response, next: NextFunct
         res.status(401).json({ message: 'Invalide token format' });
         return
     }
-
     try{
         const payload = jwt.verify(token, accessTokenSecret!) as {userId : string};
-
+        
         const blacklistToken = await Blacklist.findOne({ token });
         if(blacklistToken) {
             res.status(401).json({ message: 'Token is blacklisted'});
         }
-
+        
         const user = await findUserById(payload.userId);
         req.user = user;
         next();

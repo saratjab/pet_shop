@@ -25,3 +25,6 @@ if(!mongoUrl){
 mongoose.connect(mongoUrl)
     .then(data => app.listen(3000, () => console.log('Server started')))
     .catch(err => new Error(err));
+
+export const refresshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
+export const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
