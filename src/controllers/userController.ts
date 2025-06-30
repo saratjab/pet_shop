@@ -8,9 +8,6 @@ import { HydratedDocument } from 'mongoose';
 export const login = async (req: Request, res: Response): Promise<void> => {
     try{
         const { username, password } = req.body;
-        if(!username || !password) {
-            throw Error('username and password are requried')
-        }
         const user = await findUserByUsername(username);
         await verifyPassword(password, user);
 
@@ -36,27 +33,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
     try{
         const newUser = req.body;
-        if(!newUser.username || typeof newUser.username !== 'string'){
-            throw Error(`username required and should be string`);
-        }
-        if(newUser.role && typeof newUser.role !== 'string'){
-            throw Error(`role should be string`);
-        }
-        if(!newUser.password || typeof newUser.password !== 'string'){
-            throw Error(`password requried and should be string`);
-        }
-        if(!newUser.email || typeof newUser.email !== 'string'){
-            throw Error(`email required and should be string`);
-        }
-        if(newUser.address && typeof newUser.address !== 'string'){
-            throw Error(`address should be string`);
-        }
-        if(newUser.isActive && typeof newUser.isActive !== 'boolean'){
-            throw Error(`isActive should be boolean`);
-        }
-        if(!(newUser.role === 'customer' || newUser.role === '')){
-            throw Error(`Invalid role. You can only register as a customer.`)
-        }
         req.body.role = 'customer';
         const savedUser = await saveUser(newUser);
         res.status(201).json({

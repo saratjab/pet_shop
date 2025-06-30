@@ -6,30 +6,6 @@ import { handleError } from '../utils/handleErrors';
 export const registerPet = async (req: Request, res: Response): Promise<void> => { 
     try {
         const newPet: IPet = req.body;
-        if (!newPet.petTag || typeof newPet.petTag !== 'string') {
-            throw Error('petTag is required and must be a string');
-        }
-        if (!newPet.name || typeof newPet.name !== 'string') {
-            throw Error('Name is required and must be a string');
-        }
-        if (!newPet.kind || typeof newPet.kind !== 'string') {
-            throw Error('Kind is required and must be a string');
-        }
-        if (typeof newPet.age !== 'number' || newPet.age <= 0) {
-            throw Error('Age is required and must be a positive number');
-        }
-        if (typeof newPet.price !== 'number' || newPet.price <= 0) {
-            throw Error('Price is required and must be a positive number');
-        }
-        if (newPet.description !== undefined && typeof newPet.description !== 'string') {
-            throw Error('Description must be a string');
-        }
-        if (!newPet.gender || typeof newPet.gender !== 'string') {
-            throw Error('Gender is required and must be a string');
-        }
-        if (newPet.isAdopted !== undefined && typeof newPet.isAdopted !== 'boolean') {
-            throw Error('isAdopted must be a boolean');
-        }
         const savedPet = await savePet(newPet);
         res.status(201).json({
             petTag: savedPet.petTag,
@@ -175,36 +151,12 @@ export const fromTo = async (req: Request, res: Response): Promise<void> => {
 export const updatePet = async (req: Request, res: Response): Promise<void> => {
     try{
         const pet = req.body;
-        if (pet.petTag && typeof pet.petTag !== 'string') {
-            throw Error('petTag must be a string');
-        }
-        if (pet.name && typeof pet.name !== 'string') {
-            throw Error('Name is must be a string');
-        }
-        if (pet.kind && typeof pet.kind !== 'string') {
-            throw Error('Kind is must be a string');
-        }
-        if (pet.age !== undefined && (typeof pet.age !== 'number' || pet.age <= 0)) {
-            throw Error('age must be a positive number');
-        }
-        if (pet.price !== undefined && (typeof pet.price !== 'number' || pet.price <= 0)) {
-            throw Error('price must be a positive number');
-        }
-        if (pet.description !== undefined && typeof pet.description !== 'string') {
-            throw Error('Description must be a string');
-        }
-        if (pet.gender && typeof pet.gender !== 'string') {
-            throw Error('Gender and must be a string');
-        }
-        if (pet.isAdopted !== undefined && typeof pet.isAdopted !== 'boolean') {
-            throw Error('isAdopted must be a boolean');
-        }
         let updatedPet: IPet;
         if(req.originalUrl.includes('id')){
             updatedPet = await updatePets(await findPetById(req.params.id), pet);
         }
         else{
-            updatedPet = await updatePets(await findPetById(req.params.petTag), pet);
+            updatedPet = await updatePets(await findPetByPetTag(req.params.petTag), pet);
         }
         res.status(200).json({
             petTag: updatedPet.petTag,
