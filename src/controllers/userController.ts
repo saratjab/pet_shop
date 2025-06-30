@@ -3,6 +3,7 @@ import  { IUser } from '../models/userModel';
 import { saveUser, findAllUsers, findUserById, findUserByUsername, verifyPassword, update } from '../service/userService';
 import { generateRefreshToken, generateToken } from '../utils/jwt';
 import { handleError } from '../utils/handleErrors';
+import { formatUserResponse } from '../utils/format';
 
 export const login = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -15,12 +16,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         res.status(200).json({
             token: token,
             refreshToken: refreshToken,
-            user: {
-                username: username,
-                role: user.role,
-                email: user.email,
-                address: user.address
-            }
+            user: formatUserResponse(user),
         });
     }
     catch(err: any){
@@ -34,12 +30,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
         const newUser = req.body;
         req.body.role = 'customer';
         const savedUser = await saveUser(newUser);
-        res.status(201).json({
-            username: savedUser.username,
-            role: savedUser.role,
-            email: savedUser.email,
-            address: savedUser.address
-        });   
+        res.status(201).json(formatUserResponse(savedUser));   
     }
     catch(err: any){
         const errors = handleError(err);
@@ -55,12 +46,7 @@ export const registerEmployee = async (req: Request, res: Response): Promise<voi
         }
         req.body.role = 'employee';
         const savedEmp = await saveUser(newEmp);
-        res.status(201).json({
-            username: savedEmp.username,
-            role: savedEmp.role,
-            email: savedEmp.email,
-            address: savedEmp.address
-        });   
+        res.status(201).json(formatUserResponse(newEmp));   
         
     }catch(err: any){
         const errors = handleError(err);
@@ -71,12 +57,7 @@ export const registerEmployee = async (req: Request, res: Response): Promise<voi
 export const getUsers = async (req: Request, res: Response):Promise<void> => {
     try{
         const users = await findAllUsers(); 
-        res.status(200).json(users.map(user => ({
-            username: user.username,
-            role: user.role,
-            email: user.email,
-            address: user.address
-        })));
+        res.status(200).json(users.map(user => (formatUserResponse(user))));
     }
     catch(err: any) {
         const errors = handleError(err);
@@ -93,12 +74,7 @@ export const getUser = async (req: Request, res: Response): Promise<void> => {
         else {
             user = await findUserById(req.params.id);
         }
-        res.status(200).json({
-            username: user.username,
-            role: user.role,
-            email: user.email,
-            address: user.address
-        });
+        res.status(200).json(formatUserResponse(user));
     }catch(err: any){
         const errors = handleError(err);
         res.status(404).json( errors );
