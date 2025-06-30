@@ -20,3 +20,8 @@ export const cancelPetsSchema = z.object({
 export const getAdoptionSchema  = z.object({
     adopt_id: z.string(objError),
 })
+
+export const adoptIdSchema = z.object({
+    id: z.string().length(24, 'Invalid MongoDB ObjectId'),
+})
+
