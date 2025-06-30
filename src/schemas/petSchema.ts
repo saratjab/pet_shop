@@ -14,3 +14,11 @@ export const registerPetSchema = z.object({
 });
 
 export const updatePetSchema = registerPetSchema.partial();
+
+export const petIdSchema = z.object({
+    id: z.string().length(24, 'Invalid MongoDB ObjectId'),
+});
+
+export const petTagSchema = z.object({
+    petTag: z.string(),
+});
