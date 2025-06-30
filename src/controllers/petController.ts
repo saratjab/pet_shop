@@ -2,21 +2,14 @@ import { IPet } from '../models/petModel';
 import { Request, Response } from 'express';
 import { findAllPets, savePet, findPetById, findPetByPetTag, filter, filterAgePrice, updatePets, findAllPetsByAdmin, deletePets } from '../service/petService';
 import { handleError } from '../utils/handleErrors';
+import { formatPetResponse } from '../utils/format';
+
 
 export const registerPet = async (req: Request, res: Response): Promise<void> => { 
     try {
         const newPet: IPet = req.body;
         const savedPet = await savePet(newPet);
-        res.status(201).json({
-            petTag: savedPet.petTag,
-            name: savedPet.name,
-            kind: savedPet.kind,
-            age: savedPet.age,
-            price: savedPet.price,
-            description: savedPet.description,
-            gender: savedPet.gender,
-            isAdopted: savedPet.isAdopted
-        }); 
+        res.status(201).json(formatPetResponse(savedPet)); 
     }
     catch(err: any){
         const errors = handleError(err);
@@ -27,59 +20,29 @@ export const registerPet = async (req: Request, res: Response): Promise<void> =>
 export const getPets = async (req: Request, res: Response): Promise<void> => {
     try{
         const allPets = await findAllPets();
-        res.status(200).json(allPets.map(pet =>({
-            petTag: pet.petTag,
-            name: pet.name,
-            kind: pet.kind,
-            age: pet.age,
-            price: pet.price,
-            description: pet.description,
-            gender: pet.gender,
-        }) ));
+        res.status(200).json(allPets.map(pet =>(formatPetResponse(pet))));
     }
     catch(err: any) {
         const errors = handleError(err);
         res.json(404).json( errors );
     }
-} 
+}
 
-export const getPetById = async (req: Request, res: Response): Promise<void> => {
+export const getPet = async (req: Request, res: Response): Promise<void> => {
     try{
-        const pet = await findPetById(req.params.id);
-        res.status(200).json({
-            petTag: pet.petTag,
-            name: pet.name,
-            kind: pet.kind,
-            age: pet.age,
-            price: pet.price,
-            description: pet.description,
-            gender: pet.gender,
-            isAdopted: pet.isAdopted ? 'Yes': 'No'
-        });
-    }
-    catch(err: any) {
+        let pet: IPet;
+        if(req.originalUrl.includes('/id')){
+            pet = await findPetById(req.params.id);
+        }
+        else{
+            pet = await findPetByPetTag(req.params.petTag);
+        }
+        res.status(200).json(formatPetResponse(pet));
+    }catch(err: any){
         const errors = handleError(err);
         res.status(404).json( errors );
     }
-} 
-
-export const getPetByPetTag = async (req: Request, res: Response): Promise<void> => {
-    try{
-        const pet = await findPetByPetTag(req.params.petTag);
-        res.status(200).json({
-            petTag: pet.petTag,
-            name: pet.name,
-            kind: pet.kind,
-            age: pet.age,
-            price: pet.price,
-            description: pet.description,
-            gender: pet.gender,
-        });
-    }catch(err: any) {
-        const errors = handleError(err);
-        res.status(404).json( errors );
-    }
-} 
+}
 
 export const filterPets = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -95,16 +58,7 @@ export const filterPets = async (req: Request, res: Response): Promise<void> => 
             price, 
             isAdopted
         });
-        res.status(200).json(pets.map(pet => ({
-            petTag: pet.petTag,
-            name: pet.name,
-            kind: pet.kind,
-            age: pet.age,
-            price: pet.price,
-            description: pet.description,
-            gender: pet.gender,
-            isAdopted: pet.isAdopted ? 'Yes': 'No'
-        })));
+        res.status(200).json(pets.map(pet => (formatPetResponse(pet))));
     }catch(err: any) {
         const errors = handleError(err);
         res.status(400).json( errors );
@@ -130,16 +84,7 @@ export const fromTo = async (req: Request, res: Response): Promise<void> => {
         }
 
         const pets = await filterAgePrice({ from, to, by });
-        res.status(200).json(pets.map(pet =>({
-            petTag: pet.petTag,
-            name: pet.name,
-            kind: pet.kind,
-            age: pet.age,
-            price: pet.price,
-            description: pet.description,
-            gender: pet.gender,
-            isAdopted: pet.isAdopted ? 'Yes': 'No'
-        })));
+        res.status(200).json(pets.map(pet =>(formatPetResponse(pet))));
 
         
     }catch(err: any){
@@ -150,24 +95,16 @@ export const fromTo = async (req: Request, res: Response): Promise<void> => {
 
 export const updatePet = async (req: Request, res: Response): Promise<void> => {
     try{
-        const pet = req.body;
-        let updatedPet: IPet;
+        const updatedPet = req.body;
+        let pet: IPet;
         if(req.originalUrl.includes('id')){
-            updatedPet = await updatePets(await findPetById(req.params.id), pet);
+            pet = await findPetById(req.params.id)
         }
         else{
-            updatedPet = await updatePets(await findPetByPetTag(req.params.petTag), pet);
+            pet = await findPetByPetTag(req.params.petTag)
         }
-        res.status(200).json({
-            petTag: updatedPet.petTag,
-            name: updatedPet.name,
-            kind: updatedPet.kind,
-            age: updatedPet.age,
-            price: updatedPet.price,
-            description: updatedPet.description,
-            gender: updatedPet.gender,
-            isAdopted: updatedPet.isAdopted ? 'Yes': 'No'
-        })
+        const UPet = await updatePets(pet, updatedPet);
+        res.status(200).json(formatPetResponse(UPet))
 
     }catch(err: any){
         const errors = handleError(err);
@@ -178,16 +115,7 @@ export const updatePet = async (req: Request, res: Response): Promise<void> => {
 export const getPetsByAdmin = async (req: Request, res: Response): Promise<void> => {
     try{
         const pets = await findAllPetsByAdmin();
-        res.status(200).json(pets.map(pet => ({
-            petTag: pet.petTag,
-            name: pet.name,
-            kind: pet.kind,
-            age: pet.age,
-            price: pet.price,
-            description: pet.description,
-            gender: pet.gender,
-            isAdopted: pet.isAdopted ? 'Yes': 'No'
-        })))
+        res.status(200).json(pets.map(pet => (formatPetResponse(pet))))
     }catch(err: any){
         const errors = handleError(err);
         res.status(404).json( errors );
