@@ -151,7 +151,7 @@ export const cancelingPets = async (user_id: string, pets: string[]): Promise<Hy
     
     if(newTotal === 0){
         adopt.payMoney = 0;
-        adopt.status = 'canceld';
+        adopt.status = 'cancelled';
     }
     else if(adopt.payMoney! >= newTotal ){
         adopt.payMoney = newTotal;

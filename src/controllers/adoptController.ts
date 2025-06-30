@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { findAllAdopts, saveAdopt, findMyPets, getMoney, payments, cancelingPets, findAdoptById } from '../service/adoptService';
 import { handleError } from '../utils/handleErrors';
-import { TypeFlags } from 'typescript';
 
 export const adoption = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -10,12 +9,6 @@ export const adoption = async (req: Request, res: Response): Promise<void> => {
             throw Error('User not found');
         }
         const adopt = req.body;
-        if(adopt.pets.length === 0 || !adopt.pets){
-            throw Error('You should choose pets');
-        }
-        if(adopt.payMoney && (typeof adopt.payMoney !== 'number' || adopt.payMoney <= 0)){
-            throw Error('payMoney should be a positive number');
-        }
         const savedAdopt = await saveAdopt(user_id, adopt);
         res.status(201).json({
             user_id: savedAdopt.user_id,
@@ -83,9 +76,6 @@ export const getRemains = async (req: Request, res: Response): Promise<void> => 
 export const payment = async (req: Request, res: Response): Promise<void> => {
     try{
         const money = req.body.payMoney;
-        if(money && (typeof money !== 'number' || money <= 0)){
-            throw Error('money should be a positve number')
-        }
         const user_id = req.user.id;
         if(!user_id){
             throw Error('User not found');
@@ -116,9 +106,6 @@ export const cancelPets = async (req: Request, res: Response): Promise<void> => 
 export const getAdoption = async (req: Request, res: Response): Promise<void> => {
     try{
         const adopt_id = req.body.adopt_id;
-        if(!adopt_id){
-            throw Error('adopt id is required to get the adoption')
-        }
         const adopt = await findAdoptById(adopt_id);
         res.status(200).json({
             user_id: adopt.user_id,
