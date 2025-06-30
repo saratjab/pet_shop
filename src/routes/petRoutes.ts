@@ -19,7 +19,7 @@ router.get('/pets/price', authenticate, fromTo);
 router.patch('/pets/update/id/:id', authenticate, authorizeRoles('admin'), validate(petIdSchema, 'params'), validate(updatePetSchema), updatePet); 
 router.patch('/pets/update/petTag/:petTag', authenticate, authorizeRoles('admin', 'employee'), validate(petTagSchema, 'params'), validate(updatePetSchema), updatePet); 
 
-router.delete('/pets/delete/id/:id', authenticate, authorizeRoles('admin'), deletePet);
-router.delete('/pets/delete/petTag/:petTag', authenticate, authorizeRoles('admin'), deletePet);
+router.delete('/pets/delete/id/:id', authenticate, authorizeRoles('admin'), validate(petIdSchema, 'params'), deletePet);
+router.delete('/pets/delete/petTag/:petTag', authenticate, authorizeRoles('admin'), validate(petTagSchema, 'params'), deletePet);
 
 export default router;
