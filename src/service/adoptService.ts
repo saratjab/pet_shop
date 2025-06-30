@@ -2,13 +2,8 @@ import Adopt, { IAdopt } from '../models/adoptModel';
 import Pets, { IPet } from '../models/petModel';
 import { HydratedDocument } from 'mongoose';
 import { findUserById } from '../service/userService';
-import { findPetById } from '../service/petService';
-import { ObjectId } from 'mongodb';
 
 export const isPetValid = async (pets: string[]): Promise<HydratedDocument<IPet>[]> => {
-    // const petsData = await Promise.all(
-    //     pets.map(async pet => await findPetById( pet ))
-    // )
     const petsData = await Pets.find({
         _id: { $in: pets }
     });
@@ -24,18 +19,15 @@ export const isCustomerOld = async (user_id: string): Promise<boolean> => {
     return false;
 }
 
-export const makePetsTrueAndGetTotal = async (pets: IPet[]): Promise<number> => {
-    let total = 0;
-    // await Promise.all(pets.map(async pet => {
-    //     pet.isAdopted = true;
-    //     total += pet.price;
-    //     pet.save();
-    // }))
+export const getTotalPrice = async (pets: IPet[]): Promise<number> => {
+    return pets.reduce((sum, pet) => sum + pet.price, 0);
+}
+
+export const makePetsAdopted = async (pets: IPet[]): Promise<void> => {
     await Pets.updateMany(
         { _id: { $in: pets.map(pet => pet.id)}},
-        { $set: { isAdopted: false}}
+        { $set: { isAdopted: true}}
     );
-    return total;
 }
 
 export const saveAdopt = async (user_id: string, adopt: {
@@ -44,13 +36,14 @@ export const saveAdopt = async (user_id: string, adopt: {
 }): Promise<HydratedDocument<IAdopt>> => {
     const user = await findUserById( user_id );
     const pets = await isPetValid( adopt.pets );
-    const total = await makePetsTrueAndGetTotal( pets );
+    const total = await getTotalPrice( pets) ;
+    await makePetsAdopted( pets );
     const isOld = await isCustomerOld( user.id );
 
     let adoptDoc: HydratedDocument<IAdopt>;
     if(isOld){
         const userDB = await Adopt.findOne({ user_id: user.id });
-        if(!userDB) throw Error ('user not found');
+        if(!userDB) throw Error ('user adoption not found');
         adoptDoc = userDB;
         adoptDoc.pets.push(...adopt.pets);
         adoptDoc.total! += total;
@@ -64,6 +57,7 @@ export const saveAdopt = async (user_id: string, adopt: {
             total: total
         })
     }
+
     if(adoptDoc.payMoney! < adoptDoc.total!){
         adoptDoc.status = 'pending';
     }
@@ -87,7 +81,7 @@ export const findAllAdopts = async (): Promise<HydratedDocument<IAdopt>[]> => {
 
 export const findAdoptById = async (id: string): Promise<HydratedDocument<IAdopt> > => {
     const adopt = await Adopt.findById(id);
-    if(!adopt) throw new Error('Adopt not found');
+    if(!adopt) throw Error('Adopt not found');
     return adopt;
 }
 
@@ -124,39 +118,42 @@ export const payments = async (user_id: string, money: number): Promise<{total: 
     }
     await adopt.save();
 
-    return {total: adopt.total!, payMoney: adopt.payMoney!, remian: adopt.total! - adopt.payMoney!}
+    return {
+        total: adopt.total!, 
+        payMoney: adopt.payMoney!, 
+        remian: adopt.total! - adopt.payMoney! }
 }
 
-export const meakPetsFalse = async (pets: string[]): Promise<void> => {
-    await Promise.all(pets.map(async pet => {
-        const nPet = await findPetById(pet);
-        nPet.isAdopted = false;
-        nPet.save();
-    }))
+export const makePetsNotAdopted = async (pets: IPet[]): Promise<void> => {
+    await Pets.updateMany(
+        { _id: { $in: pets.map(pet => pet.id)}},
+        { $set: { isAdopted: true}}
+    );
 }
 
 export const cancelingPets = async (user_id: string, pets: string[]): Promise<HydratedDocument<IAdopt>> => {
     const adopt = await Adopt.findOne({ user_id });
-    if(!adopt) throw Error('no adoption');
-    let total = 0;
-    let flag = true;
-    const petDelete = await Promise.all( pets.map(async pet => {
-        const dPet = await findPetById(pet);
-        const objId = new ObjectId(pet);
-        if(!adopt.pets.includes(objId.toString())){
-            flag = false;
-        }
-        total += dPet.price;
-        return dPet;
-    }));
+    if(!adopt) throw Error('No adoption found');
     
-    if(!flag){
-        throw Error('one or more pets not adopted by you');
-    }
-    meakPetsFalse(pets);
+    const userAdoptedPets = adopt.pets.map(pet_id => pet_id.toString());
+    const cancelablePetIds = pets.filter(id => userAdoptedPets.includes(id));
+
+    if(cancelablePetIds.length === 0) throw Error(`None of the selected pets are part of the user's pets`);
+
+    const petsToCancel = await Pets.find({
+        _id: { $in: cancelablePetIds }
+    });
+
+    const total = await getTotalPrice(petsToCancel);
+
+    await makePetsNotAdopted(petsToCancel);
     let newTotal = adopt.total! - total;
     
-    if(adopt.payMoney! >= newTotal ){
+    if(newTotal === 0){
+        adopt.payMoney = 0;
+        adopt.status = 'canceld';
+    }
+    else if(adopt.payMoney! >= newTotal ){
         adopt.payMoney = newTotal;
         adopt.status = 'completed';
     }
