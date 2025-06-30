@@ -1,15 +1,16 @@
 import express from 'express';
 import mongoose from "mongoose";
+import cors from 'cors';
+import dotenv from 'dotenv';
+
 import userRoutes from './routes/userRoutes';
 import petRoutes from './routes/petRoutes';
 import adoptRoutes from './routes/adoptRoutes';
-import dotenv from 'dotenv';
-import { z } from 'zod';
 
 dotenv.config();
-import cors from 'cors';
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
@@ -17,14 +18,18 @@ app.use('/api', userRoutes);
 app.use('/api', petRoutes);  
 app.use('/api', adoptRoutes);  
 
+export const refresshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
+export const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+
+if(!refresshTokenSecret || !accessTokenSecret) 
+    throw Error('JWT secrets are not defined in .env');
+
+
 const mongoUrl = process.env.MONGO_URL;
-if(!mongoUrl){
+if(!mongoUrl)
     throw new Error('Mongo Url is not define');
-}
+
 
 mongoose.connect(mongoUrl)
     .then(data => app.listen(3000, () => console.log('Server started')))
     .catch(err => new Error(err));
-
-export const refresshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
-export const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
