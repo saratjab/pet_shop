@@ -16,3 +16,5 @@ export const loginSchema = z.object({
     username: z.string(objError).toLowerCase().nonempty(),
     password: z.string(objError),
 })
+
+export const updateUserSchema = registerSchema.partial();

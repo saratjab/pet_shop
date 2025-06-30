@@ -51,24 +51,6 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
 export const registerEmployee = async (req: Request, res: Response): Promise<void> => {
     try{
         const newEmp = req.body;
-        if(!newEmp.username || typeof newEmp.username !== 'string'){
-            throw Error(`username required and should be string`);
-        }
-        if(newEmp.role && typeof newEmp.role !== 'string'){
-            throw Error(`role should be string`);
-        }
-        if(!newEmp.password || typeof newEmp.password !== 'string'){
-            throw Error(`password requried and should be string`);
-        }
-        if(!newEmp.email || typeof newEmp.email !== 'string'){
-            throw Error(`email required and should be string`);
-        }
-        if(newEmp.address && typeof newEmp.address !== 'string'){
-            throw Error(`address should be string`);
-        }
-        if(newEmp.isActive && typeof newEmp.isActive !== 'boolean'){
-            throw Error(`isActive should be boolean`);
-        }
         if(!(newEmp.role === 'employee' || !newEmp.role)){
             throw Error(`Invalid role. As an admin, you can only register employees.`)
         }
@@ -103,114 +85,62 @@ export const getUsers = async (req: Request, res: Response):Promise<void> => {
     } 
 } 
 
-export const getUserById = async (req: Request, res: Response):Promise<void> =>{
+export const getUser = async (req: Request, res: Response): Promise<void> => {
     try{
-        const user = await findUserById(req.params.id);
-        res.status(200).json({
-            username: user.username,
-            role: user.role,
-            email: user.email,
-            address: user.address,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-            
-        });
-    }
-    catch(err: any) {
-        const errors = handleError(err);
-        res.status(404).json( errors )
-    }
-} 
-
-export const getUserByUsername = async (req: Request, res: Response):Promise<void> =>{
-    try{
-        const user = await findUserByUsername(req.params.username);
+        let user: IUser;
+        if(req.originalUrl.includes('/username')){
+            user = await findUserByUsername(req.params.username);
+        }
+        else {
+            user = await findUserById(req.params.username);
+        }
         res.status(200).json({
             username: user.username,
             role: user.role,
             email: user.email,
             address: user.address
         });
-    }
-    catch(err: any) {
-       const errors = handleError(err);
-       res.status(404).json( errors );
-    }
-} 
-
-export const unActiveUser = async (req: Request, res: Response): Promise<void> => {
-    try{
-        const user = await findUserByUsername(req.params.username);
-        user.isActive = false;
-        await saveUser(user);
-        res.status(200).json({ message: `${user.username} have been deleted`})
     }catch(err: any){
         const errors = handleError(err);
         res.status(404).json( errors );
     }
-} 
+}
 
-export const unActive = async (req: Request, res: Response): Promise<void> => {
+export const deleteUser = async (req: Request, res: Response): Promise<void> => {
     try{
-        const user = await findUserById(req.user?.id);
-        user.isActive = false;
-        await saveUser(user);
-        res.status(200).json({ message: 'You delete your account'});
-    }catch(err: any){
-        const errors = handleError(err);
-        res.status(404).json( errors );
-    }
-} 
+        let user: IUser;
 
-export const deleteByAdmin = async (req: Request, res: Response): Promise<void> => {
-    try{
-        let user: HydratedDocument<IUser>;
-        let option: string;
         if(req.originalUrl.includes('id')){
             user = await findUserById(req.params.id);
-            option = 'id';
-        }else{
+        }
+        else if(req.originalUrl.includes('username')){
             user = await findUserByUsername(req.params.username);
-            option = 'username';
+        }
+        else{
+            user = await findUserById(req.user?.id);
         }
         user.isActive = false;
-        await user.save();
-        res.send(200).json({ message: `${req.params.option} has been deleted`});
+        await saveUser(user);
+        res.status(200).json({ message: `${user.username} have been deleted`});
     }catch(err: any){
         const errors = handleError(err);
-        res.status(400).json( errors );
+        res.status(404).json( errors );
     }
-} 
+}
 
 export const updated = async (req: Request, res: Response): Promise<void> => {
     try{
-        const user = req.body;
-        if(user.username && typeof user.username !== 'string'){
-            throw Error(`username should be string`);
-        }
-        if(user.role && typeof user.role !== 'string'){
-            throw Error(`role should be string`);
-        }
-        if(user.password && typeof user.password !== 'string'){
-            throw Error(`password should be string`);
-        }
-        if(user.email && typeof user.email !== 'string'){
-            throw Error(`email should be string`);
-        }
-        if(user.address && typeof user.address !== 'string'){
-            throw Error(`address should be string`);
-        }
-        if(user.isActive && typeof user.isActive !== 'boolean'){
-            throw Error(`isActive should be boolean`);
-        }
-        let UUser: IUser;
+        const updatedUser = req.body;
+        let user: IUser;
         if(req.originalUrl.includes('role')){
-            UUser = await update(await findUserByUsername(req.params.username), user);
+            user = await findUserByUsername(req.params.username);
         }
         else {
-            if(user.role) throw Error(`You can't change your role`);
-            UUser = await update(await findUserById(req.user?.id), user);
+            if(updatedUser.role) throw Error(`You can't change your role`);
+            user = await findUserById(req.user?.id)
         }
+        const UUser = await update(user, updatedUser) ;
+        
         res.status(200).json({
             username: UUser.username,
             role: UUser.role,
@@ -222,4 +152,3 @@ export const updated = async (req: Request, res: Response): Promise<void> => {
         res.status(500).json( errors );
     }
 }
-
