@@ -3,7 +3,6 @@ import  { IUser } from '../models/userModel';
 import { saveUser, findAllUsers, findUserById, findUserByUsername, verifyPassword, update } from '../service/userService';
 import { generateRefreshToken, generateToken } from '../utils/jwt';
 import { handleError } from '../utils/handleErrors';
-import { HydratedDocument } from 'mongoose';
 
 export const login = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -92,7 +91,7 @@ export const getUser = async (req: Request, res: Response): Promise<void> => {
             user = await findUserByUsername(req.params.username);
         }
         else {
-            user = await findUserById(req.params.username);
+            user = await findUserById(req.params.id);
         }
         res.status(200).json({
             username: user.username,

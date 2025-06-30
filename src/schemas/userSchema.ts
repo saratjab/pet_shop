@@ -18,3 +18,11 @@ export const loginSchema = z.object({
 })
 
 export const updateUserSchema = registerSchema.partial();
+
+export const userIdSchema = z.object({
+    id: z.string().length(24, 'Invalid MongoDB ObjectId')
+});
+
+export const usernameSchema = z.object({
+    username: z.string(),
+});
