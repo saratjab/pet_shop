@@ -1,5 +1,6 @@
 import { IUser } from "../models/userModel";
 import { IPet } from "../models/petModel";
+import { IAdopt } from "../models/adoptModel";
 
 export const formatUserResponse = (user: IUser) => ({
     username: user.username,
@@ -18,3 +19,11 @@ export const formatPetResponse = (pet: IPet) => ({
     gender: pet.gender,
     isAdopted: pet.isAdopted ? 'Yes' : 'No',
 });
+
+export const formatAdoptResponse = (adopt: IAdopt) => ({
+    user_id: adopt.user_id,
+    pets: adopt.pets,
+    payMoney: adopt.payMoney,
+    total: adopt.total,
+    status: adopt.status
+})

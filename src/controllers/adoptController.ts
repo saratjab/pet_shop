@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { findAllAdopts, saveAdopt, findMyPets, getMoney, payments, cancelingPets, findAdoptById } from '../service/adoptService';
 import { handleError } from '../utils/handleErrors';
+import { formatAdoptResponse } from '../utils/format';
 
 export const adoption = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -10,13 +11,7 @@ export const adoption = async (req: Request, res: Response): Promise<void> => {
         }
         const adopt = req.body;
         const savedAdopt = await saveAdopt(user_id, adopt);
-        res.status(201).json({
-            user_id: savedAdopt.user_id,
-            pets: savedAdopt.pets,
-            payMoney: savedAdopt.payMoney,
-            total: savedAdopt.total,
-            status: savedAdopt.status
-        })
+        res.status(201).json(formatAdoptResponse(adopt));
     }catch(err: any) {
         const errors = handleError(err);
         res.status(400).json( errors );
@@ -26,13 +21,7 @@ export const adoption = async (req: Request, res: Response): Promise<void> => {
 export const getAdoptions = async (req: Request, res: Response): Promise<void> => {
     try{
         const adoptions = await findAllAdopts();
-        res.status(200).json(adoptions.map(adopts => ({
-            user_id: adopts.user_id,
-            pets: adopts.pets,
-            payMoney: adopts.payMoney,
-            total: adopts.total,
-            status: adopts.status
-        })))
+        res.status(200).json(adoptions.map(adopts => (formatAdoptResponse(adopts))));
     }catch(err: any){
         const errors = handleError(err);
         res.status(404).json( errors );
@@ -46,13 +35,7 @@ export const getMyPets = async (req: Request, res: Response): Promise<void> => {
             throw Error('User not found');
         }
         const pets = await findMyPets(user_id);
-        res.status(200).json({    
-            user_id: pets.user_id,
-            pets: pets.pets,
-            payMoney: pets.payMoney,
-            total: pets.total,
-            status: pets.status
-        })
+        res.status(200).json(formatAdoptResponse(pets))
     }catch(err: any){
         const errors = handleError(err);
         res.status(404).json( errors );
@@ -107,13 +90,7 @@ export const getAdoption = async (req: Request, res: Response): Promise<void> =>
     try{
         const adopt_id = req.body.adopt_id;
         const adopt = await findAdoptById(adopt_id);
-        res.status(200).json({
-            user_id: adopt.user_id,
-            pets: adopt.pets,
-            payMoney: adopt.payMoney,
-            total: adopt.total,
-            status: adopt.status
-        })
+        res.status(200).json(formatAdoptResponse(adopt));
     }catch(err: any){
         const errors = handleError(err);
         res.status(400).json( errors );
