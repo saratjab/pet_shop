@@ -3,7 +3,7 @@ import { getPets, registerPet, filterPets, fromTo, getPetsByAdmin, getPetById, g
 import { authenticate } from '../middleware/authenticate';
 import { authorizeRoles } from '../middleware/authorize';
 import { validate } from '../middleware/validate';
-import { petIdDeleteSchema, petIdParamSchema, petTagDeleteSchema, petTagParamSchema, registerPetSchema, updatePetSchema } from '../schemas/petSchema';
+import { filterPetsQuerySchema, fromToQuerySchema, petIdDeleteSchema, petIdParamSchema, petTagDeleteSchema, petTagParamSchema, registerPetSchema, updatePetSchema } from '../schemas/petSchema';
 
 const router = express.Router();
 
@@ -12,9 +12,9 @@ router.get('/pets', authenticate, getPets);
 router.get('/pets/admin', authenticate, authorizeRoles('admin'), getPetsByAdmin) 
 router.get('/pets/id/:id',authenticate, authorizeRoles('admin'), validate(petIdParamSchema, 'params'), getPetById) 
 router.get('/pets/petTag/:petTag', authenticate, validate(petTagParamSchema, 'params'), getPetByPetTag); 
-router.get('/pets/filter', authenticate, filterPets); 
-router.get('/pets/age', authenticate, fromTo);  
-router.get('/pets/price', authenticate, fromTo); 
+router.get('/pets/filter', authenticate, validate(filterPetsQuerySchema, 'query'), filterPets); 
+router.get('/pets/age', authenticate, validate(fromToQuerySchema, 'query'), fromTo('age'));  
+router.get('/pets/price', authenticate, validate(fromToQuerySchema, 'query'), fromTo('price')); 
 
 router.patch('/pets/id/:id', authenticate, authorizeRoles('admin'), validate(petIdParamSchema, 'params'), validate(updatePetSchema, 'body'), updatePetById); 
 router.patch('/pets/petTag/:petTag', authenticate, authorizeRoles('admin', 'employee'), validate(petTagParamSchema, 'params'), validate(updatePetSchema, 'body'), updatePetByPetTag); 

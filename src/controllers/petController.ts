@@ -52,18 +52,15 @@ export const getPetByPetTag = async (req: Request, res: Response): Promise<void>
 
 export const filterPets = async (req: Request, res: Response): Promise<void> => {
     try{
-        const { kind, gender } = req.query;
-        const age = req.query.age ? parseInt(req.query.age as string) : undefined;
-        const price = req.query.price ? parseInt(req.query.price as string) : undefined;
-        const isAdopted = req.query.isAdopted === 'true' ? true : req.query.isAdopted === 'false' ? false : undefined;
+        const query = req.query as {
+            kind?: string,
+            gender?: 'M' | 'F',
+            age?: number,
+            price?: number,
+            isAdopted?: boolean
+        };
 
-        const pets = await filter({
-            kind : kind as string | undefined,
-            gender : gender as string | undefined, 
-            age,
-            price, 
-            isAdopted
-        });
+        const pets = await filter(query);
         res.status(200).json(pets.map(pet => (formatPetResponse(pet))));
     }catch(err: any) {
         const errors = handleError(err);
@@ -71,28 +68,15 @@ export const filterPets = async (req: Request, res: Response): Promise<void> => 
     }
 } 
 
-export const fromTo = async (req: Request, res: Response): Promise<void> => {
+export const fromTo = (by: 'age' | 'price') => 
+async (req: Request, res: Response): Promise<void> => {
     try{
-        const from = req.query.from ? parseInt(req.query.from as string) : null;
-        const to = req.query.to ? parseInt(req.query.to as string) : null;
-
-        if ((from !== null && (isNaN(from) || from <= 0)) || (to !== null && (isNaN(to) || to <= 0))) {
-            throw Error(`Qurey parameters 'from' and 'to' must be a valid numbers`)
+        const { from, to } = req.query as {
+            from?: number, 
+            to?: number
         }
-        let by = '';
-        if(req.originalUrl.includes('/age')){
-            by = 'age';
-        }else if(req.originalUrl.includes('/price')){
-            by = 'price';
-        }
-        else{
-            throw Error(`Invalid filter type. URL must include 'age' or 'pice'`)
-        }
-
         const pets = await filterAgePrice({ from, to, by });
-        res.status(200).json(pets.map(pet =>(formatPetResponse(pet))));
-
-        
+        res.status(200).json(pets.map(pet =>(formatPetResponse(pet))));   
     }catch(err: any){
         const errors = handleError(err);
         res.status(400).json( errors );

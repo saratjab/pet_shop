@@ -19,14 +19,7 @@ export const findPetByPetTag = async (petTag: string): Promise<HydratedDocument<
     return pet;
 }
 
-export const filter = async (option: {kind?: string, age?: number, price?: number, gender?: string, isAdopted?: boolean}): Promise<HydratedDocument<IPet>[]> =>{
-    let query: any = {};
-    if(option.kind) query.kind = option.kind;
-    if(option.price !== undefined) query.price = option.price;
-    if(option.age !== undefined) query.age = option.age;
-    if(option.gender) query.gender = option.gender;
-    if(option.isAdopted !== undefined) query.isAdopted = option.isAdopted;
-
+export const filter = async (query: {kind?: string, age?: number, price?: number, gender?: string, isAdopted?: boolean}): Promise<HydratedDocument<IPet>[]> =>{
     const pets = await Pets.find(query);
     if(pets.length === 0) throw Error('pet not found');
     return pets;
@@ -45,8 +38,8 @@ export const updatePets = async (pet: IPet ,petP : UPet): Promise<HydratedDocume
 }
 
 export const filterAgePrice = async({from, to, by}: {
-from: number | null, 
-to: number | null,
+from: number | undefined, 
+to: number | undefined,
 by: string}) : Promise<HydratedDocument<IPet>[]> => {
     let query: any = {};
     if(from && to){ 
