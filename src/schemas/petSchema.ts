@@ -1,4 +1,4 @@
-import { object, z } from 'zod';
+import { z } from 'zod';
 
 const objError = { required_error: "This field is required" }
 
@@ -15,10 +15,18 @@ export const registerPetSchema = z.object({
 
 export const updatePetSchema = registerPetSchema.partial();
 
-export const petIdSchema = z.object({
+export const petIdParamSchema = z.object({
     id: z.string().length(24, 'Invalid MongoDB ObjectId'),
 });
 
-export const petTagSchema = z.object({
+export const petTagParamSchema = z.object({
     petTag: z.string(),
 });
+
+export const petIdDeleteSchema = z.object({
+    ids: z.string().array().nonempty(),
+})
+
+export const petTagDeleteSchema = z.object({
+    petTags: z.string().array().nonempty(),
+})
