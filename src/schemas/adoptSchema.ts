@@ -1,4 +1,4 @@
-import { object, z } from 'zod';
+import { z } from 'zod';
 
 const objError = { required_error: "This field is required" }
 
@@ -17,11 +17,6 @@ export const cancelPetsSchema = z.object({
     pets: z.string(objError).array().nonempty(),
 })
 
-export const getAdoptionSchema  = z.object({
-    adopt_id: z.string(objError),
+export const adoptIdParamSchema  = z.object({
+    id: z.string(objError).length(24, 'Invalid MongoDB ObjectId'),
 })
-
-export const adoptIdSchema = z.object({
-    id: z.string().length(24, 'Invalid MongoDB ObjectId'),
-})
-

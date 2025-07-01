@@ -74,9 +74,6 @@ export const payment = async (req: Request, res: Response): Promise<void> => {
 export const cancelPets = async (req: Request, res: Response): Promise<void> => {
     try{
         const pets = req.body.pets;
-        if(pets.length === 0 || !pets){
-            throw Error('You should choose pets');
-        }
         const user_id = req.user?.id;
         const adopt = await cancelingPets(user_id, pets);
         res.status(200).json( adopt );
@@ -88,7 +85,7 @@ export const cancelPets = async (req: Request, res: Response): Promise<void> => 
 
 export const getAdoption = async (req: Request, res: Response): Promise<void> => {
     try{
-        const adopt_id = req.body.adopt_id;
+        const adopt_id = req.params.id;
         const adopt = await findAdoptById(adopt_id);
         res.status(200).json(formatAdoptResponse(adopt));
     }catch(err: any){
