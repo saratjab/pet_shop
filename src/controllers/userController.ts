@@ -46,7 +46,7 @@ export const registerEmployee = async (req: Request, res: Response): Promise<voi
         }
         req.body.role = 'employee';
         const savedEmp = await saveUser(newEmp);
-        res.status(201).json(formatUserResponse(newEmp));   
+        res.status(201).json(formatUserResponse(savedEmp));   
         
     }catch(err: any){
         const errors = handleError(err);
@@ -65,15 +65,10 @@ export const getUsers = async (req: Request, res: Response):Promise<void> => {
     } 
 } 
 
-export const getUser = async (req: Request, res: Response): Promise<void> => {
+export const getUserById = async (req: Request, res: Response): Promise<void> => {
     try{
-        let user: IUser;
-        if(req.originalUrl.includes('/username')){
-            user = await findUserByUsername(req.params.username);
-        }
-        else {
-            user = await findUserById(req.params.id);
-        }
+        const id = req.params.id;
+        const user = await findUserById(id);
         res.status(200).json(formatUserResponse(user));
     }catch(err: any){
         const errors = handleError(err);
@@ -81,19 +76,21 @@ export const getUser = async (req: Request, res: Response): Promise<void> => {
     }
 }
 
-export const deleteUser = async (req: Request, res: Response): Promise<void> => {
+export const getUserByUsername = async (req: Request, res: Response): Promise<void> => {
     try{
-        let user: IUser;
+        const username = req.params.username;
+        const user = await findUserByUsername(username);
+        res.status(200).json(formatUserResponse(user));
+    }catch(err: any){
+        const errors = handleError(err);
+        res.status(404).json( errors );
+    }
+}
 
-        if(req.originalUrl.includes('id')){
-            user = await findUserById(req.params.id);
-        }
-        else if(req.originalUrl.includes('username')){
-            user = await findUserByUsername(req.params.username);
-        }
-        else{
-            user = await findUserById(req.user?.id);
-        }
+export const deleteUserById = async (req: Request, res: Response): Promise<void> => {
+    try{
+        const id = req.params.id;
+        const user = await findUserById(id);
         user.isActive = false;
         await saveUser(user);
         res.status(200).json({ message: `${user.username} have been deleted`});
@@ -103,25 +100,56 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
     }
 }
 
-export const updated = async (req: Request, res: Response): Promise<void> => {
+export const deleteUserByUsername = async (req: Request, res: Response): Promise<void> => {
     try{
-        const updatedUser = req.body;
-        let user: IUser;
-        if(req.originalUrl.includes('role')){
-            user = await findUserByUsername(req.params.username);
-        }
-        else {
-            if(updatedUser.role) throw Error(`You can't change your role`);
-            user = await findUserById(req.user?.id)
-        }
-        const UUser = await update(user, updatedUser) ;
-        
-        res.status(200).json({
-            username: UUser.username,
-            role: UUser.role,
-            email: UUser.email,
-            address: UUser.address
-        })
+        const username = req.params.username;
+        const user = await findUserByUsername(username);
+        user.isActive = false;
+        await saveUser(user);
+        res.status(200).json({ message: `${user.username} have been deleted`});
+    }catch(err: any){
+        const errors = handleError(err);
+        res.status(404).json( errors );
+    }
+}
+
+export const deleteUserAccount = async (req: Request, res: Response): Promise<void> => {
+    try{
+        const id = req.user?.id;
+        const user = await findUserById(id);
+        user.isActive = false;
+        await saveUser(user);
+        res.status(200).json({ message: `${user.username} have been deleted`});
+    }catch(err: any){
+        const errors = handleError(err);
+        res.status(404).json( errors );
+    }
+}
+
+export const updateByAdmin = async (req: Request, res: Response): Promise<void> => {
+    try{
+        const updatedData = req.body;
+        if(updatedData.role) throw Error(`You can't change your role`);
+
+        const username = req.params.username;
+        const user = await findUserByUsername(username);
+
+        const updatedUser = await update(user, updatedData);
+        res.status(200).json(formatUserResponse(updatedUser));
+    }catch(err: any){
+        const errors = handleError(err);
+        res.status(500).json( errors );
+    }
+}
+
+export const updateUserData = async (req: Request, res: Response): Promise<void> => {
+    try{
+        const updatedData = req.body;
+        const id = req.user?.id;
+        const user = await findUserById(id);
+
+        const updatedUser = await update(user, updatedData);
+        res.status(200).json(formatUserResponse(updatedUser));
     }catch(err: any){
         const errors = handleError(err);
         res.status(500).json( errors );
