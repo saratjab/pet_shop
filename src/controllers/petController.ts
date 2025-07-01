@@ -59,7 +59,6 @@ export const filterPets = async (req: Request, res: Response): Promise<void> => 
             price?: number,
             isAdopted?: boolean
         };
-
         const pets = await filter(query);
         res.status(200).json(pets.map(pet => (formatPetResponse(pet))));
     }catch(err: any) {
@@ -109,15 +108,6 @@ export const updatePetByPetTag = async (req: Request, res: Response): Promise<vo
     }
 }
 
-export const getPetsByAdmin = async (req: Request, res: Response): Promise<void> => {
-    try{
-        const pets = await findAllPetsByAdmin();
-        res.status(200).json(pets.map(pet => (formatPetResponse(pet))))
-    }catch(err: any){
-        const errors = handleError(err);
-        res.status(404).json( errors );
-    }
-} 
 
 export const deletePetById = async (req: Request, res: Response): Promise<void> => {
     try{

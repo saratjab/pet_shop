@@ -1,5 +1,5 @@
 import express from 'express';
-import { getPets, registerPet, filterPets, fromTo, getPetsByAdmin, getPetById, getPetByPetTag, updatePetById, updatePetByPetTag, deletePetById, deletePetByPetTag }  from '../controllers/petController';
+import { getPets, registerPet, filterPets, fromTo, getPetById, getPetByPetTag, updatePetById, updatePetByPetTag, deletePetById, deletePetByPetTag }  from '../controllers/petController';
 import { authenticate } from '../middleware/authenticate';
 import { authorizeRoles } from '../middleware/authorize';
 import { validate } from '../middleware/validate';
@@ -9,7 +9,6 @@ const router = express.Router();
 
 router.post('/pets', authenticate, authorizeRoles('admin', 'employee'), validate(registerPetSchema, 'body'), registerPet); 
 router.get('/pets', authenticate, getPets); 
-router.get('/pets/admin', authenticate, authorizeRoles('admin'), getPetsByAdmin) 
 router.get('/pets/id/:id',authenticate, authorizeRoles('admin'), validate(petIdParamSchema, 'params'), getPetById) 
 router.get('/pets/petTag/:petTag', authenticate, validate(petTagParamSchema, 'params'), getPetByPetTag); 
 router.get('/pets/filter', authenticate, validate(filterPetsQuerySchema, 'query'), filterPets); 

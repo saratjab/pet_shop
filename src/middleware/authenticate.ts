@@ -36,7 +36,7 @@ export const authenticate = async (req:  Request, res: Response, next: NextFunct
     }
     catch(err: any){
         const errors = handleError(err);
-        res.status(401).json({ message: 'Unauthorized' });
+        res.status(401).json({ message: 'Authentication required. Please log in' });
     }
 }
 
@@ -60,6 +60,6 @@ export const verifyRefreshToken = async (req: Request, res: Response, next: Next
     }
     catch(err: any){
         const errors = handleError(err);
-        res.status(401).json({ message: 'Unauthorized' });
+        res.status(401).json({ message: 'Authentication required. Please log in' });
     }
 }
