@@ -24,9 +24,13 @@ export const petTagParamSchema = z.object({
 });
 
 export const petIdDeleteSchema = z.object({
-    ids: z.string().array().nonempty(),
+    id: z.array(
+        z.string(objError).length(24, 'Invalid MongooDB ObjectId')
+    ).nonempty('At least one ID is required'),
 })
 
 export const petTagDeleteSchema = z.object({
-    petTags: z.string().array().nonempty(),
+    petTag: z.array(
+        z.string(objError)
+    ).nonempty('At least one pet tag is required'),
 })

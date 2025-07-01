@@ -137,8 +137,8 @@ export const getPetsByAdmin = async (req: Request, res: Response): Promise<void>
 
 export const deletePetById = async (req: Request, res: Response): Promise<void> => {
     try{
-        const ids = req.body.ids;
-        await deletePets(ids);
+        const id = req.body.id;
+        await deletePets(id);
         res.status(204).json({message: 'you deleted pets'})
     }catch(err: any){
         const errors = handleError(err);
@@ -148,8 +148,8 @@ export const deletePetById = async (req: Request, res: Response): Promise<void> 
 
 export const deletePetByPetTag = async (req: Request, res: Response): Promise<void> => {
     try{
-        const petTags = req.body.petTags;
-        await deletePets(undefined, petTags);
+        const petTag = req.body.petTag;
+        await deletePets(undefined, petTag);
         res.status(204).json({message: 'you deleted pets'})
     }catch(err: any){
         const errors = handleError(err);
