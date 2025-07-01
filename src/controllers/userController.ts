@@ -28,7 +28,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
     try{
         const newUser = req.body;
-        req.body.role = 'customer';
         const savedUser = await saveUser(newUser);
         res.status(201).json(formatUserResponse(savedUser));   
     }
@@ -41,13 +40,8 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
 export const registerEmployee = async (req: Request, res: Response): Promise<void> => {
     try{
         const newEmp = req.body;
-        if(!(newEmp.role === 'employee' || !newEmp.role)){
-            throw Error(`Invalid role. As an admin, you can only register employees.`)
-        }
-        req.body.role = 'employee';
         const savedEmp = await saveUser(newEmp);
         res.status(201).json(formatUserResponse(savedEmp));   
-        
     }catch(err: any){
         const errors = handleError(err);
         res.status(400).json( errors ) ;
@@ -129,8 +123,6 @@ export const deleteUserAccount = async (req: Request, res: Response): Promise<vo
 export const updateByAdmin = async (req: Request, res: Response): Promise<void> => {
     try{
         const updatedData = req.body;
-        if(updatedData.role) throw Error(`You can't change your role`);
-
         const username = req.params.username;
         const user = await findUserByUsername(username);
 
