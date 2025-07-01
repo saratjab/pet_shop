@@ -3,8 +3,8 @@ import { validate } from '../middleware/validate';
 import { verifyRefreshToken, authenticate } from '../middleware/authenticate';
 import { authorizeRoles } from '../middleware/authorize';
 import { logOut, refreshToken } from '../controllers/authControllers';
-import { loginSchema, registerSchema, updateUserSchema, userIdSchema, usernameSchema } from '../schemas/userSchema';
-import { registerUser, getUsers, login, updated, registerEmployee, getUser, deleteUser } from '../controllers/userController'
+import { loginSchema, registerSchema, updateUserSchema, userIdParamSchema, usernamedParamSchema } from '../schemas/userSchema';
+import { registerUser, getUsers, login, registerEmployee, getUserById, getUserByUsername, updateByAdmin, updateUserData, deleteUserAccount, deleteUserById, deleteUserByUsername } from '../controllers/userController'
 const router = express.Router();
 
 // ToDo: Favorites or Saved Pets
@@ -20,15 +20,15 @@ router.post('/logout', verifyRefreshToken, logOut);
 
 router.post('/user/employee', authenticate, authorizeRoles('admin'), validate(registerSchema), registerEmployee);
 router.get('/user', authenticate, getUsers); 
-router.get('/user/id/:id', authenticate, authorizeRoles('admin'), validate(userIdSchema, 'params'),  getUser); 
-router.get('/user/username/:username', authenticate, validate(usernameSchema, 'params'), getUser); 
-router.patch('/user/alter', authenticate, validate(updateUserSchema), updated); 
-router.patch('/user/role/:username', authenticate, authorizeRoles('admin'), validate(usernameSchema, 'params'), validate(updateUserSchema), updated); 
+router.get('/user/id/:id', authenticate, authorizeRoles('admin'), validate(userIdParamSchema, 'params'),  getUserById); 
+router.get('/user/username/:username', authenticate, validate(usernamedParamSchema, 'params'), getUserByUsername); 
+router.patch('/user/alter', authenticate, validate(updateUserSchema), updateUserData); 
+router.patch('/user/role/:username', authenticate, authorizeRoles('admin'), validate(usernamedParamSchema, 'params'), validate(updateUserSchema), updateByAdmin); 
 
-router.delete('/user/unactive', authenticate, deleteUser); 
+router.delete('/user/unactive', authenticate, deleteUserAccount); 
 
-router.delete('/user/delete/id/:id', authenticate, authorizeRoles('admin'), validate(userIdSchema, 'params'), deleteUser);
-router.delete('/user/delete/username/:username', authenticate, authorizeRoles('admin'),validate(usernameSchema, 'params'), deleteUser);
+router.delete('/user/delete/id/:id', authenticate, authorizeRoles('admin'), validate(userIdParamSchema, 'params'), deleteUserById);
+router.delete('/user/delete/username/:username', authenticate, authorizeRoles('admin'),validate(usernamedParamSchema, 'params'), deleteUserByUsername);
 // router.get('/user/order');
 
 export default router;
