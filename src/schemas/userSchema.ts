@@ -23,6 +23,9 @@ export const registerSchema = z.object({
 })
 .strict('Unexpected field found');
 //! registerSchema becomes a ZodEffects type (a wrapped schema), not a base ZodObject anymore — and .extend() only works on ZodObject.
+//? .refine() -> allows us to write rules for some fileds
+//? it can be applied on a single field, to validate it's value / or it can be applied to the whole object to validate mulitple fields if they have relationships
+//? .strict() -> makes sure no extra fields are sent 
 
 export const registerCustomerSchema = registerSchema.extend({
     role: z.string().refine(val => val === 'customer', { message: 'role must be customer' }).optional(),
