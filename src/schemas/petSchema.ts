@@ -3,14 +3,18 @@ import { z } from 'zod';
 const objError = { required_error: "This field is required" }
 
 export const registerPetSchema = z.object({
-    petTag: z.string(objError).toLowerCase(),
+    petTag: z.string(objError)
+        .toLowerCase(),
     name: z.string(objError),
     kind: z.string(objError),
-    age: z.number(objError).positive('Age must be positive'),
-    price: z.number(objError).positive('Price must be positve'),
+    age: z.number(objError)
+        .refine(age => age > 0, { message: 'Age must be positive' }),
+    price: z.number(objError)
+        .refine(price => price > 0, { message: 'Price must be positve' }),
     description: z.string(objError).optional(),
     gender: z.enum(['M', 'F'], { message: 'gender must be F or M'}),
-    isAdopted: z.boolean().default(false),
+    isAdopted: z.boolean()
+        .default(false),
 });
 
 export const updatePetSchema = registerPetSchema.partial();
