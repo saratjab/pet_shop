@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const objError = { required_error: "This field is required" }
+const objError = { required_error: "field is required" }
 
 export const adoptionSchema = z.object({
     user_id: z.string(objError),
@@ -8,7 +8,6 @@ export const adoptionSchema = z.object({
         .array()
         .refine(pets => pets.length > 0, { message: 'At least one pet must be selected for adoption' }),
     payMoney: z.number().positive().default(0),
-    status: z.enum(['pending', 'completed', 'cancelled'])
 });
 
 export const paymentSchema = z.object({

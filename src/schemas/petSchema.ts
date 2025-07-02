@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const objError = { required_error: "This field is required" }
+const objError = { required_error: "field is required" }
 
 export const registerPetSchema = z.object({
     petTag: z.string(objError)

@@ -3,7 +3,7 @@ import { validate } from '../middleware/validate';
 import { verifyRefreshToken, authenticate } from '../middleware/authenticate';
 import { authorizeRoles } from '../middleware/authorize';
 import { logOut, refreshToken } from '../controllers/authControllers';
-import { loginSchema, registerCustomerSchema, registerEmployeeSchema, registerSchema, updateUserSchema, userIdParamSchema, usernamedParamSchema } from '../schemas/userSchema';
+import { loginSchema, registerCustomerSchema, registerEmployeeSchema, updateUserSchema, userIdParamSchema, usernamedParamSchema } from '../schemas/userSchema';
 import { registerUser, getUsers, login, registerEmployee, getUserById, getUserByUsername, updateByAdmin, updateUserData, deleteUserAccount, deleteUserById, deleteUserByUsername } from '../controllers/userController'
 const router = express.Router();
 
@@ -32,3 +32,4 @@ router.delete('/user/delete/username/:username', authenticate, authorizeRoles('a
 // router.get('/user/order');
 
 export default router;
+
