@@ -21,7 +21,7 @@ export const registerSchema = z.object({
     isActive: z.boolean()
         .optional(),
 })
-.strict()
+.strict('Unexpected field found');
 //! registerSchema becomes a ZodEffects type (a wrapped schema), not a base ZodObject anymore — and .extend() only works on ZodObject.
 
 export const registerCustomerSchema = registerSchema.extend({
