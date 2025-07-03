@@ -1,7 +1,17 @@
 import { Request, Response } from 'express';
-import { findAllAdopts, saveAdopt, findMyPets, getMoney, payments, cancelingPets, findAdoptById } from '../service/adoptService';
 import { handleError } from '../utils/handleErrors';
 import { formatAdoptResponse } from '../utils/format';
+import { findAllAdopts, saveAdopt, findMyPets, getMoney, payments, cancelingPets, findAdoptById } from '../service/adoptService';
+
+export const getAdoptions = async (req: Request, res: Response): Promise<void> => {
+    try{
+        const adoptions = await findAllAdopts();
+        res.status(200).json(adoptions.map(adopts => (formatAdoptResponse(adopts))));
+    }catch(err: any){
+        const errors = handleError(err);
+        res.status(404).json( errors );
+    }
+}
 
 export const adoption = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -17,16 +27,6 @@ export const adoption = async (req: Request, res: Response): Promise<void> => {
         res.status(400).json( errors );
     }
 } 
-
-export const getAdoptions = async (req: Request, res: Response): Promise<void> => {
-    try{
-        const adoptions = await findAllAdopts();
-        res.status(200).json(adoptions.map(adopts => (formatAdoptResponse(adopts))));
-    }catch(err: any){
-        const errors = handleError(err);
-        res.status(404).json( errors );
-    }
-}
 
 export const getMyPets = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -74,7 +74,7 @@ export const payment = async (req: Request, res: Response): Promise<void> => {
 export const cancelPets = async (req: Request, res: Response): Promise<void> => {
     try{
         const pets = req.body.pets;
-        const user_id = req.user?.id;
+        const user_id = req.user.id;
         const adopt = await cancelingPets(user_id, pets);
         res.status(200).json( adopt );
     }catch(err: any){
