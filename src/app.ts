@@ -16,7 +16,7 @@ app.use(express.json());
 
 app.use('/api/users', userRoutes);  
 app.use('/api/pets', petRoutes);  
-app.use('/api', adoptRoutes);  
+app.use('/api/adopts', adoptRoutes);  
 
 export const refresshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 export const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;

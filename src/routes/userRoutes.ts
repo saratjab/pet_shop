@@ -20,13 +20,13 @@ router.post('/logout', verifyRefreshToken, logOut);
 router.post('/employees', authenticate, authorizeRoles('admin'), validate(registerEmployeeSchema, 'body'), registerEmployee);
 
 router.get('/', authenticate, getUsers); 
-router.get('/id/:id', authenticate, authorizeRoles('admin'), validate(userIdParamSchema, 'params'),  getUserById); 
-router.get('/username/:username', authenticate, validate(usernamedParamSchema, 'params'), getUserByUsername); 
 router.patch('/alter', authenticate, validate(updateUserSchema, 'body'), updateUserData); 
 router.patch('/role/:username', authenticate, authorizeRoles('admin'), validate(usernamedParamSchema, 'params'), validate(updateUserSchema, 'body'), updateByAdmin); 
+router.get('/:id', authenticate, authorizeRoles('admin'), validate(userIdParamSchema, 'params'),  getUserById); 
+router.get('/username/:username', authenticate, validate(usernamedParamSchema, 'params'), getUserByUsername); 
 
 router.patch('/me', authenticate, deleteUserAccount); 
-router.delete('/id/:id', authenticate, authorizeRoles('admin'), validate(userIdParamSchema, 'params'), deleteUserById);
+router.delete('/:id', authenticate, authorizeRoles('admin'), validate(userIdParamSchema, 'params'), deleteUserById);
 router.delete('/username/:username', authenticate, authorizeRoles('admin'),validate(usernamedParamSchema, 'params'), deleteUserByUsername);
 
 export default router;
