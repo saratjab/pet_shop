@@ -8,10 +8,10 @@ import { adoption, getAdoptions, getRemains, payment, getMyPets, cancelPets, get
 const router = express.Router();
 
 router.get('/', authenticate, authorizeRoles('admin'), getAdoptions); 
-router.post('/', authenticate, authorizeRoles('customer'), validate(adoptionSchema, 'body'), adoption); 
+router.post('/', authenticate, authorizeRoles('customer'), validate([adoptionSchema], ['body']), adoption); 
 router.get('/show', authenticate, authorizeRoles('customer'), getMyPets); 
 router.get('/pays', authenticate, authorizeRoles('customer'), getRemains); 
-router.post('/pay', authenticate, authorizeRoles('customer'), validate(paymentSchema, 'body'), payment); 
-router.post('/cancel', authenticate, authorizeRoles('customer'), validate(cancelPetsSchema, 'body'), cancelPets); 
-router.get('/:id', authenticate, authorizeRoles('admin'), validate(adoptIdParamSchema, 'params'), getAdoption); 
+router.post('/pay', authenticate, authorizeRoles('customer'), validate([paymentSchema], ['body']), payment); 
+router.post('/cancel', authenticate, authorizeRoles('customer'), validate([cancelPetsSchema], ['body']), cancelPets); 
+router.get('/:id', authenticate, authorizeRoles('admin'), validate([adoptIdParamSchema], ['params']), getAdoption); 
 export default router;

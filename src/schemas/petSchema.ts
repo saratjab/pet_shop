@@ -74,4 +74,5 @@ export const fromToQuerySchema = z.object({
         .transform((val) => parseInt(val))
         .refine((val) => !isNaN(val) && val > 0, { message: 'to must be a positive number'})
         .optional(),
-});
+}); 
+// use types

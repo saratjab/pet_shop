@@ -13,20 +13,20 @@ const router = express.Router();
 // DELETE /user/favorites/:petTag
 // Add optional hard delete for admins:
 
-router.post('/register', validate(registerCustomerSchema, 'body'), registerUser); 
-router.post('/login', validate(loginSchema, 'body'), login); 
+router.post('/register', validate([registerCustomerSchema], ['body']), registerUser); 
+router.post('/login', validate([loginSchema], ['body']), login); 
 router.post('/refresh-token', verifyRefreshToken, refreshToken);
 router.post('/logout', verifyRefreshToken, logOut);
-router.post('/employees', authenticate, authorizeRoles('admin'), validate(registerEmployeeSchema, 'body'), registerEmployee);
+router.post('/employees', authenticate, authorizeRoles('admin'), validate([registerEmployeeSchema], ['body']), registerEmployee);
 
 router.get('/', authenticate, getUsers); 
-router.patch('/alter', authenticate, validate(updateUserSchema, 'body'), updateUserData); 
-router.patch('/role/:username', authenticate, authorizeRoles('admin'), validate(usernamedParamSchema, 'params'), validate(updateUserSchema, 'body'), updateByAdmin); 
-router.get('/:id', authenticate, authorizeRoles('admin'), validate(userIdParamSchema, 'params'),  getUserById); 
-router.get('/username/:username', authenticate, validate(usernamedParamSchema, 'params'), getUserByUsername); 
+router.patch('/alter', authenticate, validate([updateUserSchema], ['body']), updateUserData); 
+router.patch('/role/:username', authenticate, authorizeRoles('admin'), validate([usernamedParamSchema, updateUserSchema], ['params', 'body']), updateByAdmin);
+router.get('/username/:username', authenticate, validate([usernamedParamSchema], ['params']), getUserByUsername); 
+router.get('/:id', authenticate, authorizeRoles('admin'), validate([userIdParamSchema], ['params']),  getUserById); 
 
 router.patch('/me', authenticate, deleteUserAccount); 
-router.delete('/:id', authenticate, authorizeRoles('admin'), validate(userIdParamSchema, 'params'), deleteUserById);
-router.delete('/username/:username', authenticate, authorizeRoles('admin'),validate(usernamedParamSchema, 'params'), deleteUserByUsername);
+router.delete('/:id', authenticate, authorizeRoles('admin'), validate([userIdParamSchema], ['params']), deleteUserById);
+router.delete('/username/:username', authenticate, authorizeRoles('admin'),validate([usernamedParamSchema], ['params']), deleteUserByUsername);
 
 export default router;
