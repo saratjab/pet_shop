@@ -1,9 +1,20 @@
 import { Response, Request } from 'express';
-import  { IUser } from '../models/userModel';
-import { saveUser, findAllUsers, findUserById, findUserByUsername, verifyPassword, update } from '../service/userService';
-import { generateRefreshToken, generateToken } from '../utils/jwt';
 import { handleError } from '../utils/handleErrors';
 import { formatUserResponse } from '../utils/format';
+import { generateRefreshToken, generateToken } from '../utils/jwt';
+import { saveUser, findAllUsers, findUserById, findUserByUsername, verifyPassword, update } from '../service/userService';
+
+export const registerUser = async (req: Request, res: Response): Promise<void> => {
+    try{
+        const newUser = req.body;
+        const savedUser = await saveUser(newUser);
+        res.status(201).json(formatUserResponse(savedUser));   
+    }
+    catch(err: any){
+        const errors = handleError(err);
+        res.status(400).json( errors );
+    }
+}
 
 export const login = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -22,18 +33,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     catch(err: any){
         const errors = handleError(err);
         res.status(400).json( errors );
-    }
-}
-
-export const registerUser = async (req: Request, res: Response): Promise<void> => {
-    try{
-        const newUser = req.body;
-        const savedUser = await saveUser(newUser);
-        res.status(201).json(formatUserResponse(savedUser));   
-    }
-    catch(err: any){
-        const errors = handleError(err);
-        res.status(400).json( errors ) ;
     }
 }
 
@@ -81,6 +80,47 @@ export const getUserByUsername = async (req: Request, res: Response): Promise<vo
     }
 }
 
+export const updateUserData = async (req: Request, res: Response): Promise<void> => {
+    try{
+        const updatedData = req.body;
+        const id = req.user.id;
+        const user = await findUserById(id);
+
+        const updatedUser = await update(user, updatedData);
+        res.status(200).json(formatUserResponse(updatedUser));
+    }catch(err: any){
+        const errors = handleError(err);
+        res.status(500).json( errors );
+    }
+}
+
+export const updateByAdmin = async (req: Request, res: Response): Promise<void> => {
+    try{
+        const updatedData = req.body;
+        const username = req.params.username;
+        const user = await findUserByUsername(username);
+
+        const updatedUser = await update(user, updatedData);
+        res.status(200).json(formatUserResponse(updatedUser));
+    }catch(err: any){
+        const errors = handleError(err);
+        res.status(500).json( errors );
+    }
+}
+
+export const deleteUserAccount = async (req: Request, res: Response): Promise<void> => {
+    try{
+        const id = req.user.id;
+        const user = await findUserById(id);
+        user.isActive = false;
+        await saveUser(user);
+        res.status(200).json({ message: `${user.username} have been deleted`});
+    }catch(err: any){
+        const errors = handleError(err);
+        res.status(404).json( errors );
+    }
+}
+
 export const deleteUserById = async (req: Request, res: Response): Promise<void> => {
     try{
         const id = req.params.id;
@@ -104,46 +144,5 @@ export const deleteUserByUsername = async (req: Request, res: Response): Promise
     }catch(err: any){
         const errors = handleError(err);
         res.status(404).json( errors );
-    }
-}
-
-export const deleteUserAccount = async (req: Request, res: Response): Promise<void> => {
-    try{
-        const id = req.user?.id;
-        const user = await findUserById(id);
-        user.isActive = false;
-        await saveUser(user);
-        res.status(200).json({ message: `${user.username} have been deleted`});
-    }catch(err: any){
-        const errors = handleError(err);
-        res.status(404).json( errors );
-    }
-}
-
-export const updateByAdmin = async (req: Request, res: Response): Promise<void> => {
-    try{
-        const updatedData = req.body;
-        const username = req.params.username;
-        const user = await findUserByUsername(username);
-
-        const updatedUser = await update(user, updatedData);
-        res.status(200).json(formatUserResponse(updatedUser));
-    }catch(err: any){
-        const errors = handleError(err);
-        res.status(500).json( errors );
-    }
-}
-
-export const updateUserData = async (req: Request, res: Response): Promise<void> => {
-    try{
-        const updatedData = req.body;
-        const id = req.user?.id;
-        const user = await findUserById(id);
-
-        const updatedUser = await update(user, updatedData);
-        res.status(200).json(formatUserResponse(updatedUser));
-    }catch(err: any){
-        const errors = handleError(err);
-        res.status(500).json( errors );
     }
 }

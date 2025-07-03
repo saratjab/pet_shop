@@ -1,5 +1,5 @@
 import express from 'express';
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
@@ -14,7 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api', userRoutes);  
+app.use('/api/users', userRoutes);  
 app.use('/api', petRoutes);  
 app.use('/api', adoptRoutes);  
 
