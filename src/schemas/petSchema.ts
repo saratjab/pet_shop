@@ -4,14 +4,18 @@ const objError = { required_error: "field is required" }
 
 export const registerPetSchema = z.object({
     petTag: z.string(objError)
-        .toLowerCase(),
-    name: z.string(objError),
-    kind: z.string(objError),
+        .toLowerCase()
+        .nonempty('pet tag must be at least 1 character'),
+    name: z.string(objError)
+        .nonempty('pet tag must be at least 1 character'),
+    kind: z.string(objError)
+        .nonempty('pet tag must be at least 1 character'),
     age: z.number(objError)
         .refine(age => age > 0, { message: 'Age must be positive' }),
     price: z.number(objError)
         .refine(price => price > 0, { message: 'Price must be positve' }),
-    description: z.string(objError).optional(),
+    description: z.string(objError)
+        .optional(),
     gender: z.enum(['M', 'F'], { message: 'gender must be F or M'}),
     isAdopted: z.boolean()
         .default(false),
@@ -20,28 +24,34 @@ export const registerPetSchema = z.object({
 export const updatePetSchema = registerPetSchema.partial();
 
 export const petIdParamSchema = z.object({
-    id: z.string(objError).length(24, 'Invalid MongoDB ObjectId'),
+    id: z.string(objError)
+        .length(24, 'Invalid MongoDB ObjectId'),
 });
 
 export const petTagParamSchema = z.object({
-    petTag: z.string(objError),
+    petTag: z.string(objError)
+        .nonempty('pet tag must be at least 1 character'),
 });
 
 export const petIdDeleteSchema = z.object({
     id: z.array(
-        z.string(objError).length(24, 'Invalid MongooDB ObjectId')
+        z.string(objError)
+        .length(24, 'Invalid MongooDB ObjectId'),
     ).nonempty('At least one ID is required'),
-})
+});
 
 export const petTagDeleteSchema = z.object({
     petTag: z.array(
         z.string(objError)
+        .nonempty('pet tag must be at least 1 character'),
     ).nonempty('At least one pet tag is required'),
-})
+});
 
 export const filterPetsQuerySchema  = z.object({
-    kind: z.string().optional(),
-    gender: z.enum(['F', 'M']).optional(),
+    kind: z.string()
+        .optional(),
+    gender: z.enum(['F', 'M'])
+        .optional(),
     age: z.string()
         .transform((val) => parseInt(val))
         .refine((val) => !isNaN(val) && val > 0, { message: 'Age must be a positive number'})
@@ -64,5 +74,4 @@ export const fromToQuerySchema = z.object({
         .transform((val) => parseInt(val))
         .refine((val) => !isNaN(val) && val > 0, { message: 'to must be a positive number'})
         .optional(),
-
-})
+});

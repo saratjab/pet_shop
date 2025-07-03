@@ -1,9 +1,8 @@
 import { IPet } from '../models/petModel';
 import { Request, Response } from 'express';
-import { findAllPets, savePet, findPetById, findPetByPetTag, filter, filterAgePrice, updatePets, findAllPetsByAdmin, deletePets } from '../service/petService';
 import { handleError } from '../utils/handleErrors';
 import { formatPetResponse } from '../utils/format';
-
+import { findAllPets, savePet, findPetById, findPetByPetTag, filter, filterAgePrice, updatePets, findAllPetsByAdmin, deletePets } from '../service/petService';
 
 export const registerPet = async (req: Request, res: Response): Promise<void> => { 
     try {
@@ -25,28 +24,6 @@ export const getPets = async (req: Request, res: Response): Promise<void> => {
     catch(err: any) {
         const errors = handleError(err);
         res.json(404).json( errors );
-    }
-}
-
-export const getPetById = async (req: Request, res: Response): Promise<void> => {
-    try{
-        const id = req.params.id;
-        let pet = await findPetById(id);
-        res.status(200).json(formatPetResponse(pet));
-    }catch(err: any){
-        const errors = handleError(err);
-        res.status(404).json( errors );
-    }
-}
-
-export const getPetByPetTag = async (req: Request, res: Response): Promise<void> => {
-    try{
-        const petTag = req.params.petTag;
-        let pet = await findPetByPetTag(petTag);
-        res.status(200).json(formatPetResponse(pet));
-    }catch(err: any){
-        const errors = handleError(err);
-        res.status(404).json( errors );
     }
 }
 
@@ -80,8 +57,30 @@ async (req: Request, res: Response): Promise<void> => {
         const errors = handleError(err);
         res.status(400).json( errors );
     }
-} 
+}
 
+export const getPetById = async (req: Request, res: Response): Promise<void> => {
+    try{
+        const id = req.params.id;
+        let pet = await findPetById(id);
+        res.status(200).json(formatPetResponse(pet));
+    }catch(err: any){
+        const errors = handleError(err);
+        res.status(404).json( errors );
+    }
+}
+
+export const getPetByPetTag = async (req: Request, res: Response): Promise<void> => {
+    try{
+        const petTag = req.params.petTag;
+        let pet = await findPetByPetTag(petTag);
+        res.status(200).json(formatPetResponse(pet));
+    }catch(err: any){
+        const errors = handleError(err);
+        res.status(404).json( errors );
+    }
+}
+ 
 export const updatePetById = async (req: Request, res: Response): Promise<void> => {
     try{
         const updatedData = req.body;
@@ -107,7 +106,6 @@ export const updatePetByPetTag = async (req: Request, res: Response): Promise<vo
         res.status(400).json( errors );
     }
 }
-
 
 export const deletePetById = async (req: Request, res: Response): Promise<void> => {
     try{
