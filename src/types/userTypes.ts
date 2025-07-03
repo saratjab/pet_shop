@@ -1,4 +1,4 @@
 import { updateUserSchema } from "../schemas/userSchema";
 import { z } from 'zod';
 
-export type updateType = z.infer<typeof updateUserSchema>;
+export type updateUserType = z.infer<typeof updateUserSchema>;

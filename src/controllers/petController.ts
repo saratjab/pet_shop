@@ -2,7 +2,7 @@ import { IPet } from '../models/petModel';
 import { Request, Response } from 'express';
 import { handleError } from '../utils/handleErrors';
 import { formatPetResponse } from '../utils/format';
-import { findAllPets, savePet, findPetById, findPetByPetTag, filter, filterAgePrice, updatePets, findAllPetsByAdmin, deletePets } from '../service/petService';
+import { findAllPets, savePet, findPetById, findPetByPetTag, filter, filterAgePrice, updatePets, deletePets } from '../service/petService';
 
 export const registerPet = async (req: Request, res: Response): Promise<void> => { 
     try {
@@ -53,7 +53,7 @@ async (req: Request, res: Response): Promise<void> => {
             from?: number, 
             to?: number
         }
-        const pets = await filterAgePrice({ from, to, by });
+        const pets = await filterAgePrice({ from, to }, by);
         if(pets.length === 0) res.status(404).json({ message: 'Pets not found' });
         else res.status(200).json(pets.map(pet =>(formatPetResponse(pet))));   
     }catch(err: any){

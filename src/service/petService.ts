@@ -1,5 +1,6 @@
-import Pets, { IPet, UPet } from '../models/petModel';
+import Pets, { IPet } from '../models/petModel';
 import { HydratedDocument } from 'mongoose';
+import { query, queryFromTo, updatePetType } from '../types/petTypes';
 
 export const findAllPets = async (): Promise<HydratedDocument<IPet>[]> => {
     const pets = await Pets.find({ isAdopted: false });
@@ -18,7 +19,7 @@ export const findPetByPetTag = async (petTag: string): Promise<HydratedDocument<
     return pet;
 }
 
-export const filter = async (query: {kind?: string, age?: number, price?: number, gender?: string, isAdopted?: boolean}): Promise<HydratedDocument<IPet>[]> =>{
+export const filter = async (query: query): Promise<HydratedDocument<IPet>[]> =>{
     const pets = await Pets.find(query);
     return pets;
 }
@@ -30,15 +31,12 @@ export const savePet = async (pet: IPet): Promise<HydratedDocument<IPet>> => {
     return savedPet;
 }
 
-export const updatePets = async (pet: IPet ,petP : UPet): Promise<HydratedDocument<IPet>> => {
+export const updatePets = async (pet: IPet, petP: updatePetType): Promise<HydratedDocument<IPet>> => {
     Object.assign(pet, petP);
     return await savePet(pet);
 }
 
-export const filterAgePrice = async({from, to, by}: {
-from: number | undefined, 
-to: number | undefined,
-by: string}) : Promise<HydratedDocument<IPet>[]> => {
+export const filterAgePrice = async({ from, to }: queryFromTo, by: string) : Promise<HydratedDocument<IPet>[]> => {
     let query: any = {};
     if(from && to){ 
         query[by] = {$gte: from, $lte: to};
@@ -50,11 +48,6 @@ by: string}) : Promise<HydratedDocument<IPet>[]> => {
         query[by] = {$lte: to};
     }
     const pets = await Pets.find(query);
-    return pets;
-}
-
-export const findAllPetsByAdmin = async (): Promise<HydratedDocument<IPet>[]> => {
-    const pets = await Pets.find({});
     return pets;
 }
 
