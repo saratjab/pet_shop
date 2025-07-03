@@ -1,9 +1,10 @@
 import bcrypt from 'bcryptjs';
 import User, { IUser, UUser } from '../models/userModel';
 import { HydratedDocument } from 'mongoose';
+import { updateType } from '../types/userTypes';
 
 export const findAllUsers = async (): Promise<HydratedDocument<IUser>[]> => {
-    const users = await User.find({ isActive: true, address: 'hebron' });
+    const users = await User.find({ isActive: true });
     return users;
 }
 
@@ -32,15 +33,7 @@ export const verifyPassword = async (password: string, user: IUser): Promise<boo
     return isMatch;
 }
 
-export const updateUserInfo = async (user: IUser, password: string | undefined, email: string | undefined, address: string | undefined): Promise<IUser> => {
-    if(password) user.password = password;
-    if(email) user.email = email;
-    if(address) user.address = address;
-
-    return await user.save();
-}
-
-export const update = async (user: IUser, UUser: UUser): Promise<IUser> => {
+export const update = async (user: IUser, UUser: updateType): Promise<IUser> => {
     Object.assign(user, UUser);
     return await user.save();
 }
