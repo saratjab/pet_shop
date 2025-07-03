@@ -3,8 +3,7 @@ import User, { IUser, UUser } from '../models/userModel';
 import { HydratedDocument } from 'mongoose';
 
 export const findAllUsers = async (): Promise<HydratedDocument<IUser>[]> => {
-    const users = await User.find({ isActive: true });
-    if(users.length === 0) throw Error('No Users found');
+    const users = await User.find({ isActive: true, address: 'hebron' });
     return users;
 }
 

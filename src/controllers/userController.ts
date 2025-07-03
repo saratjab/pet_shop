@@ -50,7 +50,8 @@ export const registerEmployee = async (req: Request, res: Response): Promise<voi
 export const getUsers = async (req: Request, res: Response):Promise<void> => {
     try{
         const users = await findAllUsers(); 
-        res.status(200).json(users.map(user => (formatUserResponse(user))));
+        if(users.length === 0) res.status(200).json({ message: 'No users found'});
+        else res.status(200).json(users.map(user => (formatUserResponse(user))));
     }
     catch(err: any) {
         const errors = handleError(err);

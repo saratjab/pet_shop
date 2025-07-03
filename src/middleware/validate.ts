@@ -7,7 +7,7 @@ export const validate =
 (req: Request, res: Response, next: NextFunction) => {
     try{
         for(let i = 0; i < schemas.length; i++){
-            schemas[i].parse(target[i]);
+            schemas[i].parse(req[target[i]]);
         }
         next();
     }catch(err: any){

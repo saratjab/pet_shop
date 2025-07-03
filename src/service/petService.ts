@@ -3,7 +3,6 @@ import { HydratedDocument } from 'mongoose';
 
 export const findAllPets = async (): Promise<HydratedDocument<IPet>[]> => {
     const pets = await Pets.find({ isAdopted: false });
-    if(pets.length === 0) throw Error('no pets found');
     return pets;
 }
 
@@ -21,7 +20,6 @@ export const findPetByPetTag = async (petTag: string): Promise<HydratedDocument<
 
 export const filter = async (query: {kind?: string, age?: number, price?: number, gender?: string, isAdopted?: boolean}): Promise<HydratedDocument<IPet>[]> =>{
     const pets = await Pets.find(query);
-    if(pets.length === 0) throw Error('pet not found');
     return pets;
 }
 
@@ -52,13 +50,11 @@ by: string}) : Promise<HydratedDocument<IPet>[]> => {
         query[by] = {$lte: to};
     }
     const pets = await Pets.find(query);
-    if(pets.length === 0) throw Error('no pets found');
     return pets;
 }
 
 export const findAllPetsByAdmin = async (): Promise<HydratedDocument<IPet>[]> => {
     const pets = await Pets.find({});
-    if(pets.length === 0) throw Error('no pets found');
     return pets;
 }
 

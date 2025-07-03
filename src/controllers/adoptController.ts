@@ -6,7 +6,8 @@ import { findAllAdopts, saveAdopt, findMyPets, getMoney, payments, cancelingPets
 export const getAdoptions = async (req: Request, res: Response): Promise<void> => {
     try{
         const adoptions = await findAllAdopts();
-        res.status(200).json(adoptions.map(adopts => (formatAdoptResponse(adopts))));
+        if(adoptions.length === 0) res.status(404).json({ message: 'Adoptions not found' });
+        else res.status(200).json(adoptions.map(adopts => (formatAdoptResponse(adopts))));
     }catch(err: any){
         const errors = handleError(err);
         res.status(404).json( errors );

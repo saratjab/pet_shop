@@ -19,7 +19,8 @@ export const registerPet = async (req: Request, res: Response): Promise<void> =>
 export const getPets = async (req: Request, res: Response): Promise<void> => {
     try{
         const allPets = await findAllPets();
-        res.status(200).json(allPets.map(pet =>(formatPetResponse(pet))));
+        if(allPets.length === 0) res.status(404).json({ message: 'Pets not found' });
+        else res.status(200).json(allPets.map(pet =>(formatPetResponse(pet))));
     }
     catch(err: any) {
         const errors = handleError(err);
@@ -37,7 +38,8 @@ export const filterPets = async (req: Request, res: Response): Promise<void> => 
             isAdopted?: boolean
         };
         const pets = await filter(query);
-        res.status(200).json(pets.map(pet => (formatPetResponse(pet))));
+        if(pets.length === 0) res.status(404).json({ message: 'Pets not found' });
+        else res.status(200).json(pets.map(pet => (formatPetResponse(pet))));
     }catch(err: any) {
         const errors = handleError(err);
         res.status(400).json( errors );
@@ -52,7 +54,8 @@ async (req: Request, res: Response): Promise<void> => {
             to?: number
         }
         const pets = await filterAgePrice({ from, to, by });
-        res.status(200).json(pets.map(pet =>(formatPetResponse(pet))));   
+        if(pets.length === 0) res.status(404).json({ message: 'Pets not found' });
+        else res.status(200).json(pets.map(pet =>(formatPetResponse(pet))));   
     }catch(err: any){
         const errors = handleError(err);
         res.status(400).json( errors );

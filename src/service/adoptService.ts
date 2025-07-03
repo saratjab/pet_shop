@@ -75,7 +75,6 @@ export const saveAdopt = async (user_id: string, adopt: {
 
 export const findAllAdopts = async (): Promise<HydratedDocument<IAdopt>[]> => {
     const adopts = await Adopt.find({});
-    if(!adopts || adopts.length === 0) throw Error('No Adopts found');
     return adopts;
 }
 
