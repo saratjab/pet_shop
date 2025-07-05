@@ -3,6 +3,12 @@ import Pets, { IPet } from '../models/petModel';
 import { HydratedDocument } from 'mongoose';
 import { findUserById } from '../service/userService';
 
+type paymentSummary = {
+    total: number,
+    payMoney: number,
+    remaining: number
+};
+
 export const isPetValid = async (pets: string[]): Promise<HydratedDocument<IPet>[]> => {
     const petsData = await Pets.find({
         _id: { $in: pets }
@@ -87,17 +93,17 @@ export const findMyPets = async (user_id: string): Promise<HydratedDocument<IAdo
     return adopt;
 }
 
-export const getMoney = async (user_id: string): Promise<{total: number, payMoney: number, remian: number}> =>{
+export const getMoney = async (user_id: string): Promise<paymentSummary> =>{
     const adopt = await Adopt.findOne({ user_id });
     if(!adopt) throw Error('no adoption');
     return {
         total: adopt.total!,
         payMoney: adopt.payMoney!,
-        remian: adopt.total! - adopt.payMoney!
+        remaining: adopt.total! - adopt.payMoney!
     };
 }
 
-export const payments = async (user_id: string, money: number): Promise<{total: number, payMoney: number, remian: number}> =>{
+export const payments = async (user_id: string, money: number): Promise<paymentSummary> =>{
     const adopt = await Adopt.findOne({ user_id });
     if(!adopt) throw Error('no adoption');
     adopt.payMoney! += money;
@@ -108,7 +114,6 @@ export const payments = async (user_id: string, money: number): Promise<{total: 
         adopt.status = 'completed';
     }
     else{
-        let remaining = adopt.payMoney! - adopt.total!;
         adopt.payMoney = adopt.total!;
         adopt.status = 'completed';
     }
@@ -117,7 +122,7 @@ export const payments = async (user_id: string, money: number): Promise<{total: 
     return {
         total: adopt.total!, 
         payMoney: adopt.payMoney!, 
-        remian: adopt.total! - adopt.payMoney! 
+        remaining: adopt.total! - adopt.payMoney! 
     };
 }
 

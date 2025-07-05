@@ -21,7 +21,8 @@ export const adoption = async (req: Request, res: Response): Promise<void> => {
             throw Error('User not found');
         }
         const adopt = req.body;
-        const savedAdopt = await saveAdopt(user_id, adopt);
+        adopt.user_id = user_id;
+        const savedAdopt = await saveAdopt(adopt);
         res.status(201).json(formatAdoptResponse(adopt));
     }catch(err: any) {
         const errors = handleError(err);
