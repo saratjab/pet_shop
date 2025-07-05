@@ -1,6 +1,6 @@
 import Pets, { IPet } from '../models/petModel';
 import { HydratedDocument } from 'mongoose';
-import { query, queryFromTo, updatePetType } from '../types/petTypes';
+import { Query, updatePetType } from '../types/petTypes';
 
 export const findAllPets = async (): Promise<HydratedDocument<IPet>[]> => {
     const pets = await Pets.find({ isAdopted: false });
@@ -19,10 +19,10 @@ export const findPetByPetTag = async (petTag: string): Promise<HydratedDocument<
     return pet;
 }
 
-export const filter = async (query: query): Promise<HydratedDocument<IPet>[]> =>{
-    const pets = await Pets.find(query);
-    return pets;
-}
+// export const filter = async (query: query): Promise<HydratedDocument<IPet>[]> =>{
+//     const pets = await Pets.find(query);
+//     return pets;
+// }
 
 export const savePet = async (pet: IPet): Promise<HydratedDocument<IPet>> => {
     const newPet = new Pets(pet);
@@ -36,20 +36,20 @@ export const updatePets = async (pet: IPet, petP: updatePetType): Promise<Hydrat
     return await savePet(pet);
 }
 
-export const filterAgePrice = async({ from, to }: queryFromTo, by: string) : Promise<HydratedDocument<IPet>[]> => {
-    let query: any = {};
-    if(from && to){ 
-        query[by] = {$gte: from, $lte: to};
-    }
-    else if(from){
-        query[by] = {$gte: from};
-    }
-    else if(to){
-        query[by] = {$lte: to};
-    }
-    const pets = await Pets.find(query);
-    return pets;
-}
+// export const filterAgePrice = async({ from, to }: queryFromTo, by: string) : Promise<HydratedDocument<IPet>[]> => {
+//     let query: any = {};
+//     if(from && to){ 
+//         query[by] = {$gte: from, $lte: to};
+//     }
+//     else if(from){
+//         query[by] = {$gte: from};
+//     }
+//     else if(to){
+//         query[by] = {$lte: to};
+//     }
+//     const pets = await Pets.find(query);
+//     return pets;
+// }
 
 export const deletePets = async (id?: string[], petTag?: string[]): Promise<void> => {
     if(id){
@@ -62,4 +62,25 @@ export const deletePets = async (id?: string[], petTag?: string[]): Promise<void
             petTag: { $in: petTag }
         });
     }
+}
+
+export const filter = async (query: Query): Promise<HydratedDocument<IPet>[]> => {
+    let newQuery: any = {};
+    if(query.kind) newQuery.kind = query.kind;
+    if(query.gender) newQuery.gender = query.gender;
+    if(query.isAdopted !== undefined) newQuery.isAdopted = query.isAdopted;
+    if(query.age) newQuery.age = query.age;
+    else if(query.minAge || query.maxAge){
+        newQuery.age = {};
+        if(query.minAge) newQuery.age.$gte = query.minAge;
+        if(query.maxAge) newQuery.age.$lte = query.maxAge;
+    }
+    if(query.price) newQuery.price = query.price;
+    else if(query.minPrice || query.maxPrice){
+        newQuery.price = {};
+        if(query.minPrice) newQuery.price.$gte = query.minPrice;
+        if(query.maxPrice) newQuery.price.$lte = query.maxPrice;
+    }
+    const pets = await Pets.find(newQuery);
+    return pets;
 }
