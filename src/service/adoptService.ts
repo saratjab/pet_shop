@@ -30,11 +30,8 @@ export const makePetsAdopted = async (pets: IPet[]): Promise<void> => {
     );
 }
 
-export const saveAdopt = async (user_id: string, adopt: {
-    pets: string[],
-    payMoney?: number,
-}): Promise<HydratedDocument<IAdopt>> => {
-    const user = await findUserById( user_id );
+export const saveAdopt = async (adopt: IAdopt): Promise<HydratedDocument<IAdopt>> => {
+    const user = await findUserById( adopt.user_id );
     const pets = await isPetValid( adopt.pets );
     const total = await getTotalPrice( pets) ;
     await makePetsAdopted( pets );
@@ -51,7 +48,7 @@ export const saveAdopt = async (user_id: string, adopt: {
     }
     else{
         adoptDoc = new Adopt({
-            user_id: user_id,
+            user_id: adopt.user_id,
             pets: adopt.pets,
             payMoney: adopt.payMoney ?? 0,
             total: total
@@ -120,7 +117,8 @@ export const payments = async (user_id: string, money: number): Promise<{total: 
     return {
         total: adopt.total!, 
         payMoney: adopt.payMoney!, 
-        remian: adopt.total! - adopt.payMoney! }
+        remian: adopt.total! - adopt.payMoney! 
+    };
 }
 
 export const makePetsNotAdopted = async (pets: IPet[]): Promise<void> => {
