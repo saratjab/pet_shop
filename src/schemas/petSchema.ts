@@ -47,35 +47,6 @@ export const petTagDeleteSchema = z.object({
     ).nonempty('At least one pet tag is required'),
 });
 
-// export const filterPetsQuerySchema  = z.object({
-//     kind: z.string()
-//         .optional(),
-//     gender: z.enum(['F', 'M'])
-//         .optional(),
-//     age: z.string()
-//         .transform((val) => parseInt(val))
-//         .refine((val) => !isNaN(val) && val > 0, { message: 'Age must be a positive number'})
-//         .optional(),
-//     price: z.string()
-//         .transform((val) => parseInt(val))
-//         .refine((val) => !isNaN(val) && val > 0, { message: 'Price must be a positive number'})
-//         .optional(),
-//     isAdopted: z.enum(['true', 'false'])
-//         .transform((val) => val === 'true')
-//         .optional(),
-// });
-
-// export const fromToQuerySchema = z.object({
-//     from: z.string()
-//         .transform((val) => parseInt(val))
-//         .refine((val) => !isNaN(val) && val > 0, { message: 'from must be a positive number'})
-//         .optional(),
-//     to: z.string()
-//         .transform((val) => parseInt(val))
-//         .refine((val) => !isNaN(val) && val > 0, { message: 'to must be a positive number'})
-//         .optional(),
-// }); 
-
 export const filterPetsQuerySchema = z.object({
     kind: z.string()
         .optional(),

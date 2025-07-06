@@ -8,10 +8,7 @@ import { filterPetsQuerySchema, petIdDeleteSchema, petIdParamSchema, petTagDelet
 const router = express.Router();
 
 router.post('/', authenticate, authorizeRoles('admin', 'employee'), validate([registerPetSchema], ['body']), registerPet); 
-router.get('/', authenticate, getPets); 
-router.get('/filter', authenticate, validate([filterPetsQuerySchema], ['query']), filterPets); 
-// router.get('/range/age', authenticate, validate([fromToQuerySchema], ['query']), fromTo('age'));  
-// router.get('/range/price', authenticate, validate([fromToQuerySchema], ['query']), fromTo('price')); 
+router.get('/', authenticate, validate([filterPetsQuerySchema], ['query']), getPets); 
 router.get('/:id',authenticate, authorizeRoles('admin'), validate([petIdParamSchema], ['params']), getPetById) 
 router.get('/tag/:petTag', authenticate, validate([petTagParamSchema], ['params']), getPetByPetTag); 
 
