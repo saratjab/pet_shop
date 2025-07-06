@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { handleError } from '../utils/handleErrors';
 import { formatPetResponse } from '../utils/format';
 import { savePet, findPetById, findPetByPetTag, filter, updatePets, deletePets } from '../service/petService';
-import { Query } from '../types/petTypes';
+import { getPetsQuery } from '../types/petTypes';
 
 export const registerPet = async (req: Request, res: Response): Promise<void> => { 
     try {
@@ -31,7 +31,7 @@ export const getPets = async (req: Request, res: Response): Promise<void> => {
 
 export const filterPets = async (req: Request, res: Response): Promise<void> => {
     try{
-        const query = req.query as Query;
+        const query = req.query as getPetsQuery;
         const pets = await filter(query);
         if(pets.length == 0) res.status(404).json({ message: 'Pets not found' });
         else res.status(200).json(pets.map(pet => (formatPetResponse(pet))));

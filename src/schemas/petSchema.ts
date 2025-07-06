@@ -77,7 +77,7 @@ export const filterPetsQuerySchema = z.object({
         .optional(),
     price: z.string()
         .transform(val => parseInt(val))
-        .refine((val) => !isNaN(val) && val > 0, { message: 'Price must be a positive number'} )
+        .refine((val) => !isNaN(val) && val > 0, { message: 'Price must be a positive number'} ) 
         .optional(),    
 }).strict()
 .superRefine((data, ctx) => {

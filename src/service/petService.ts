@@ -1,6 +1,6 @@
 import Pets, { IPet } from '../models/petModel';
 import { HydratedDocument } from 'mongoose';
-import { Query, updatePetType } from '../types/petTypes';
+import { getPetsQuery, updatePetType } from '../types/petTypes';
 
 export const findPetById = async (id: string): Promise<HydratedDocument<IPet>> => {
     const pet = await Pets.findById(id);
@@ -39,7 +39,7 @@ export const deletePets = async (id?: string[], petTag?: string[]): Promise<void
     }
 }
 
-export const filter = async (query: Query): Promise<HydratedDocument<IPet>[]> => {
+export const filter = async (query: getPetsQuery): Promise<HydratedDocument<IPet>[]> => {
     let newQuery: any = {};
     if(query.kind) newQuery.kind = query.kind;
     if(query.gender) newQuery.gender = query.gender;
