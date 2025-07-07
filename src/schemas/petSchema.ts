@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { paginationQuerySchema } from './paginationSchema';
 
 const objError = { required_error: "field is required" }
 
@@ -79,7 +80,17 @@ export const filterPetsQuerySchema = z.object({
         .transform(val => parseInt(val))
         .refine((val) => !isNaN(val) && val > 0, { message: 'Price must be a positive number'} ) 
         .optional(),    
-}) // .strict()
+    sortBy: z.enum(['price', 'age', 'name'], { message: 'can order by price, age or name'})
+        .default('price')
+        .optional(),
+    order: z.string()
+        .default('asc')
+        .refine(val => val === 'asc' || val === 'desc', { message: 'order asc or desc only'})
+        .transform(val => val === 'asc' ? 1 : -1)
+        .optional(),
+}).strict();
+
+export const filterPetsQueryAndPaginationSchema = filterPetsQuerySchema.merge(paginationQuerySchema).strict()
 .superRefine((data, ctx) => {
     if(data.age && (data.minAge || data.maxAge)){
         ctx.addIssue({

@@ -3,13 +3,12 @@ import { validate } from '../middleware/validate';
 import { authorizeRoles } from '../middleware/authorize';
 import { authenticate } from '../middleware/authenticate';
 import { registerPet, filterPets, getPetById, getPetByPetTag, updatePetById, updatePetByPetTag, deletePetById, deletePetByPetTag }  from '../controllers/petController';
-import { filterPetsQuerySchema, petIdDeleteSchema, petIdParamSchema, petTagDeleteSchema, petTagParamSchema, registerPetSchema, updatePetSchema } from '../schemas/petSchema';
-import { paginationQuerySchema } from '../schemas/paginationSchema';
+import { filterPetsQueryAndPaginationSchema, petIdDeleteSchema, petIdParamSchema, petTagDeleteSchema, petTagParamSchema, registerPetSchema, updatePetSchema } from '../schemas/petSchema';
 
 const router = express.Router();
 
 router.post('/', authenticate, authorizeRoles('admin', 'employee'), validate(registerPetSchema, null, null), registerPet); 
-// router.get('/', authenticate, validate([filterPetsQuerySchema, paginationQuerySchema], ['query', 'query']), filterPets); // new schema 
+router.get('/', authenticate, validate(null, filterPetsQueryAndPaginationSchema, null), filterPets); // new schema 
 router.get('/:id',authenticate, authorizeRoles('admin'), validate(null, null, petIdParamSchema), getPetById) 
 router.get('/tag/:petTag', authenticate, validate(null, null, petTagParamSchema), getPetByPetTag); 
 
