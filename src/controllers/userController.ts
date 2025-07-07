@@ -3,6 +3,7 @@ import { handleError } from '../utils/handleErrors';
 import { formatUserResponse } from '../utils/format';
 import { generateRefreshToken, generateToken } from '../utils/jwt';
 import { saveUser, findAllUsers, findUserById, findUserByUsername, verifyPassword, update } from '../service/userService';
+import { pagination } from '../types/paginationTypes';
 
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -49,9 +50,21 @@ export const registerEmployee = async (req: Request, res: Response): Promise<voi
 
 export const getUsers = async (req: Request, res: Response):Promise<void> => {
     try{
-        const users = await findAllUsers(); 
+        const { page = 1, limit = 10} = req.query as pagination;
+        const skip = (page - 1) * limit;
+        console.log(limit, skip);
+        const { users, total } = await findAllUsers({ limit, skip }); 
+        console.log(total);
         if(users.length === 0) res.status(200).json({ message: 'No users found'})
-        else res.status(200).json(users.map(user => (formatUserResponse(user))));
+        else res.status(200).json({
+            data: users.map(user => (formatUserResponse(user))),
+            pagination: {
+                total,
+                page,
+                limit,
+                pages: Math.ceil(total / limit),
+            }
+        });
     }
     catch(err: any) {
         const errors = handleError(err);

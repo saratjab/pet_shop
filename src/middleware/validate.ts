@@ -8,6 +8,7 @@ export const validate =
     try{
         for(let i = 0; i < schemas.length; i++){
             schemas[i].parse(req[target[i]]);
+            console.log(req[target[i]]);
         }
         next();
     }catch(err: any){

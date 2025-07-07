@@ -5,6 +5,7 @@ import { logOut, refreshToken } from '../controllers/authControllers';
 import { verifyRefreshToken, authenticate } from '../middleware/authenticate';
 import { loginSchema, registerCustomerSchema, registerEmployeeSchema, updateUserSchema, userIdParamSchema, usernamedParamSchema } from '../schemas/userSchema';
 import { registerUser, getUsers, login, registerEmployee, getUserById, getUserByUsername, updateByAdmin, updateUserData, deleteUserAccount, deleteUserById, deleteUserByUsername } from '../controllers/userController'
+import { paginationParamSchema } from '../schemas/paginationSchema';
 const router = express.Router();
 
 // ToDo: Favorites or Saved Pets
@@ -19,7 +20,7 @@ router.post('/refresh-token', verifyRefreshToken, refreshToken);
 router.post('/logout', verifyRefreshToken, logOut);
 router.post('/employees', authenticate, authorizeRoles('admin'), validate([registerEmployeeSchema], ['body']), registerEmployee);
 
-router.get('/', authenticate, getUsers); 
+router.get('/', authenticate, validate([paginationParamSchema], ['query']), getUsers); 
 router.patch('/alter', authenticate, validate([updateUserSchema], ['body']), updateUserData); 
 router.patch('/role/:username', authenticate, authorizeRoles('admin'), validate([usernamedParamSchema, updateUserSchema], ['params', 'body']), updateByAdmin);
 router.get('/username/:username', authenticate, validate([usernamedParamSchema], ['params']), getUserByUsername); 

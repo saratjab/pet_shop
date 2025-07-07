@@ -1,11 +1,14 @@
 import bcrypt from 'bcryptjs';
-import User, { IUser, UUser } from '../models/userModel';
+import User, { IUser } from '../models/userModel';
 import { HydratedDocument } from 'mongoose';
-import { updateUserType } from '../types/userTypes';
+import {  updateUserType } from '../types/userTypes';
 
-export const findAllUsers = async (): Promise<HydratedDocument<IUser>[]> => {
-    const users = await User.find({ isActive: true });
-    return users;
+export const findAllUsers = async (pagination: { limit: number, skip: number }): Promise<{ users: HydratedDocument<IUser>[]; total: number}> => {
+  const [users, total] = await Promise.all([
+    User.find({ isActive: true }).skip(pagination.skip).limit(pagination.limit),
+    User.countDocuments({ isActive: true }),
+  ]);
+    return { users, total };
 }
 
 export const findUserById = async (id: string):Promise<HydratedDocument<IUser>> => {
