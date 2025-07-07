@@ -1,4 +1,4 @@
 import { z } from 'zod';
-import { paginationParamSchema } from "../schemas/paginationSchema";
+import { paginationQuerySchema } from "../schemas/paginationSchema";
 
-export type pagination = z.infer<typeof paginationParamSchema>;
+export type pagination = z.infer<typeof paginationQuerySchema>;

@@ -4,10 +4,11 @@ import { authorizeRoles } from '../middleware/authorize';
 import { authenticate } from '../middleware/authenticate';
 import { adoptIdParamSchema, adoptionSchema, cancelPetsSchema, paymentSchema } from '../schemas/adoptSchema';
 import { adoption, getAdoptions, getRemains, payment, getMyPets, cancelPets, getAdoption } from '../controllers/adoptController';
+import { paginationQuerySchema } from '../schemas/paginationSchema';
 
 const router = express.Router();
 
-router.get('/', authenticate, authorizeRoles('admin'), getAdoptions); 
+router.get('/', authenticate, authorizeRoles('admin'), validate([paginationQuerySchema], ['query']), getAdoptions); 
 router.post('/', authenticate, authorizeRoles('customer'), validate([adoptionSchema], ['body']), adoption); 
 router.get('/show', authenticate, authorizeRoles('customer'), getMyPets); 
 router.get('/pays', authenticate, authorizeRoles('customer'), getRemains); 

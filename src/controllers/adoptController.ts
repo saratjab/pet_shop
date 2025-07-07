@@ -2,12 +2,23 @@ import { Request, Response } from 'express';
 import { handleError } from '../utils/handleErrors';
 import { formatAdoptResponse } from '../utils/format';
 import { findAllAdopts, saveAdopt, findMyPets, getMoney, payments, cancelingPets, findAdoptById } from '../service/adoptService';
+import { pagination } from '../types/paginationTypes';
 
 export const getAdoptions = async (req: Request, res: Response): Promise<void> => {
     try{
-        const adoptions = await findAllAdopts();
+        const { page = 1, limit = 10} = req.query as pagination;
+        const skip = (page - 1) * limit;
+        const { adoptions, total} = await findAllAdopts({ limit, skip });
         if(adoptions.length === 0) res.status(404).json({ message: 'Adoptions not found' });
-        else res.status(200).json(adoptions.map(adopts => (formatAdoptResponse(adopts))));
+        else res.status(200).json({
+            data: adoptions.map(adopts => (formatAdoptResponse(adopts))),
+            pagination: {
+                total,
+                page,
+                limit,
+                pages: Math.ceil(total / limit),
+            }
+        });
     }catch(err: any){
         const errors = handleError(err);
         res.status(404).json( errors );

@@ -2,6 +2,7 @@ import Adopt, { IAdopt } from '../models/adoptModel';
 import Pets, { IPet } from '../models/petModel';
 import { HydratedDocument } from 'mongoose';
 import { findUserById } from '../service/userService';
+import { promise } from 'zod';
 
 type paymentSummary = {
     total: number,
@@ -76,9 +77,12 @@ export const saveAdopt = async (adopt: IAdopt): Promise<HydratedDocument<IAdopt>
     return await adoptDoc.save();
 }
 
-export const findAllAdopts = async (): Promise<HydratedDocument<IAdopt>[]> => {
-    const adopts = await Adopt.find({});
-    return adopts;
+export const findAllAdopts = async (pagination: {limit: number, skip: number}): Promise<{ adoptions: HydratedDocument<IAdopt>[], total: number}> => {
+    const [adoptions, total] = await Promise.all([
+        Adopt.find({}).skip(pagination.skip).limit(pagination.limit),
+        Adopt.countDocuments(),
+    ]);
+    return { adoptions, total };
 }
 
 export const findAdoptById = async (id: string): Promise<HydratedDocument<IAdopt> > => {
