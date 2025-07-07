@@ -8,11 +8,11 @@ import { paginationQuerySchema } from '../schemas/paginationSchema';
 
 const router = express.Router();
 
-router.get('/', authenticate, authorizeRoles('admin'), validate([paginationQuerySchema], ['query']), getAdoptions); 
-router.post('/', authenticate, authorizeRoles('customer'), validate([adoptionSchema], ['body']), adoption); 
+router.get('/', authenticate, authorizeRoles('admin'), validate(null, paginationQuerySchema, null), getAdoptions); 
+router.post('/', authenticate, authorizeRoles('customer'), validate(adoptionSchema, null, null), adoption); 
 router.get('/show', authenticate, authorizeRoles('customer'), getMyPets); 
 router.get('/pays', authenticate, authorizeRoles('customer'), getRemains); 
-router.post('/pay', authenticate, authorizeRoles('customer'), validate([paymentSchema], ['body']), payment); 
-router.post('/cancel', authenticate, authorizeRoles('customer'), validate([cancelPetsSchema], ['body']), cancelPets); 
-router.get('/:id', authenticate, authorizeRoles('admin'), validate([adoptIdParamSchema], ['params']), getAdoption); 
+router.post('/pay', authenticate, authorizeRoles('customer'), validate(paymentSchema, null, null), payment); 
+router.post('/cancel', authenticate, authorizeRoles('customer'), validate(cancelPetsSchema, null, null), cancelPets); 
+router.get('/:id', authenticate, authorizeRoles('admin'), validate(null, null, adoptIdParamSchema), getAdoption); 
 export default router;

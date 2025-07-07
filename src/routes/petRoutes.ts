@@ -8,15 +8,16 @@ import { paginationQuerySchema } from '../schemas/paginationSchema';
 
 const router = express.Router();
 
-router.post('/', authenticate, authorizeRoles('admin', 'employee'), validate([registerPetSchema], ['body']), registerPet); 
-router.get('/', authenticate, validate([filterPetsQuerySchema, paginationQuerySchema], ['query', 'query']), filterPets); 
-router.get('/:id',authenticate, authorizeRoles('admin'), validate([petIdParamSchema], ['params']), getPetById) 
-router.get('/tag/:petTag', authenticate, validate([petTagParamSchema], ['params']), getPetByPetTag); 
+router.post('/', authenticate, authorizeRoles('admin', 'employee'), validate(registerPetSchema, null, null), registerPet); 
+// router.get('/', authenticate, validate([filterPetsQuerySchema, paginationQuerySchema], ['query', 'query']), filterPets); // new schema 
+router.get('/:id',authenticate, authorizeRoles('admin'), validate(null, null, petIdParamSchema), getPetById) 
+router.get('/tag/:petTag', authenticate, validate(null, null, petTagParamSchema), getPetByPetTag); 
 
-router.patch('/:id', authenticate, authorizeRoles('admin'), validate([petIdParamSchema, updatePetSchema], ['params', 'body']), updatePetById); 
-router.patch('/tag/:petTag', authenticate, authorizeRoles('admin', 'employee'), validate([petTagParamSchema, updatePetSchema], ['params', 'body']), updatePetByPetTag); 
+router.patch('/:id', authenticate, authorizeRoles('admin'), validate(updatePetSchema, null, petIdParamSchema), updatePetById); 
+router.patch('/tag/:petTag', authenticate, authorizeRoles('admin', 'employee'), validate(updatePetSchema, null, petTagParamSchema)
+, updatePetByPetTag); 
 
-router.delete('/bluk/id', authenticate, authorizeRoles('admin'), validate([petIdDeleteSchema], ['body']), deletePetById);
-router.delete('/bluk/petTag', authenticate, authorizeRoles('admin'), validate([petTagDeleteSchema], ['body']), deletePetByPetTag);
+router.delete('/bluk/id', authenticate, authorizeRoles('admin'), validate(petIdDeleteSchema, null, null), deletePetById);
+router.delete('/bluk/petTag', authenticate, authorizeRoles('admin'), validate(petTagDeleteSchema, null, null), deletePetByPetTag);
 
 export default router;
