@@ -52,9 +52,7 @@ export const getUsers = async (req: Request, res: Response):Promise<void> => {
     try{
         const { page = 1, limit = 10} = req.query as pagination;
         const skip = (page - 1) * limit;
-        console.log(limit, skip);
         const { users, total } = await findAllUsers({ limit, skip }); 
-        console.log(total);
         if(users.length === 0) res.status(200).json({ message: 'No users found'})
         else res.status(200).json({
             data: users.map(user => (formatUserResponse(user))),

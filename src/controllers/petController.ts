@@ -4,6 +4,7 @@ import { handleError } from '../utils/handleErrors';
 import { formatPetResponse } from '../utils/format';
 import { savePet, findPetById, findPetByPetTag, filter, updatePets, deletePets } from '../service/petService';
 import { getPetsQuery } from '../types/petTypes';
+import { pagination } from '../types/paginationTypes';
 
 export const registerPet = async (req: Request, res: Response): Promise<void> => { 
     try {
@@ -19,10 +20,20 @@ export const registerPet = async (req: Request, res: Response): Promise<void> =>
 
 export const filterPets = async (req: Request, res: Response): Promise<void> => {
     try{
+        const { page = 1, limit = 10} = req.query as pagination;
+        const skip = (page - 1) * limit;
         const query = req.query as getPetsQuery;
-        const pets = await filter(query);
+        const { pets, total } = await filter(query, { limit, skip });
         if(pets.length == 0) res.status(404).json({ message: 'Pets not found' });
-        else res.status(200).json(pets.map(pet => (formatPetResponse(pet))));
+        else res.status(200).json({
+            data: pets.map(pet => (formatPetResponse(pet))),
+            pagination: {
+                total,
+                page,
+                limit,
+                pages: Math.ceil(total / limit),
+            }
+        });
     }
     catch(err: any){
         const errors = handleError(err);

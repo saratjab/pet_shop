@@ -39,7 +39,7 @@ export const deletePets = async (id?: string[], petTag?: string[]): Promise<void
     }
 }
 
-export const filter = async (query: getPetsQuery): Promise<HydratedDocument<IPet>[]> => {
+export const filter = async (query: getPetsQuery, pagination: {limit: number, skip: number}): Promise<{ pets: HydratedDocument<IPet>[], total: number}> => {
     let newQuery: any = {};
     if(query.kind) newQuery.kind = query.kind;
     if(query.gender) newQuery.gender = query.gender;
@@ -56,6 +56,10 @@ export const filter = async (query: getPetsQuery): Promise<HydratedDocument<IPet
         if(query.minPrice) newQuery.price.$gte = query.minPrice;
         if(query.maxPrice) newQuery.price.$lte = query.maxPrice;
     }
-    const pets = await Pets.find(newQuery);
-    return pets;
+    // const pets = await Pets.find(newQuery);
+    const [pets, total] = await Promise.all([
+            Pets.find(newQuery).skip(pagination.skip).limit(pagination.limit),
+            Pets.countDocuments(),
+    ]);
+    return { pets, total };
 }

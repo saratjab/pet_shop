@@ -79,7 +79,7 @@ export const filterPetsQuerySchema = z.object({
         .transform(val => parseInt(val))
         .refine((val) => !isNaN(val) && val > 0, { message: 'Price must be a positive number'} ) 
         .optional(),    
-}).strict()
+}) // .strict()
 .superRefine((data, ctx) => {
     if(data.age && (data.minAge || data.maxAge)){
         ctx.addIssue({

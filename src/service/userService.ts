@@ -4,10 +4,10 @@ import { HydratedDocument } from 'mongoose';
 import {  updateUserType } from '../types/userTypes';
 
 export const findAllUsers = async (pagination: { limit: number, skip: number }): Promise<{ users: HydratedDocument<IUser>[]; total: number}> => {
-  const [users, total] = await Promise.all([
-    User.find({ isActive: true }).skip(pagination.skip).limit(pagination.limit),
-    User.countDocuments({ isActive: true }),
-  ]);
+    const [users, total] = await Promise.all([
+        User.find({ isActive: true }).skip(pagination.skip).limit(pagination.limit),
+        User.countDocuments({ isActive: true }),
+    ]);
     return { users, total };
 }
 
