@@ -81,13 +81,15 @@ export const filterPetsQuerySchema = z.object({
         .refine((val) => !isNaN(val) && val > 0, { message: 'Price must be a positive number'} ) 
         .optional(),    
     sortBy: z.enum(['price', 'age', 'name'], { message: 'can order by price, age or name'})
-        .default('price')
-        .optional(),
+        .transform(val => (val.trim() === '' ? undefined : val))
+        .optional()
+        .default('price'),
     order: z.string()
+        .transform(val => (val.trim() === '' ? undefined : val))
         .default('asc')
+        .optional()
         .refine(val => val === 'asc' || val === 'desc', { message: 'order asc or desc only'})
-        .transform(val => val === 'asc' ? 1 : -1)
-        .optional(),
+        .transform(val => val === 'asc' ? 1 : -1),
 }).strict();
 
 export const filterPetsQueryAndPaginationSchema = filterPetsQuerySchema.merge(paginationQuerySchema).strict()

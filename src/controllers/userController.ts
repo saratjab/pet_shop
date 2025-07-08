@@ -50,17 +50,17 @@ export const registerEmployee = async (req: Request, res: Response): Promise<voi
 
 export const getUsers = async (req: Request, res: Response):Promise<void> => {
     try{
-        const { page = 1, limit = 10} = req.query as pagination;
-        const skip = (page - 1) * limit;
-        const { users, total } = await findAllUsers({ limit, skip }); 
+        const query = req.query as unknown as pagination;
+        const skip = (query.page! - 1) * query.limit;
+        const { users, total } = await findAllUsers({ limit: query.limit, skip }); 
         if(users.length === 0) res.status(200).json({ message: 'No users found'})
         else res.status(200).json({
             data: users.map(user => (formatUserResponse(user))),
             pagination: {
                 total,
-                page,
-                limit,
-                pages: Math.ceil(total / limit),
+                page: query.page,
+                limit: query.limit,
+                pages: Math.ceil(total / query.limit),
             }
         });
     }
