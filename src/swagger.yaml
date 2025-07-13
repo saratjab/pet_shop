@@ -1,0 +1,68 @@
+openapi: 3.0.0
+info:
+  title: User Logout API
+  version: 1.0.0
+  description: API endpoint for logging out users
+
+paths:
+  /users/logout:
+    post:
+      summary: Logout a user
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logged out successfully
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Something went wrong on the server
+
+
+# openapi: 3.0.0
+# info:
+#   title: User Logout API
+#   version: 1.0.0
+#   description: API endpoint for logging out users
+
+# paths:
+#   /users/logout:
+#     post:
+#       summary: Logout a user
+#       tags:
+#         - Users
+#       responses:
+#         '200':
+#           description: Logged out successfully
+#           content:
+#             application/json:
+#               schema:
+#                 type: object
+#                 properties:
+#                   message:
+#                     type: string
+#                     example: Logged out successfully
+#         '500':
+#           description: Internal server error
+#           content:
+#             application/json:
+#               schema:
+#                 type: object
+#                 properties:
+#                   error:
+#                     type: string
+#                     example: Something went wrong on the server

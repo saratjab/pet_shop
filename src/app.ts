@@ -7,6 +7,8 @@ import userRoutes from './routes/userRoutes';
 import petRoutes from './routes/petRoutes';
 import adoptRoutes from './routes/adoptRoutes';
 
+import { swaggerDocs } from './swaggerConfig';
+
 dotenv.config();
 
 const app = express();
@@ -14,6 +16,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use('/api-docs', swaggerDocs.serve, swaggerDocs.setup);
 app.use('/api/users', userRoutes);  
 app.use('/api/pets', petRoutes);  
 app.use('/api/adopts', adoptRoutes);  
