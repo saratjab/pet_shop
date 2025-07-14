@@ -8,7 +8,7 @@ servers:
   - url: http://localhost:3000
 
 paths:
-  /users/register:
+  /api/users/register:
     post:
       summary: Register a new customer
       tags:
@@ -33,7 +33,7 @@ paths:
               example:
                 error: "Passwords do not match"
 
-  /users/login:
+  /api/users/login:
     post:
       summary: Login a user and receive tokens
       tags:

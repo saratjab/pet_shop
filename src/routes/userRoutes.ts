@@ -15,7 +15,7 @@ const router = express.Router();
 // Add optional hard delete for admins:
 /**
  * @swagger
- *   /users/register:
+ *   /api/users/register:
  *     post:
  *       summary: Register a new customer
  *       tags:
@@ -43,7 +43,7 @@ const router = express.Router();
 router.post('/register', validate(registerCustomerSchema, null, null), registerUser); 
 /**
  * @swagger
-*   /users/login:
+*   /api/users/login:
  *     post:
  *       summary: Login a user and receive tokens
  *       tags:
