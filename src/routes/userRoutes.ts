@@ -22,7 +22,7 @@ const router = express.Router();
  *       summary: Register a new customer
  *       tags:
  *         - Users
- *       descriptoin: >
+ *       description: >
  *         Creates a new user account with the role of 'customer'. 
  *         The request must include a username, email, password, and confirmPassword. 
  *         Optional fields like address and isActive can also be included.
@@ -51,7 +51,7 @@ const router = express.Router();
 router.post('/register', validate(registerCustomerSchema, null, null), registerUser); 
 /**
  * @swagger
-*   /api/users/login:
+ *   /api/users/login:
  *     post:
  *       summary: Login a user and receive tokens
  *       tags:

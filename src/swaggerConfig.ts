@@ -14,24 +14,16 @@ const swaggerOptions = {
         url: 'http://localhost:3000',
       }
     ],
-
     components: {
-      securitySchemas: {
+      securitySchemes: {
         bearerAuth: {
           type: 'http',
-          schema: 'bearer',
+          scheme: 'bearer',
           bearerFormat: 'JWT',
         },
       },
     },
-
-    security: [
-      {
-        bearerAuth: [],
-      },
-    ],
   },
-
   apis: ['./src/routes/**/*.ts']
 };
 
