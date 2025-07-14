@@ -1,10 +1,22 @@
-import swaggerUi from 'swagger-ui-express';
-import YAML from 'yamljs';
-import path from 'path';
+import swaggerJSDoc from "swagger-jsdoc";
 
-const swaggerDocument = YAML.load(path.join(__dirname, '../src/swagger.yaml'));
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'User Auth API',
+      description: 'API endpoints for user register and login',
+      version: '1.0.0',
+    },
 
-export const swaggerDocs = {
-  serve: swaggerUi.serve,
-  setup: swaggerUi.setup(swaggerDocument),
+    servers: [
+      {
+        url: 'http://localhost:3000',
+      }
+    ],
+  },
+
+  apis: ['./src/routes/**/*.ts']
 };
+
+export const swaggerDocs = swaggerJSDoc(swaggerOptions);
