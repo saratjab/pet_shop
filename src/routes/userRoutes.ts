@@ -13,6 +13,8 @@ const router = express.Router();
 // GET /user/favorites
 // DELETE /user/favorites/:petTag
 // Add optional hard delete for admins:
+
+//! description / security 
 /**
  * @swagger
  *   /api/users/register:
@@ -20,6 +22,12 @@ const router = express.Router();
  *       summary: Register a new customer
  *       tags:
  *         - Users
+ *       descriptoin: >
+ *         Creates a new user account with the role of 'customer'. 
+ *         The request must include a username, email, password, and confirmPassword. 
+ *         Optional fields like address and isActive can also be included.
+ *         Password and confirmPassword must match.
+ *         The API will respond with the created user's public information (without password).
  *       requestBody:
  *         required: true
  *         content:
@@ -48,6 +56,10 @@ router.post('/register', validate(registerCustomerSchema, null, null), registerU
  *       summary: Login a user and receive tokens
  *       tags:
  *         - Users
+ *       description: >
+ *         This endpoint authenticates a user by verifying their username and password.
+ *         If the credentials are valid, it returns a JWT access token and a refresh token,
+ *         along with the user's public information.
  *       requestBody:
  *         required: true
  *         content:
