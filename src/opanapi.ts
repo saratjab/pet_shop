@@ -1,11 +1,11 @@
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
-import { registerCustomerSchema, loginSchema } from "./schemas/userSchema";
-import errorMap from "zod/v3/locales/en.cjs";
-import { object } from "zod";
+import { registerCustomerSchema, loginSchema, registerResponseSchema } from "./schemas/userSchema";
 
 export const registry = new OpenAPIRegistry();
+
 registry.register('LoginInput', loginSchema);
 registry.register('RegisterCustomer', registerCustomerSchema);
+registry.register('RegisterResponse', registerResponseSchema);
 
 registry.registerPath({
     path: '/api/users/register',
@@ -30,11 +30,11 @@ registry.registerPath({
     responses: {
         201: {
             description: 'User successfully registered',
-            // content: {
-            //     "application/json": {
-            //         schema: 'UserResponse'
-            //     }
-            // }
+            content: {
+                "application/json": {
+                    schema: registerResponseSchema
+                }
+            }
         },
         400: {
             description: 'Validation error',

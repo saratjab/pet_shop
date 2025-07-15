@@ -75,6 +75,29 @@ export const registerEmployeeSchema = registerSchema.extend({
     path: ['confirmPassword'],
 });
 
+export const registerResponseSchema = z.object({
+    username: z.string(objError)
+        .toLowerCase()
+        .nonempty()
+        .openapi({ 
+            example: 'sarat123',
+            description: 'a unique nonempty username'
+        }),
+    role: userRoles,
+    email: z.string(objError)
+        .email('Invalid email')
+        .openapi({ 
+            example: 'sarat@gmail.com',
+            description: 'email'
+        }),
+    address: z.string()
+        .optional()
+        .openapi({ 
+            example: 'Hebron, Palestine',
+            description: 'address not required'
+         }),
+})
+
 export const updateUserSchema = registerSchema.partial();
 
 export const loginSchema = z.object({
