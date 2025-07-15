@@ -10,6 +10,7 @@
     "dev:watch": "tsc-watch --onSuccess \"npm start\""
   },
   "dependencies": {
+    "@asteasolutions/zod-to-openapi": "^7.3.4",
     "axios": "^1.10.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.15.2",
@@ -25,7 +26,8 @@
     "swagger-ui-express": "^5.0.1",
     "validator": "^13.15.0",
     "yamljs": "^0.3.0",
-    "zod": "^3.25.67"
+    "zod": "^3.25.67",
+    "zod-openapi": "^5.1.0"
   },
   "author": "",
   "license": "ISC",

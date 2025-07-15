@@ -14,40 +14,7 @@ const router = express.Router();
 // DELETE /user/favorites/:petTag
 // Add optional hard delete for admins:
 
-//! description / security 
-/**
- * @swagger
- *   /api/users/register:
- *     post:
- *       summary: Register a new customer
- *       tags:
- *         - Users
- *       description: >
- *         Creates a new user account with the role of 'customer'. 
- *         The request must include a username, email, password, and confirmPassword. 
- *         Optional fields like address and isActive can also be included.
- *         Password and confirmPassword must match.
- *         The API will respond with the created user's public information (without password).
- *       requestBody:
- *         required: true
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/RegisterCustomer'
- *       responses:
- *         '201':
- *           description: User successfully registered
- *           content:
- *             application/json:
- *               schema:
- *                 $ref: '#/components/schemas/UserResponse'
- *         '400':
- *           description: Validation error
- *           content:
- *             application/json:
- *               example:
- *                 error: "Passwords do not match"
- */
+
 router.post('/register', validate(registerCustomerSchema, null, null), registerUser); 
 /**
  * @swagger
