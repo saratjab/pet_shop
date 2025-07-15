@@ -1,9 +1,10 @@
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
-import { registerCustomerSchema, loginSchema, registerResponseSchema } from "./schemas/userSchema";
+import { registerCustomerSchema, loginSchema, registerResponseSchema, loginResponseSchema } from "./schemas/userSchema";
 
 export const registry = new OpenAPIRegistry();
 
 registry.register('LoginInput', loginSchema);
+registry.register('LoginResponse', loginResponseSchema);
 registry.register('RegisterCustomer', registerCustomerSchema);
 registry.register('RegisterResponse', registerResponseSchema);
 
@@ -75,11 +76,11 @@ registry.registerPath({
     responses: {
         200: {
             description: 'Login successful',
-            // content: {
-            //     "application/json": {
-            //         schema: 'loginResponse'
-            //     }
-            // }
+            content: {
+                "application/json": {
+                    schema: loginResponseSchema
+                }
+            }
         },
         400: {
             description: 'Invalid credentials or validation errors',

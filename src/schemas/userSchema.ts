@@ -98,6 +98,20 @@ export const registerResponseSchema = z.object({
          }),
 })
 
+export const loginResponseSchema = z.object({
+    token: z.string()
+        .openapi({
+            example: 'jwt token',
+            description: 'jwt token for the user'
+        }),
+    refreshToken: z.string()
+        .openapi({
+            example: 'jwt refreshToken',
+            description: 'jwt refreshToken for the user'
+        }),
+    user: registerResponseSchema,
+});
+
 export const updateUserSchema = registerSchema.partial();
 
 export const loginSchema = z.object({
