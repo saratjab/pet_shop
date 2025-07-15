@@ -8,6 +8,12 @@ registry.register('LoginResponse', loginResponseSchema);
 registry.register('RegisterCustomer', registerCustomerSchema);
 registry.register('RegisterResponse', registerResponseSchema);
 
+registry.registerComponent('securitySchemes', 'bearerAuth', {
+  type: 'http',
+  scheme: 'bearer',
+  bearerFormat: 'JWT',
+});
+
 registry.registerPath({
     path: '/api/users/register',
     method: 'post',
