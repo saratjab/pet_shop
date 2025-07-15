@@ -1,5 +1,7 @@
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 import { registerCustomerSchema, loginSchema } from "./schemas/userSchema";
+import errorMap from "zod/v3/locales/en.cjs";
+import { object } from "zod";
 
 export const registry = new OpenAPIRegistry();
 registry.register('LoginInput', loginSchema);
@@ -44,6 +46,51 @@ registry.registerPath({
                             message: {
                                 type: 'string',
                                 example: `Passwrod doesn't match`
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    },
+});
+
+registry.registerPath({
+    path: '/api/users/login',
+    method: 'post',
+    summary: 'Login a user and receive tokens',
+    tags: ['Users'],
+    description: `This endpoint authenticates a user by verifying their username and password.
+    \nIf the credentials are valid, it returns a JWT access token and a refresh token,
+    \nalong with the user's public information.`,
+    request: {
+        body: {
+            content: {
+                'application/json': {
+                    schema: loginSchema,
+                },
+            },
+        },
+    },
+    responses: {
+        200: {
+            description: 'Login successful',
+            // content: {
+            //     "application/json": {
+            //         schema: 'loginResponse'
+            //     }
+            // }
+        },
+        400: {
+            description: 'Invalid credentials or validation errors',
+            content: {
+                "application/json": {
+                    schema: {
+                        type: 'object',
+                        properties: {
+                            message: {
+                                type: 'string',
+                                example: 'Invalid username or password',
                             },
                         },
                     },
