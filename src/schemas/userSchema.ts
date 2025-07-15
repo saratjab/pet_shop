@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
 
-extendZodWithOpenApi(z); // this add the .openapi() method to Zod
+extendZodWithOpenApi(z);
 
 const userRoles = z.enum(['admin', 'employee', 'customer']);
 const objError = { required_error: "field is required" }
@@ -54,7 +54,7 @@ export const registerCustomerSchema = registerSchema.extend({
         .refine(val => val === 'customer', { message: 'role must be customer' })
         .optional()
         .openapi({ 
-            example: 'custmer',
+            example: 'customer',
             description: 'your role in the system'
         }),
 }).refine(data => data.confirmPassword === data.password, { 
