@@ -14,39 +14,7 @@ const router = express.Router();
 // DELETE /user/favorites/:petTag
 // Add optional hard delete for admins:
 
-//! description / security 
 router.post('/register', validate(registerCustomerSchema, null, null), registerUser); 
-/**
- * @swagger
- *   /api/users/login:
- *     post:
- *       summary: Login a user and receive tokens
- *       tags:
- *         - Users
- *       description: >
- *         This endpoint authenticates a user by verifying their username and password.
- *         If the credentials are valid, it returns a JWT access token and a refresh token,
- *         along with the user's public information.
- *       requestBody:
- *         required: true
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/LoginInput'
- *       responses:
- *         '200':
- *           description: Login successful
- *           content:
- *             application/json:
- *               schema:
- *                 $ref: '#/components/schemas/LoginResponse'
- *         '400':
- *           description: Invalid credentials or validation errors
- *           content:
- *             application/json:
- *               example:
- *                 error: "Invalid username or password"
- */
 router.post('/login', validate(loginSchema, null, null), login); 
 router.post('/refresh-token', verifyRefreshToken, refreshToken);
 router.post('/logout', verifyRefreshToken, logOut);
@@ -61,90 +29,5 @@ router.get('/:id', authenticate, authorizeRoles('admin'), validate(null, null, u
 router.patch('/me', authenticate, deleteUserAccount); 
 router.delete('/:id', authenticate, authorizeRoles('admin'), validate(null, null, userIdParamSchema), deleteUserById);
 router.delete('/username/:username', authenticate, authorizeRoles('admin'), validate(null, null, usernamedParamSchema), deleteUserByUsername);
-
-/**
- * @swagger
- * components:
- *   schemas:
- *     RegisterCustomer:
- *       type: object
- *       required:
- *         - username
- *         - password
- *         - confirmPassword
- *         - email
- *       properties:
- *         username:
- *           type: string
- *           example: sarat123
- *         password:
- *           type: string
- *           minLength: 8
- *           maxLength: 32
- *           format: password
- *           example: strongpassword
- *         confirmPassword:
- *           type: string
- *           minLength: 8
- *           maxLength: 32
- *           format: password
- *           example: strongpassword
- *         email:
- *           type: string
- *           format: email
- *           example: sarat@example.com
- *         role:
- *           type: string
- *           enum: [customer]
- *           example: customer
- *         address:
- *           type: string
- *           example: "Hebron, Palestine"
- *         isActive:
- *           type: boolean
- *           example: true
- * 
- *     LoginInput:
- *       type: object
- *       required:
- *         - username
- *         - password
- *       properties:
- *         username:
- *           type: string
- *           example: sarat123
- *         password:
- *           type: string
- *           format: password
- *           example: strongpassword
- * 
- *     UserResponse:
- *       type: object
- *       properties:
- *         username:
- *           type: string
- *           example: sarat123
- *         role:
- *           type: string
- *           example: customer
- *         email:
- *           type: string
- *           example: sarat@example.com
- *         address:
- *           type: string
- *           example: "Hebron, Palestine"
- * 
- *     LoginResponse:
- *       type: object
- *       properties:
- *         token:
- *           type: string
- *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
- *         refreshToken:
- *           type: string
- *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
- *         user:
- *           $ref: '#/components/schemas/UserResponse'
- */
 
 export default router;
