@@ -135,7 +135,7 @@ export const loginSchema = z.object({
 export const userIdParamSchema  = z.object({
     id: z.string(objError)
         .length(24, 'Invalid MongoDB ObjectId'),
-});
+}).openapi('IDParam');
 
 export const usernamedParamSchema  = z.object({
     username: z.string(objError)

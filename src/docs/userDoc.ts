@@ -1,5 +1,5 @@
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
-import { loginSchema, loginResponseSchema, registerCustomerSchema, userResponseSchema, registerEmployeeSchema, paginatedUsersResponseSchema, updateUserSchema, usernamedParamSchema } from "../schemas/userSchema";
+import { loginSchema, loginResponseSchema, registerCustomerSchema, userResponseSchema, registerEmployeeSchema, paginatedUsersResponseSchema, updateUserSchema, usernamedParamSchema, userIdParamSchema } from "../schemas/userSchema";
 import { paginationQuerySchema } from "../schemas/paginationSchema";
 
 // ToDo: 1- separate auth from users 2- change error messages 
@@ -14,6 +14,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     registry.register('PaginatedUsersResponse', paginatedUsersResponseSchema)
     registry.register('UpdateUser', updateUserSchema);
     registry.register('UsernameParam', usernamedParamSchema);
+    registry.register('IDParam', userIdParamSchema);
 
     registry.registerPath({
         path: '/api/users/register',
@@ -555,6 +556,169 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
                         },
                     },
                 },
+            },
+        },
+    });
+
+    registry.registerPath({
+        path: '/api/users/username/{username}',
+        method: 'get',
+        summary: `Get a user's public profile by their username`,
+        tags: ['Users'],
+        description: `Retrieves public profile data of a user by their unique username.
+        \nThis endpoint is typically used to display user information in public or semi-public contexts.  
+        \nAuthentication is required, but any authenticated user can access this endpoint.
+        \nReturns the user's public data such as username, email, role, and address.`,
+        request: {
+            params: usernamedParamSchema,
+        },
+        responses: {
+            200: {
+                description: 'get user successfully',
+                content: {
+                    "application/json": {
+                        schema: userResponseSchema,
+                    }
+                }
+            },
+            400: {
+                description: 'Bad Request',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'username must be at least 1 character',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            401: {
+                description: 'Unauthorized error',
+                content: {
+                    "application/json":{
+                        schema: {
+                            type: 'object',
+                            properties:{
+                                accessToken: {
+                                    type: 'string',
+                                    example: 'Token is blacklisted'
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404: {
+                description: 'Not found',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'User not found',
+                                },
+                            },
+                        },
+                    },
+                }
+            },
+        },
+    });
+
+    registry.registerPath({
+        path: '/api/users/{id}',
+        method: 'get',
+        summary: 'get user by id',
+        tags: ['Users'],
+        description: `Fetches a user's data using their unique MongoDB ObjectId.
+        \nThis endpoint is intended for admin users or systems that need to retrieve user information by ID.  
+        \nIt requires authentication and proper authorization (e.g., admin-only access).
+        \nReturns the user's public profile info if the ID is valid and authorized.`,
+        security: [
+            { bearerAuth: [] },
+        ],
+        request: {
+            params: userIdParamSchema,
+        },
+        responses: {
+            200: {
+                description: 'get user successfully',
+                content: {
+                    "application/json": {
+                        schema: userResponseSchema,
+                    }
+                }
+            },
+            400: {
+                description: 'Bad Request',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'Invalid MongoDB ObjectId',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            401: {
+                description: 'Unauthorized error',
+                content: {
+                    "application/json":{
+                        schema: {
+                            type: 'object',
+                            properties:{
+                                accessToken: {
+                                    type: 'string',
+                                    example: 'Token is blacklisted'
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            403: {
+                description: 'Forbidden',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'Access denied. You are not authorized.',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404: {
+                description: 'Not found',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'User not found',
+                                },
+                            },
+                        },
+                    },
+                }
             },
         },
     });
