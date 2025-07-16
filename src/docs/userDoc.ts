@@ -1,11 +1,14 @@
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
-import { loginSchema, loginResponseSchema, registerCustomerSchema, registerResponseSchema } from "../schemas/userSchema";
+import { loginSchema, loginResponseSchema, registerCustomerSchema, registerResponseSchema, registerEmployeeSchema } from "../schemas/userSchema";
+
+// ToDo: 1- separate auth from users 2- change error messages 
 
 export const registerUserDocs = (registry: OpenAPIRegistry) => {
     registry.register('LoginInput', loginSchema);
     registry.register('LoginResponse', loginResponseSchema);
     registry.register('RegisterCustomer', registerCustomerSchema);
     registry.register('RegisterResponse', registerResponseSchema);
+    registry.register('RegisterEmployee', registerEmployeeSchema);
 
     registry.registerPath({
         path: '/api/users/register',
@@ -19,12 +22,12 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
         \nThe API will respond with the created user's public information (without password).`,
         request: {
             body: {
-            required: true,
-            content: {
-                'application/json': {
-                schema: registerCustomerSchema,
+                required: true,
+                content: {
+                    'application/json': {
+                    schema: registerCustomerSchema,
+                    },
                 },
-            },
             },
         },
         responses: {
@@ -37,7 +40,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
                 }
             },
             400: {
-                description: 'Validation error',
+                description: 'Bad Request',
                 content: {
                     "application/json": {
                         schema: {
@@ -54,7 +57,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
             },
         },
     });
-    
+
     registry.registerPath({
         path: '/api/users/login',
         method: 'post',
@@ -65,6 +68,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
         \nalong with the user's public information.`,
         request: {
             body: {
+                required: true,
                 content: {
                     'application/json': {
                         schema: loginSchema,
@@ -91,6 +95,187 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
                                 message: {
                                     type: 'string',
                                     example: 'Invalid username or password',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    registry.registerPath({
+        path: '/api/users/refresh-token',
+        method: 'post',
+        summary: 'refresh access token by refresh token',
+        tags: ['Users'],
+        description: `Accepts a valid refresh token from headers and issues a new access token.
+        \nThis endpoint is used to maintain a user's session without requiring them to log in again.
+        \nIf the refresh token is invalid or missing, it will return a 401 Unauthorized error.`,
+        responses: {
+            200: {
+                description: `refresh token is valid then generate new access token`,
+                content:{
+                    "application/json":{
+                        schema:{
+                            type: 'object',
+                            properties:{
+                                accessToken: {
+                                    type: 'string',
+                                    example: 'new access Token'
+                                }
+                            },
+                        },
+                    },
+                },
+            },
+            401: {
+                description: 'Unauthorized error',
+                content: {
+                    "application/json":{
+                        schema: {
+                            type: 'object',
+                            properties:{
+                                accessToken: {
+                                    type: 'string',
+                                    example: 'Refresh token missing or invalid'
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    registry.registerPath({
+        path: '/api/users/logout',
+        method: 'post',
+        summary: 'logout user',
+        tags: ['Users'],
+        description: `Logs out the current user by blacklisting the refresh token.
+        \nThis ensures the token cannot be reused to gain access to the system again.
+        \nA valid refresh token must be provided, typically in the request's cookies or local storage.`,
+        responses:{
+            200: {
+                description: 'logout successfully',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'Logged out successfully',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            401: {
+                description: 'Unauthorized error',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'Unauthorized: Token is blacklisted or missing'
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            500: {
+                description: 'Internal server error',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'server error',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    registry.registerPath({
+        path: '/api/users/employees',
+        method: 'post',
+        summary: 'Register a new employee',
+        tags: ['Users'],
+        description: ``,
+        request: {
+            body: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: registerEmployeeSchema,
+                    },
+                },
+            },
+        },
+        responses: {
+            201: {
+                description: 'User successfully registered',
+                content: {
+                    "application/json": {
+                        schema: registerResponseSchema
+                    },
+                },
+            },
+            400: {
+                description: 'Bad request',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                ZodError: {
+                                    type: 'string',
+                                    example: 'username is required',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            401: {
+                description: 'Unauthorized error',
+                content: {
+                    "application/json":{
+                        schema: {
+                            type: 'object',
+                            properties:{
+                                accessToken: {
+                                    type: 'string',
+                                    example: 'Token is blacklisted'
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+
+            403: {
+                description: 'Forbidden',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'Access denied. You are not authorized.',
                                 },
                             },
                         },

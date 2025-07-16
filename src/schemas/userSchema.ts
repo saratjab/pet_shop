@@ -73,7 +73,7 @@ export const registerEmployeeSchema = registerSchema.extend({
 }).refine(data => data.confirmPassword === data.password, {
     message: 'Passwords do not match',
     path: ['confirmPassword'],
-});
+}).openapi('RegisterEmployee');
 
 export const registerResponseSchema = z.object({
     username: z.string(objError)
