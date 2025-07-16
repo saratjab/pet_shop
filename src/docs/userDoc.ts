@@ -1,5 +1,5 @@
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
-import { loginSchema, loginResponseSchema, registerCustomerSchema, userResponseSchema, registerEmployeeSchema, paginatedUsersResponseSchema, updateUserSchema } from "../schemas/userSchema";
+import { loginSchema, loginResponseSchema, registerCustomerSchema, userResponseSchema, registerEmployeeSchema, paginatedUsersResponseSchema, updateUserSchema, usernamedParamSchema } from "../schemas/userSchema";
 import { paginationQuerySchema } from "../schemas/paginationSchema";
 
 // ToDo: 1- separate auth from users 2- change error messages 
@@ -13,6 +13,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     registry.register('Pagination', paginationQuerySchema);
     registry.register('PaginatedUsersResponse', paginatedUsersResponseSchema)
     registry.register('UpdateUser', updateUserSchema);
+    registry.register('UsernameParam', usernamedParamSchema);
 
     registry.registerPath({
         path: '/api/users/register',
@@ -238,7 +239,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
                 },
             },
             400: {
-                description: 'Bad request',
+                description: 'Bad Request',
                 content: {
                     "application/json": {
                         schema: {
@@ -316,7 +317,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
                 }
             },
             400: {
-                description: 'Bad request',
+                description: 'Bad Request',
                 content: {
                     "application/json": {
                         schema: {
@@ -399,7 +400,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
                 }
             },
             400: {
-                description: 'Bad request',
+                description: 'Bad Request',
                 content: {
                     "application/json": {
                         schema: {
@@ -445,6 +446,99 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
                         },
                     },
                 }
+            },
+            500: {
+                description: 'Internal server error',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'server error',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    registry.registerPath({
+        path: '/api/users/role/{username}',
+        method: 'patch',
+        summary: `update role by admin using users's username`,
+        tags: ['Users'],
+        description: `Allows an admin to update the role of a specific user using their username.
+        \nThe new role must be one of the allowed roles (e.g., admin, employee, or customer).
+        \nThis endpoint requires authentication and is restricted to admin users only.
+        \nThe server will respond with the updated user information if successful.`,
+        security: [
+            {
+                bearerAuth: [],
+            },
+        ],
+        request:{
+            params: usernamedParamSchema,
+        },
+        responses: {
+            200: {
+                description: 'Update user successfully',
+                content: {
+                    "application/json": {
+                        schema: userResponseSchema,
+                    }
+                }
+            },
+            400: {
+                description: 'Bad Request',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'username must be at least 1 character',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            401: {
+                description: 'Unauthorized error',
+                content: {
+                    "application/json":{
+                        schema: {
+                            type: 'object',
+                            properties:{
+                                accessToken: {
+                                    type: 'string',
+                                    example: 'Token is blacklisted'
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            403: {
+                description: 'Forbidden',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'Access denied. You are not authorized.',
+                                },
+                            },
+                        },
+                    },
+                },
             },
             500: {
                 description: 'Internal server error',

@@ -139,8 +139,12 @@ export const userIdParamSchema  = z.object({
 
 export const usernamedParamSchema  = z.object({
     username: z.string(objError)
-        .nonempty('username must be at least 1 character'),
-});
+        .nonempty('username must be at least 1 character')
+        .openapi({
+            example: 'user123',
+            description: `user's username`
+        }),
+}).openapi('UsernameParam');
 
 export const paginatedUsersResponseSchema = z.object({
     data: z.array(userResponseSchema),
