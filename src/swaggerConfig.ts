@@ -1,5 +1,5 @@
 import { OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
-import { registry } from "./opanapi";
+import { registry } from "./docs/opanapi";
 import swaggerUi from 'swagger-ui-express';
 
 const generator = new OpenApiGeneratorV3(registry.definitions);
