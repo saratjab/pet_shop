@@ -66,7 +66,7 @@ export const getUsers = async (req: Request, res: Response):Promise<void> => {
     }
     catch(err: any) {
         const errors = handleError(err);
-        res.status(404).json( errors );
+        res.status(500).json( errors );
     } 
 } 
 

@@ -1,5 +1,6 @@
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
-import { loginSchema, loginResponseSchema, registerCustomerSchema, registerResponseSchema, registerEmployeeSchema } from "../schemas/userSchema";
+import { loginSchema, loginResponseSchema, registerCustomerSchema, userResponseSchema, registerEmployeeSchema, paginatedUsersResponseSchema, updateUserSchema } from "../schemas/userSchema";
+import { paginationQuerySchema } from "../schemas/paginationSchema";
 
 // ToDo: 1- separate auth from users 2- change error messages 
 
@@ -7,14 +8,17 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     registry.register('LoginInput', loginSchema);
     registry.register('LoginResponse', loginResponseSchema);
     registry.register('RegisterCustomer', registerCustomerSchema);
-    registry.register('RegisterResponse', registerResponseSchema);
+    registry.register('UserResponse', userResponseSchema);
     registry.register('RegisterEmployee', registerEmployeeSchema);
+    registry.register('Pagination', paginationQuerySchema);
+    registry.register('PaginatedUsersResponse', paginatedUsersResponseSchema)
+    registry.register('UpdateUser', updateUserSchema);
 
     registry.registerPath({
         path: '/api/users/register',
         method: 'post',
         summary: 'Register a new customer',
-        tags: ['Users'],
+        tags: ['Auth'],
         description: `Creates a new user account with the role of 'customer'. 
         \nThe request must include a username, email, password, and confirmPassword.  
         \nOptional fields like address and isActive can also be included. 
@@ -35,7 +39,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
                 description: 'User successfully registered',
                 content: {
                     "application/json": {
-                        schema: registerResponseSchema
+                        schema: userResponseSchema
                     }
                 }
             },
@@ -62,7 +66,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
         path: '/api/users/login',
         method: 'post',
         summary: 'Login a user and receive tokens',
-        tags: ['Users'],
+        tags: ['Auth'],
         description: `This endpoint authenticates a user by verifying their username and password.
         \nIf the credentials are valid, it returns a JWT access token and a refresh token,
         \nalong with the user's public information.`,
@@ -108,7 +112,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
         path: '/api/users/refresh-token',
         method: 'post',
         summary: 'refresh access token by refresh token',
-        tags: ['Users'],
+        tags: ['Auth'],
         description: `Accepts a valid refresh token from headers and issues a new access token.
         \nThis endpoint is used to maintain a user's session without requiring them to log in again.
         \nIf the refresh token is invalid or missing, it will return a 401 Unauthorized error.`,
@@ -152,7 +156,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
         path: '/api/users/logout',
         method: 'post',
         summary: 'logout user',
-        tags: ['Users'],
+        tags: ['Auth'],
         description: `Logs out the current user by blacklisting the refresh token.
         \nThis ensures the token cannot be reused to gain access to the system again.
         \nA valid refresh token must be provided, typically in the request's cookies or local storage.`,
@@ -212,7 +216,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
         path: '/api/users/employees',
         method: 'post',
         summary: 'Register a new employee',
-        tags: ['Users'],
+        tags: ['Auth'],
         description: ``,
         request: {
             body: {
@@ -229,7 +233,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
                 description: 'User successfully registered',
                 content: {
                     "application/json": {
-                        schema: registerResponseSchema
+                        schema: userResponseSchema
                     },
                 },
             },
@@ -240,7 +244,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
                         schema: {
                             type: 'object',
                             properties: {
-                                ZodError: {
+                                message: {
                                     type: 'string',
                                     example: 'username is required',
                                 },
@@ -276,6 +280,182 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
                                 message: {
                                     type: 'string',
                                     example: 'Access denied. You are not authorized.',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    registry.registerPath({
+        path: '/api/users/',
+        method: 'get',
+        summary: 'get all active users',
+        tags: ['Users'],
+        description: `Retrieves a paginated list of all active users in the system.
+        \nSupports optional query parameters for page number and limit.
+        \nThe response includes user information such as username, email, role, and address,
+        \nalong with pagination metadata (total users, current page, page size, and total pages)`,
+        security: [
+            {
+                bearerAuth: [],
+            },
+        ],
+        request: {
+            query: paginationQuerySchema,
+        },
+        responses: {
+            200: {
+                description: 'Get users successfully',
+                content: {
+                    "application/json": {
+                        schema: paginatedUsersResponseSchema,
+                    }
+                }
+            },
+            400: {
+                description: 'Bad request',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'Page must be a positive number',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            401: {
+                description: 'Unauthorized error',
+                content: {
+                    "application/json":{
+                        schema: {
+                            type: 'object',
+                            properties:{
+                                accessToken: {
+                                    type: 'string',
+                                    example: 'Token is blacklisted'
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            500: {
+                description: 'Internal server error',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'server error',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    registry.registerPath({
+        path: '/api/users/alter',
+        method: 'patch',
+        summary: 'update user data',
+        tags: ['Users'],
+        description: `Updates user information for the currently authenticated user. 
+        \nSupports partial updates — only the fields provided in the request body will be changed.
+        \nTypical updatable fields include username, email, address, and isActive. 
+        \nRequires a valid JWT token for authentication.`,
+        security: [
+            {
+                bearerAuth: [],
+            },
+        ],
+        request: {
+            body: {
+                content: {
+                    "application/json": {
+                        schema: updateUserSchema,
+                    },
+                },
+            },
+        },
+        responses: {
+            200: {
+                description: 'Update user successfully',
+                content: {
+                    "application/json": {
+                        schema: userResponseSchema,
+                    }
+                }
+            },
+            400: {
+                description: 'Bad request',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'username must be at least 1 character',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            401: {
+                description: 'Unauthorized error',
+                content: {
+                    "application/json":{
+                        schema: {
+                            type: 'object',
+                            properties:{
+                                accessToken: {
+                                    type: 'string',
+                                    example: 'Token is blacklisted'
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404: {
+                description: 'Not found',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'User not found',
+                                },
+                            },
+                        },
+                    },
+                }
+            },
+            500: {
+                description: 'Internal server error',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'server error',
                                 },
                             },
                         },

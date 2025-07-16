@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
+import { paginationSchema } from './paginationSchema';
 
 extendZodWithOpenApi(z);
 
@@ -75,7 +76,7 @@ export const registerEmployeeSchema = registerSchema.extend({
     path: ['confirmPassword'],
 }).openapi('RegisterEmployee');
 
-export const registerResponseSchema = z.object({
+export const userResponseSchema = z.object({
     username: z.string(objError)
         .toLowerCase()
         .nonempty()
@@ -96,7 +97,7 @@ export const registerResponseSchema = z.object({
             example: 'Hebron, Palestine',
             description: 'address not required'
          }),
-})
+}).openapi('UserResponse');
 
 export const loginResponseSchema = z.object({
     token: z.string()
@@ -109,10 +110,10 @@ export const loginResponseSchema = z.object({
             example: 'jwt refreshToken',
             description: 'jwt refreshToken for the user'
         }),
-    user: registerResponseSchema,
+    user: userResponseSchema,
 });
 
-export const updateUserSchema = registerSchema.partial();
+export const updateUserSchema = registerSchema.partial().openapi('UpdateUser');
 
 export const loginSchema = z.object({
     username: z.string(objError)
@@ -140,3 +141,8 @@ export const usernamedParamSchema  = z.object({
     username: z.string(objError)
         .nonempty('username must be at least 1 character'),
 });
+
+export const paginatedUsersResponseSchema = z.object({
+    data: z.array(userResponseSchema),
+    pagination: paginationSchema,
+}).openapi('PaginatedUsersResponse')

@@ -18,9 +18,9 @@ router.post('/register', validate(registerCustomerSchema, null, null), registerU
 router.post('/login', validate(loginSchema, null, null), login); 
 router.post('/refresh-token', verifyRefreshToken, refreshToken);
 router.post('/logout', verifyRefreshToken, logOut);
-router.post('/employees', authenticate, authorizeRoles('admin'),validate(registerEmployeeSchema, null, null), registerEmployee);
+router.post('/employees', authenticate, authorizeRoles('admin'), validate(registerEmployeeSchema, null, null), registerEmployee);
 
-router.get('/', authenticate, validate(null, paginationQuerySchema, null), getUsers); 
+router.get('/', authenticate, validate(null, paginationQuerySchema, null), getUsers);
 router.patch('/alter', authenticate, validate(updateUserSchema, null, null), updateUserData); 
 router.patch('/role/:username', authenticate, authorizeRoles('admin'), validate(updateUserSchema, null, usernamedParamSchema), updateByAdmin);
 router.get('/username/:username', authenticate, validate(null, null, usernamedParamSchema), getUserByUsername); 
