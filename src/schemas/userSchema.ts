@@ -137,7 +137,7 @@ export const userIdParamSchema  = z.object({
         .length(24, 'Invalid MongoDB ObjectId'),
 }).openapi('IDParam');
 
-export const usernamedParamSchema  = z.object({
+export const usernameParamSchema  = z.object({
     username: z.string(objError)
         .nonempty('username must be at least 1 character')
         .openapi({

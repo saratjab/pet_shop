@@ -126,7 +126,7 @@ export const deleteUserAccount = async (req: Request, res: Response): Promise<vo
         const user = await findUserById(id);
         user.isActive = false;
         await saveUser(user);
-        res.status(200).json({ message: `${user.username} have been deleted`});
+        res.status(200).json({ message: `${user.username} has been deleted`});
     }catch(err: any){
         const errors = handleError(err);
         res.status(404).json( errors );
@@ -139,7 +139,7 @@ export const deleteUserById = async (req: Request, res: Response): Promise<void>
         const user = await findUserById(id);
         user.isActive = false;
         await saveUser(user);
-        res.status(200).json({ message: `${user.username} have been deleted`});
+        res.status(200).json({ message: `${user.username} has been deleted`});
     }catch(err: any){
         const errors = handleError(err);
         res.status(404).json( errors );

@@ -1,5 +1,5 @@
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
-import { loginSchema, loginResponseSchema, registerCustomerSchema, userResponseSchema, registerEmployeeSchema, paginatedUsersResponseSchema, updateUserSchema, usernamedParamSchema, userIdParamSchema } from "../schemas/userSchema";
+import { loginSchema, loginResponseSchema, registerCustomerSchema, userResponseSchema, registerEmployeeSchema, paginatedUsersResponseSchema, updateUserSchema, usernameParamSchema, userIdParamSchema } from "../schemas/userSchema";
 import { paginationQuerySchema } from "../schemas/paginationSchema";
 
 // ToDo: 1- separate auth from users 2- change error messages 
@@ -13,7 +13,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     registry.register('Pagination', paginationQuerySchema);
     registry.register('PaginatedUsersResponse', paginatedUsersResponseSchema)
     registry.register('UpdateUser', updateUserSchema);
-    registry.register('UsernameParam', usernamedParamSchema);
+    registry.register('UsernameParam', usernameParamSchema);
     registry.register('IDParam', userIdParamSchema);
 
     registry.registerPath({
@@ -482,7 +482,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
             },
         ],
         request:{
-            params: usernamedParamSchema,
+            params: usernameParamSchema,
         },
         responses: {
             200: {
@@ -569,8 +569,11 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
         \nThis endpoint is typically used to display user information in public or semi-public contexts.  
         \nAuthentication is required, but any authenticated user can access this endpoint.
         \nReturns the user's public data such as username, email, role, and address.`,
+        security: [
+            { bearerAuth: [] },
+        ],
         request: {
-            params: usernamedParamSchema,
+            params: usernameParamSchema,
         },
         responses: {
             200: {
@@ -719,6 +722,265 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
                         },
                     },
                 }
+            },
+        },
+    });
+
+    registry.registerPath({
+        path: '/api/users/me',
+        method: 'patch',
+        summary: `Delete the authenticated user's account`,
+        tags: ['Users'],
+        description: `Allows an authenticated user to delete their own account.
+        \nThis operation is irreversible and will remove all user data from the system.
+        \nThe user must be logged in with a valid access token.`,
+        security: [
+            { bearerAuth: [] },
+        ],
+        responses: {
+            200: {
+                description: 'deleting the account successfully',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'user123 has been deleted',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            401: {
+                description: 'Unauthorized error',
+                content: {
+                    "application/json":{
+                        schema: {
+                            type: 'object',
+                            properties:{
+                                accessToken: {
+                                    type: 'string',
+                                    example: 'Token is blacklisted'
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404: {
+                description: 'Not found',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'User not found',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    registry.registerPath({
+        path: '/api/users/{id}',
+        method: 'delete',
+        summary: `Delete user's account by admin using id`,
+        tags: ['Users'],
+        description: `Allows an administrator to permanently delete a user's account using their MongoDB ObjectId.
+        \nThis action is irreversible and can only be performed by users with the 'admin' role.
+        \nReturns a success message upon deletion or an appropriate error if the user doesn't exist or the request is unauthorized.`,
+        security: [
+            { bearerAuth: [] },
+        ],
+        request: {
+            params: userIdParamSchema,
+        },
+        responses: {
+            200: {
+                description: 'deleting the account successfully',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'user123 has been deleted',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            400: {
+                description: 'Bad Request',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'Invalid MongoDB ObjectId',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            401: {
+                description: 'Unauthorized error',
+                content: {
+                    "application/json":{
+                        schema: {
+                            type: 'object',
+                            properties:{
+                                accessToken: {
+                                    type: 'string',
+                                    example: 'Token is blacklisted'
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            403: {
+                description: 'Forbidden',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'Access denied. You are not authorized.',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404: {
+                description: 'Not found',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'User not found',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    registry.registerPath({
+        path: '/api/users/username/{username}',
+        method: 'delete',
+        summary: `Delete user's account by admin using username`,
+        tags: ['Users'],
+        description: `Allows an administrator to permanently delete a user's account using their username.
+        \nThis action is irreversible and can only be performed by users with the 'admin' role.
+        \nReturns a success message upon deletion or an appropriate error if the user doesn't exist or the request is unauthorized.`,
+        security: [
+            { bearerAuth: [] },
+        ],
+        request: {
+            params: usernameParamSchema,
+        },
+        responses: {
+            200: {
+                description: 'deleting the account successfully',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'user123 has been deleted',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            400: {
+                description: 'Bad Request',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'username must be at least 1 character',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            401: {
+                description: 'Unauthorized error',
+                content: {
+                    "application/json":{
+                        schema: {
+                            type: 'object',
+                            properties:{
+                                accessToken: {
+                                    type: 'string',
+                                    example: 'Token is blacklisted'
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            403: {
+                description: 'Forbidden',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'Access denied. You are not authorized.',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404: {
+                description: 'Not found',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'User not found',
+                                },
+                            },
+                        },
+                    },
+                },
             },
         },
     });
