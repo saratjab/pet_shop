@@ -15,4 +15,5 @@ router.get('/pays', authenticate, authorizeRoles('customer'), getRemains);
 router.post('/pay', authenticate, authorizeRoles('customer'), validate(paymentSchema, null, null), payment); 
 router.post('/cancel', authenticate, authorizeRoles('customer'), validate(cancelPetsSchema, null, null), cancelPets); 
 router.get('/:id', authenticate, authorizeRoles('admin'), validate(null, null, adoptIdParamSchema), getAdoption); 
+
 export default router;

@@ -2,7 +2,6 @@ import Adopt, { IAdopt } from '../models/adoptModel';
 import Pets, { IPet } from '../models/petModel';
 import { HydratedDocument } from 'mongoose';
 import { findUserById } from '../service/userService';
-import { promise } from 'zod';
 
 type paymentSummary = {
     total: number,

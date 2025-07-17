@@ -9,7 +9,7 @@ export const getAdoptions = async (req: Request, res: Response): Promise<void> =
         const query = req.query as unknown as pagination;
         const skip = (query.page - 1) * query.limit;
         const { adoptions, total} = await findAllAdopts({ limit: query.limit, skip });
-        if(adoptions.length === 0) res.status(404).json({ message: 'Adoptions not found' });
+        if(adoptions.length === 0) res.status(200).json({ message: 'Adoptions not found' });
         else res.status(200).json({
             data: adoptions.map(adopts => (formatAdoptResponse(adopts))),
             pagination: {
@@ -65,7 +65,7 @@ export const getRemains = async (req: Request, res: Response): Promise<void> => 
         res.status(200).json( infoPay );
     }catch(err: any){
         const errors = handleError(err);
-        res.status(400).json( errors );
+        res.status(500).json( errors );
     }
 }
 

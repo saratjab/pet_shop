@@ -2,7 +2,7 @@ import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 import { paginationQuerySchema } from "../schemas/paginationSchema";
 import { loginSchema, loginResponseSchema, registerCustomerSchema, userResponseSchema, registerEmployeeSchema, paginatedUsersResponseSchema, updateUserSchema, usernameParamSchema, userIdParamSchema } from "../schemas/userSchema";
 
-// ToDo: 1- separate auth from users 2- change error messages 
+// ToDo: 1- separate auth from users 2- change error messages 3- use more zod in controllers 
 
 export const registerUserDocs = (registry: OpenAPIRegistry) => {
     registry.register('LoginInput', loginSchema);
