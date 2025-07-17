@@ -2,6 +2,8 @@ import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 import { paginationQuerySchema } from "../schemas/paginationSchema";
 import { adoptIdParamSchema, adoptionSchema, adoptPaginationSchema, adoptResponseSchema, cancelPetsSchema, paymentInfoSchema, paymentSchema } from "../schemas/adoptSchema";
 
+export const adoptPath = '/api/adopts';
+
 export const registerAdoptDocs = (registry: OpenAPIRegistry) => {
     registry.register('Adoption', adoptionSchema);
     registry.register('Pagination', paginationQuerySchema);
@@ -12,7 +14,7 @@ export const registerAdoptDocs = (registry: OpenAPIRegistry) => {
     registry.register('AdoptIDParam', adoptIdParamSchema);
 
     registry.registerPath({
-        path: '/api/adopts/',
+        path: `${adoptPath}/`,
         method: 'get',
         summary: 'get all adoptions',
         tags: ['Adoption'],
@@ -86,7 +88,7 @@ export const registerAdoptDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/adopts/',
+        path: `${adoptPath}/`,
         method: 'post',
         summary: 'create adoptoin',
         tags: ['Adoption'],
@@ -167,7 +169,7 @@ export const registerAdoptDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/adopts/show',
+        path: `${adoptPath}/show`,
         method: 'get',
         summary: `get user's adoption`,
         tags: ['Adoption'],
@@ -238,7 +240,7 @@ export const registerAdoptDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/adopts/pays',
+        path: `${adoptPath}/pays`,
         method: 'get',
         summary: `show user's info pay`,
         tags: ['Adoption'],
@@ -309,7 +311,7 @@ export const registerAdoptDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/adopts/pay',
+        path: `${adoptPath}/pay`,
         method: 'post',
         summary: 'pay for your pets',
         tags: ['Adoption'],
@@ -391,7 +393,7 @@ export const registerAdoptDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/adopts/cancel',
+        path: `${adoptPath}/cancel`,
         method: 'post',
         summary: 'delete pets',
         tags: ['Adoption'],
@@ -470,7 +472,7 @@ export const registerAdoptDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/adopts/{id}',
+        path: `${adoptPath}/{id}`,
         method: 'get',
         summary: 'get adopt by Id',
         tags: ['Adoption'],

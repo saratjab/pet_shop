@@ -1,6 +1,8 @@
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 import { filteredPetResponseSchema, filterPetsQueryAndPaginationSchema, petIdDeleteSchema, petIdParamSchema, petResponseSchema, petTagDeleteSchema, petTagParamSchema, registerPetSchema, updatePetSchema } from "../schemas/petSchema";
 
+const petPath = '/api/pets';
+
 export const registerPetDocs = (registry: OpenAPIRegistry) => {
     registry.register('RegisterPet', registerPetSchema);
     registry.register('PerResponse', petResponseSchema);
@@ -13,7 +15,7 @@ export const registerPetDocs = (registry: OpenAPIRegistry) => {
     registry.register('PetTagDelete', petTagDeleteSchema);
 
     registry.registerPath({
-        path: '/api/pets/',
+        path: `${petPath}/`,
         method: 'post',
         summary: 'creating a new pet',
         tags: ['Pets'],
@@ -95,7 +97,7 @@ export const registerPetDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/pets/',
+        path: `${petPath}/`,
         method: 'get',
         summary: 'get all pets',
         tags: ['Pets'],
@@ -149,7 +151,7 @@ export const registerPetDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/pets/{id}',
+        path: `${petPath}/{id}`,
         method: 'get',
         summary: 'get pet by ID',
         tags: ['Pets'],
@@ -238,7 +240,7 @@ export const registerPetDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/pets/tag/{petTag}',
+        path: `${petPath}/tag/{petTag}`,
         method: 'get',
         summary: 'get pet by pet tag',
         tags: ['Pets'],
@@ -308,7 +310,7 @@ export const registerPetDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/pets/{id}',
+        path: `${petPath}/{id}`,
         method: 'patch',
         summary: 'update pet by ID',
         tags: ['Pets'],
@@ -391,7 +393,7 @@ export const registerPetDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/pets/tag/{petTag}',
+        path: `${petPath}/tag/{petTag}`,
         method: 'patch',
         summary: 'update pet by pet tag',
         tags: ['Pets'],
@@ -474,7 +476,7 @@ export const registerPetDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/pets/bluk/id',
+        path: `${petPath}/bluk/id`,
         method: 'delete',
         summary: 'delete pet by ID',
         tags: ['Pets'],
@@ -563,7 +565,7 @@ export const registerPetDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/pets/bluk/petTag',
+        path: `${petPath}/bluk/petTag`,
         method: 'delete',
         summary: 'delete pet by pet tags',
         tags: ['Pets'],

@@ -3,6 +3,8 @@ import { paginationQuerySchema } from "../schemas/paginationSchema";
 import { loginSchema, loginResponseSchema, registerCustomerSchema, userResponseSchema, registerEmployeeSchema, paginatedUsersResponseSchema, updateUserSchema, usernameParamSchema, userIdParamSchema } from "../schemas/userSchema";
 
 // ToDo: 1- separate auth from users 2- change error messages 3- use more zod in controllers 
+//! description  for response /
+const userPath = '/api/users';
 
 export const registerUserDocs = (registry: OpenAPIRegistry) => {
     registry.register('LoginInput', loginSchema);
@@ -15,9 +17,12 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     registry.register('UpdateUser', updateUserSchema);
     registry.register('UsernameParam', usernameParamSchema);
     registry.register('IDParam', userIdParamSchema);
+    // registry.registerParameter() -> it's not that useful it's just here becuase of the origin of openAPI compnents.parameters
+    // and it doesn't accept zod object / z.number z.string ... 
+    // also in the registerPath -> params: object / so we return to redundant 
 
     registry.registerPath({
-        path: '/api/users/register',
+        path: `${userPath}/register`,
         method: 'post',
         summary: 'Register a new customer',
         tags: ['Auth'],
@@ -65,7 +70,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/users/login',
+        path: `${userPath}/login`,
         method: 'post',
         summary: 'Login a user and receive tokens',
         tags: ['Auth'],
@@ -111,7 +116,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/users/refresh-token',
+        path: `${userPath}/refresh-token`,
         method: 'post',
         summary: 'refresh access token by refresh token',
         tags: ['Auth'],
@@ -155,7 +160,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/users/logout',
+        path: `${userPath}/logout`,
         method: 'post',
         summary: 'logout user',
         tags: ['Auth'],
@@ -215,7 +220,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/users/employees',
+        path: `${userPath}/employees`,
         method: 'post',
         summary: 'Register a new employee',
         tags: ['Auth'],
@@ -292,7 +297,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/users/',
+        path: `${userPath}/`,
         method: 'get',
         summary: 'get all active users',
         tags: ['Users'],
@@ -369,7 +374,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/users/alter',
+        path: `${userPath}/alter`,
         method: 'patch',
         summary: 'update user data',
         tags: ['Users'],
@@ -468,7 +473,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/users/role/{username}',
+        path: `${userPath}/role/{username}`,
         method: 'patch',
         summary: `update role by admin using users's username`,
         tags: ['Users'],
@@ -561,7 +566,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/users/username/{username}',
+        path: `${userPath}/username/{username}`,
         method: 'get',
         summary: `Get a user's public profile by their username`,
         tags: ['Users'],
@@ -636,7 +641,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/users/{id}',
+        path: `${userPath}/{id}`,
         method: 'get',
         summary: 'get user by id',
         tags: ['Users'],
@@ -727,7 +732,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/users/me',
+        path: `${userPath}/me`,
         method: 'patch',
         summary: `Delete the authenticated user's account`,
         tags: ['Users'],
@@ -790,7 +795,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/users/{id}',
+        path: `${userPath}/{id}`,
         method: 'delete',
         summary: `Delete user's account by admin using id`,
         tags: ['Users'],
@@ -888,7 +893,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     });
 
     registry.registerPath({
-        path: '/api/users/username/{username}',
+        path: `${userPath}/username/{username}`,
         method: 'delete',
         summary: `Delete user's account by admin using username`,
         tags: ['Users'],
