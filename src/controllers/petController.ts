@@ -2,12 +2,9 @@ import { IPet } from '../models/petModel';
 import { Request, Response } from 'express';
 import { handleError } from '../utils/handleErrors';
 import { formatPetResponse } from '../utils/format';
-import { savePet, findPetById, findPetByPetTag, filter, updatePets, deletePets } from '../service/petService';
 import { getPetsQuery } from '../types/petTypes';
+import { savePet, findPetById, findPetByPetTag, filter, updatePets, deletePets } from '../service/petService';
 
-// export interface GetPetsRequest extends Request{
-//     query: getPetsQuery
-// };
 export const registerPet = async (req: Request, res: Response): Promise<void> => { 
     try {
         const newPet: IPet = req.body;
@@ -24,7 +21,7 @@ export const filterPets = async (req: Request, res: Response): Promise<void> => 
     try{
         const query = req.query as unknown as getPetsQuery;
         const { pets, total } = await filter(query);
-        if([].length == 0) res.status(404).json({ message: 'Pets not found' });
+        if([].length == 0) res.status(200).json({ message: 'Pets not found' });
         else res.status(200).json({
             data: pets.map(pet => (formatPetResponse(pet))),
             pagination: {

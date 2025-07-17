@@ -1,6 +1,6 @@
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
-import { loginSchema, loginResponseSchema, registerCustomerSchema, userResponseSchema, registerEmployeeSchema, paginatedUsersResponseSchema, updateUserSchema, usernameParamSchema, userIdParamSchema } from "../schemas/userSchema";
 import { paginationQuerySchema } from "../schemas/paginationSchema";
+import { loginSchema, loginResponseSchema, registerCustomerSchema, userResponseSchema, registerEmployeeSchema, paginatedUsersResponseSchema, updateUserSchema, usernameParamSchema, userIdParamSchema } from "../schemas/userSchema";
 
 // ToDo: 1- separate auth from users 2- change error messages 
 

@@ -1,52 +1,94 @@
 import { z } from 'zod';
-import { paginationQuerySchema } from './paginationSchema';
+import { paginationQuerySchema, paginationSchema } from './paginationSchema';
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
+import { registerPet } from '../controllers/petController';
 
+extendZodWithOpenApi(z);
 const objError = { required_error: "field is required" }
 
 export const registerPetSchema = z.object({
     petTag: z.string(objError)
         .toLowerCase()
-        .nonempty('pet tag must be at least 1 character'),
+        .nonempty('pet tag must be at least 1 character')
+        .openapi({
+            example: 'luckyDog',
+            description: 'a unique tag for the pet',
+        }),        
     name: z.string(objError)
-        .nonempty('pet tag must be at least 1 character'),
+        .nonempty('pet tag must be at least 1 character')
+        .openapi({
+            example: 'lucky',
+            description: 'the pet name',
+        }),
     kind: z.string(objError)
-        .nonempty('pet tag must be at least 1 character'),
+        .nonempty('pet tag must be at least 1 character')
+        .openapi({
+            example: 'dog',
+            description: 'the pet kind',
+        }),
     age: z.number(objError)
-        .refine(age => age > 0, { message: 'Age must be positive' }),
+        .refine(age => age > 0, { message: 'Age must be positive' })
+        .openapi({
+            example: 2,
+            description: 'the pet age',
+        }),
     price: z.number(objError)
-        .refine(price => price > 0, { message: 'Price must be positve' }),
+        .refine(price => price > 0, { message: 'Price must be positve' })
+        .openapi({
+            example: 20,
+            description: 'the pet price',
+        }),
     description: z.string(objError)
-        .optional(),
-    gender: z.enum(['M', 'F'], { message: 'gender must be F or M'}),
+        .optional()
+        .openapi({
+            example: 'white with black spots',
+        }),
+    gender: z.enum(['M', 'F'], { message: 'gender must be F or M'})
+        .openapi({
+            example: 'M',
+        }),
     isAdopted: z.boolean()
-        .default(false),
-});
+        .default(false)
+        .openapi({
+            example: false,
+        }),
+}).openapi('RegisterPet');
 
-export const updatePetSchema = registerPetSchema.partial();
+export const petResponseSchema = registerPetSchema.openapi('PetRespnse');
+
+export const filteredPetResponseSchema = z.object({
+    pets: z.array(petResponseSchema),
+    pagination: paginationSchema,
+}).openapi('FilteredPetResponse');
+
+export const updatePetSchema = registerPetSchema.partial().openapi('UpdatePet');
 
 export const petIdParamSchema = z.object({
     id: z.string(objError)
         .length(24, 'Invalid MongoDB ObjectId'),
-});
+}).openapi('PetIDParam');
 
 export const petTagParamSchema = z.object({
     petTag: z.string(objError)
         .nonempty('pet tag must be at least 1 character'),
-});
+}).openapi('PetTagParam');
 
 export const petIdDeleteSchema = z.object({
     id: z.array(
         z.string(objError)
         .length(24, 'Invalid MongooDB ObjectId'),
-    ).nonempty('At least one ID is required'),
-});
+    ).nonempty('At least one ID is required')
+    .openapi({
+        description: `an array of id's`
+    }),
+}).openapi('PetIDDelete');
 
 export const petTagDeleteSchema = z.object({
     petTag: z.array(
         z.string(objError)
         .nonempty('pet tag must be at least 1 character'),
     ).nonempty('At least one pet tag is required'),
-});
+}).openapi('PetTagDelete');
 
 export const filterPetsQuerySchema = z.object({
     kind: z.string()
