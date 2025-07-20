@@ -27,6 +27,8 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "validator": "^13.15.0",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0",
     "yamljs": "^0.3.0",
     "zod": "^3.25.67",
     "zod-openapi": "^5.1.0"
@@ -49,6 +51,7 @@
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "@types/validator": "^13.15.1",
+    "@types/winston": "^2.4.4",
     "@types/yamljs": "^0.2.34",
     "@typescript-eslint/eslint-plugin": "^8.34.0",
     "@typescript-eslint/parser": "^8.34.0",
