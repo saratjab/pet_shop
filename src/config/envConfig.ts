@@ -1,13 +1,23 @@
 import dotenv from 'dotenv';
 import path from 'path';
 
+const node_env = process.env.NODE_ENV || 'development';
+
 dotenv.config({
-    path: path.resolve(__dirname, `${process.env.NODE_ENV}.env`)
+    path: path.resolve(__dirname, `../../.env.${node_env}`),
 });
 
-module.exports = {
-    NODE_ENV: process.env.NODE_ENV || 'development',
-    HOST: process.env.HOST || 'localhost',
-    PORT: process.env.PORT || 3000,
-    DATABASE_URL: process.env.DATABASE_URL,
+const required = (key: string): string => {
+    const value = process.env[key];
+    if(!value) {
+        console.error(`Missing required environment variable: ${key}`);
+        process.exit(1);
+    }
+    return value;
+}
+
+export const env = {
+    node_env,
+    PORT: required('PORT'),
+    DATABASE_URL: required('DATABASE_URL'),
 };

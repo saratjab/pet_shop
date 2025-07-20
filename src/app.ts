@@ -8,6 +8,7 @@ import petRoutes from './routes/petRoutes';
 import adoptRoutes from './routes/adoptRoutes';
 
 import { swaggerDocs } from './swaggerConfig';
+import { env } from './config/envConfig';
 
 dotenv.config();
 
@@ -20,6 +21,10 @@ app.use('/api-docs', swaggerDocs.serve, swaggerDocs.setup);
 app.use('/api/users', userRoutes);  
 app.use('/api/pets', petRoutes);  
 app.use('/api/adopts', adoptRoutes);  
+
+app.get('/', (req, res) => {
+    res.send(`Running in ${env.node_env} mode`);
+});
 
 export const refresshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 export const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
@@ -34,5 +39,5 @@ if(!mongoUrl)
 
 
 mongoose.connect(mongoUrl)
-    .then(data => app.listen(3000, () => console.log('Server started')))
+    .then(data => app.listen(parseInt(env.PORT), () => console.log('Server started')))
     .catch(err => new Error(err));
