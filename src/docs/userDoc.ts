@@ -3,7 +3,7 @@ import { paginationQuerySchema } from "../schemas/paginationSchema";
 import { loginSchema, loginResponseSchema, registerCustomerSchema, userResponseSchema, registerEmployeeSchema, paginatedUsersResponseSchema, updateUserSchema, usernameParamSchema, userIdParamSchema } from "../schemas/userSchema";
 
 // ToDo: 1- separate auth from users 2- change error messages 3- use more zod in controllers 
-//! description  for response /
+//! description  for response 
 const userPath = '/api/users';
 
 export const registerUserDocs = (registry: OpenAPIRegistry) => {
@@ -17,9 +17,6 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     registry.register('UpdateUser', updateUserSchema);
     registry.register('UsernameParam', usernameParamSchema);
     registry.register('IDParam', userIdParamSchema);
-    // registry.registerParameter() -> it's not that useful it's just here becuase of the origin of openAPI compnents.parameters
-    // and it doesn't accept zod object / z.number z.string ... 
-    // also in the registerPath -> params: object / so we return to redundant 
 
     registry.registerPath({
         path: `${userPath}/register`,
