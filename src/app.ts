@@ -33,10 +33,9 @@ if(!refresshTokenSecret || !accessTokenSecret)
     throw Error('JWT secrets are not defined in .env');
 
 
-const mongoUrl = process.env.MONGO_URL;
+const mongoUrl = env.DATABASE_URL;
 if(!mongoUrl)
     throw new Error('Mongo Url is not define');
-
 
 mongoose.connect(mongoUrl)
     .then(data => app.listen(parseInt(env.PORT), () => console.log('Server started')))
