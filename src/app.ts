@@ -1,7 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import dotenv from 'dotenv';
 
 import userRoutes from './routes/userRoutes';
 import petRoutes from './routes/petRoutes';
@@ -9,8 +8,6 @@ import adoptRoutes from './routes/adoptRoutes';
 
 import { swaggerDocs } from './swaggerConfig';
 import { env } from './config/envConfig';
-
-dotenv.config();
 
 const app = express();
 
@@ -26,12 +23,11 @@ app.get('/', (req, res) => {
     res.send(`Running in ${env.node_env} mode`);
 });
 
-export const refresshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
-export const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+export const refresshTokenSecret = env.REFRESH_TOKEN_SECRET;
+export const accessTokenSecret = env.ACCESS_TOKEN_SECRET;
 
 if(!refresshTokenSecret || !accessTokenSecret) 
     throw Error('JWT secrets are not defined in .env');
-
 
 const mongoUrl = env.DATABASE_URL;
 if(!mongoUrl)
