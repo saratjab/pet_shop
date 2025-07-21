@@ -4,14 +4,21 @@ import { formatUserResponse } from '../utils/format';
 import { generateRefreshToken, generateToken } from '../utils/jwt';
 import { saveUser, findAllUsers, findUserById, findUserByUsername, verifyPassword, update } from '../service/userService';
 import { pagination } from '../types/paginationTypes';
+import logger from '../config/logger';
 
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
     try{
+        logger.info('User registration started');
+        logger.debug(`Incoming user data: ${JSON.stringify(req.body)}`);
+
         const newUser = req.body;
         const savedUser = await saveUser(newUser);
+
+        logger.info(`User registered successfully: ${savedUser._id}`);
         res.status(201).json(formatUserResponse(savedUser));   
     }
     catch(err: any){
+        logger.error(`Registration failed: ${err.message}`);
         const errors = handleError(err);
         res.status(400).json( errors );
     }

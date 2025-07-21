@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import User, { IUser } from '../models/userModel';
 import { HydratedDocument } from 'mongoose';
 import {  updateUserType } from '../types/userTypes';
+import logger from '../config/logger';
 
 export const findAllUsers = async (pagination: { limit: number, skip: number }): Promise<{ users: HydratedDocument<IUser>[]; total: number}> => {
     const [users, total] = await Promise.all([
@@ -24,9 +25,16 @@ export const findUserByUsername = async (username: string): Promise<HydratedDocu
 }
 
 export const saveUser = async (user: IUser): Promise<HydratedDocument<IUser>> => {
+    logger.debug(`Saving new user to the database`);
+
     const newUser = new User( user );
     const savedUser = await newUser.save();
-    if(!savedUser) throw Error(`Error saving user`);
+    if(!savedUser) {
+        logger.error(`Failed to save user`);
+        throw Error(`Error saving user`);
+    }
+
+    logger.debug(`User saved with ID: ${savedUser._id}`);
     return savedUser;
 }
 

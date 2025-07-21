@@ -47,13 +47,15 @@ export const registerSchema = z.object({
     isActive: z.boolean()
         .optional()
         .openapi({ example: true }),
-}).strict('Unexpected field found');
+}).strict('Unexpected failed found');
 //! registerSchema becomes a ZodEffects type (a wrapped schema), not a base ZodObject anymore — and .extend() only works on ZodObject.
 
 export const registerCustomerSchema = registerSchema.extend({
     role: z.string()
-        .refine(val => val === 'customer', { message: 'role must be customer' })
+        .transform(val => (val.trim() === '' ? undefined : val))
         .optional()
+        .default('customer')
+        .refine(val => val === 'customer', { message: 'role must be customer' })
         .openapi({ 
             example: 'customer',
             description: 'your role in the system'
@@ -65,8 +67,10 @@ export const registerCustomerSchema = registerSchema.extend({
 
 export const registerEmployeeSchema = registerSchema.extend({
     role: z.string()
-        .refine(val => val === 'employee', { message: 'role must be employee' })
+        .transform(val => (val.trim() === '' ? undefined : val))
         .optional()
+        .default('employee')
+        .refine(val => val === 'employee', { message: 'role must be employee' })
         .openapi({ 
             example: 'employee',
             description: 'your role in the system'

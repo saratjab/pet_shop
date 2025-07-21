@@ -1,3 +1,5 @@
+import logger from "../config/logger";
+
 interface ValidationErrorObject  {
     username?: string,
     email?: string,
@@ -18,6 +20,7 @@ interface ValidationErrorObject  {
 } // ToDo: add the adopt 
 
 export const handleError = (error: { name: string, errors: {path:string, message: string, received: string}[], message?: string, keyValue?: string }): ValidationErrorObject => {
+    logger.error(`Handled Error`);
     let errorsObj: ValidationErrorObject = {} ;
     const name: string = error.name;
     if(name === 'ValidationError'){
