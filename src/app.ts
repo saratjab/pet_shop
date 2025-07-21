@@ -24,6 +24,7 @@ app.get('/', (req, res) => {
     logger.info('Get / route hit');
     logger.warn('something looks off');
     logger.error('something broke!');
+    logger.debug('for development');
     res.send(`Running in ${env.node_env} mode`);
 });
 
