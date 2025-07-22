@@ -27,11 +27,14 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
 export const login = async (req: Request, res: Response): Promise<void> => {
     try{
         const { username, password } = req.body;
+        logger.info(`Login attempt for username: ${username}`);
         const user = await findUserByUsername(username);
         await verifyPassword(password, user);
 
         const token: string = generateToken(user.id);
         const refreshToken = generateRefreshToken(user.id);
+        logger.info(`Login successful for username: ${username}`);
+
         res.status(200).json({
             token: token,
             refreshToken: refreshToken,
@@ -39,8 +42,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         });
     }
     catch(err: any){
+        logger.error(`Login failed for username: ${req.body?.username} - ${err.message}`);
         const errors = handleError(err);
-        res.status(400).json( errors );
+        res.status(404).json( errors );
     }
 }
 

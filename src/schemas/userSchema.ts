@@ -122,14 +122,14 @@ export const updateUserSchema = registerSchema.partial().openapi('UpdateUser');
 export const loginSchema = z.object({
     username: z.string(objError)
         .toLowerCase()
-        .nonempty('username must be at least 1 character')
+        .nonempty('must be at least 1 character')
         .openapi({ 
             example: 'sarat123',
             description: 'your username'
         }),
     password: z.string(objError)
-        .min(8, 'Password must be at least 8 characters')
-        .max(32, 'Password must be at most 32 characters')
+        .min(8, 'must be at least 8 characters')
+        .max(32, 'must be at most 32 characters')
         .openapi({ 
             example: 'strongPassword',
             description: 'your passwrod'
@@ -143,7 +143,7 @@ export const userIdParamSchema  = z.object({
 
 export const usernameParamSchema  = z.object({
     username: z.string(objError)
-        .nonempty('username must be at least 1 character')
+        .nonempty('must be at least 1 character')
         .openapi({
             example: 'user123',
             description: `user's username`

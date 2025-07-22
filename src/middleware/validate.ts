@@ -21,7 +21,7 @@ export const validate = (body: ZodSchema | null, query: ZodSchema | null, params
             req.params = parsed;
         }
 
-        logger.debug(`Validatoin passed and parsed into ${req.body}`);
+        logger.debug(`Validatoin passed and parsed`);
         next();
     }catch(err: any){
         logger.warn(`Validation failed: ${err.message}`);

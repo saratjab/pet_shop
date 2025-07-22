@@ -19,8 +19,14 @@ export const findUserById = async (id: string):Promise<HydratedDocument<IUser>> 
 }
 
 export const findUserByUsername = async (username: string): Promise<HydratedDocument<IUser>> =>{
+    logger.debug(`Looking for active user with username: ${username}`);
+
     const user = await User.findOne({ username: username, isActive: true });
-    if(!user) throw Error('User not found');
+    if(!user){
+        logger.warn(`User not found or inactive: ${username}`);
+        throw Error('User not found');
+    }
+    logger.debug(`User ${username} found`);
     return user;
 }
 
@@ -39,8 +45,14 @@ export const saveUser = async (user: IUser): Promise<HydratedDocument<IUser>> =>
 }
 
 export const verifyPassword = async (password: string, user: IUser): Promise<boolean> => {
+    logger.debug(`Verifying password for user: ${user.username}`);
+
     const isMatch = await bcrypt.compare(password, user.password);
-    if(!isMatch) throw Error(`Wrong Password`);
+    if(!isMatch) {
+        logger.warn(`Password mismatch for user: ${user.username}`);
+        throw Error(`Wrong Password`);
+    } 
+    logger.debug(`Password verification successful for user: ${user.username}`);
     return isMatch;
 }
 

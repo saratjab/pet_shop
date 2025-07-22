@@ -125,6 +125,22 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
                     },
                 },
             },
+            404: {
+                description: 'Not found',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'User not found',
+                                },
+                            },
+                        },
+                    },
+                }
+            },
         },
     });
 
