@@ -4,14 +4,21 @@ import { handleError } from '../utils/handleErrors';
 import { formatPetResponse } from '../utils/format';
 import { getPetsQuery } from '../types/petTypes';
 import { savePet, findPetById, findPetByPetTag, filter, updatePets, deletePets } from '../service/petService';
+import logger from '../config/logger';
 
 export const registerPet = async (req: Request, res: Response): Promise<void> => { 
     try {
+        logger.info('Pet registration started');
+        logger.debug(`Incoming pet data: ${JSON.stringify(req.body)}`);
+
         const newPet: IPet = req.body;
         const savedPet = await savePet(newPet);
+
+        logger.info(`Pet registered successfully: ${savedPet}`);
         res.status(201).json(formatPetResponse(savedPet)); 
     }
     catch(err: any){
+        logger.error(`Registration failed: ${err.message}`);
         const errors = handleError(err);
         res.status(400).json( errors );
     }
@@ -41,9 +48,13 @@ export const filterPets = async (req: Request, res: Response): Promise<void> => 
 export const getPetById = async (req: Request, res: Response): Promise<void> => {
     try{
         const id = req.params.id;
+        logger.debug(`Fetching pet by ID: ${id}`);
+
         let pet = await findPetById(id);
+        logger.info(`Pet found: ${pet.petTag}`);
         res.status(200).json(formatPetResponse(pet));
     }catch(err: any){
+        logger.warn(`Pet not found with ID: ${req.params.id}`);
         const errors = handleError(err);
         res.status(404).json( errors );
     }
@@ -52,9 +63,13 @@ export const getPetById = async (req: Request, res: Response): Promise<void> => 
 export const getPetByPetTag = async (req: Request, res: Response): Promise<void> => {
     try{
         const petTag = req.params.petTag;
+        logger.debug(`Fetching pet by petTag: ${petTag}`);
+
         let pet = await findPetByPetTag(petTag);
+        logger.info(`Pet found: ${petTag}`);
         res.status(200).json(formatPetResponse(pet));
     }catch(err: any){
+        logger.warn(`Pet not found: ${req.params.petTag}`);
         const errors = handleError(err);
         res.status(404).json( errors );
     }
@@ -64,10 +79,14 @@ export const updatePetById = async (req: Request, res: Response): Promise<void> 
     try{
         const updatedData = req.body;
         const id = req.params.id;
+        logger.debug(`admin requested updates on Pet [${id}]`);
+
         const pet = await findPetById(id);
         const updatedPet = await updatePets(pet, updatedData);
+        logger.info(`Pet [${id}] info updated successfully`);
         res.status(200).json(formatPetResponse(updatedPet));
     }catch(err: any){
+        logger.error(`Failed to update pet: [${req.params.id}]: ${err.message}`);
         const errors = handleError(err);
         res.status(400).json( errors );
     }
@@ -77,10 +96,14 @@ export const updatePetByPetTag = async (req: Request, res: Response): Promise<vo
     try{
         const updatedData = req.body;
         const petTag = req.params.petTag;
+        logger.debug(`admin requested updates on Pet [${petTag}]`);
+
         const pet = await findPetByPetTag(petTag);
         const updatedPet = await updatePets(pet, updatedData);
+        logger.info(`Pet [${petTag}] info updated successfully`);
         res.status(200).json(formatPetResponse(updatedPet));
     }catch(err: any){
+        logger.error(`Failed to update pet: [${req.params.id}]: ${err.message}`);
         const errors = handleError(err);
         res.status(400).json( errors );
     }
@@ -89,9 +112,13 @@ export const updatePetByPetTag = async (req: Request, res: Response): Promise<vo
 export const deletePetById = async (req: Request, res: Response): Promise<void> => {
     try{
         const id = req.body.id;
+        logger.debug(`requested deletion of pet by ID [${id}]`);
+
         await deletePets(id);
+        logger.info(`Pet [${id}] has been deleted`);
         res.status(204).json({message: 'you deleted pets'})
     }catch(err: any){
+        logger.error(`Error deleting user by ID [${req.params.id}]: ${err.message}`);
         const errors = handleError(err);
         res.status(400).json( errors ); 
     }
@@ -100,9 +127,13 @@ export const deletePetById = async (req: Request, res: Response): Promise<void> 
 export const deletePetByPetTag = async (req: Request, res: Response): Promise<void> => {
     try{
         const petTag = req.body.petTag;
+        logger.debug(`requested deletion of pet by ID [${petTag}]`);
+
         await deletePets(undefined, petTag);
+        logger.info(`Pets has been deleted`);
         res.status(204).json({message: 'you deleted pets'})
     }catch(err: any){
+        logger.error(`Error deleting pets by pet tag: ${err.message}`);
         const errors = handleError(err);
         res.status(400).json( errors ); 
     }
