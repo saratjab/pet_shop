@@ -20,7 +20,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     catch(err: any){
         logger.error(`Registration failed: ${err.message}`);
         const errors = handleError(err);
-        res.status(400).json( errors );
+        res.status(500).json( errors );
     }
 }
 

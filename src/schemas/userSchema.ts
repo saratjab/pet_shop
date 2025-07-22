@@ -10,22 +10,22 @@ const objError = { required_error: "field is required" }
 export const registerSchema = z.object({
     username: z.string(objError)
         .toLowerCase()
-        .nonempty('username must be at least 1 character')
+        .nonempty('must be at least 1 character')
         .openapi({ 
             example: 'sarat123',
             description: 'a unique nonempty username'
         }),
     password: z.string(objError)
-        .min(8, 'Password must be at least 8 characters')
-        .max(32, 'Password must be at most 32 characters')
+        .min(8, 'must be at least 8 characters')
+        .max(32, 'must be at most 32 characters')
         .openapi({ 
             format: 'password', 
             example: 'strongPassword',
-            description: 'a strong password at least 8 char and  at most 32 char'
+            description: 'a strong password at least 8 char and at most 32 char'
         }),
     confirmPassword: z.string(objError)
-        .min(8, 'Password must be at least 8 characters')
-        .max(32, 'Password must be at most 32 characters')
+        .min(8, 'must be at least 8 characters')
+        .max(32, 'must be at most 32 characters')
         .openapi({ 
             format: 'password', 
             example: 'strongPassword',
@@ -38,7 +38,7 @@ export const registerSchema = z.object({
             description: 'email'
         }),
     role: userRoles,
-    address: z.string()
+    address: z.string(objError)
         .optional()
         .openapi({ 
             example: 'Hebron, Palestine',
@@ -55,13 +55,13 @@ export const registerCustomerSchema = registerSchema.extend({
         .transform(val => (val.trim() === '' ? undefined : val))
         .optional()
         .default('customer')
-        .refine(val => val === 'customer', { message: 'role must be customer' })
+        .refine(val => val === 'customer', { message: 'must be customer' })
         .openapi({ 
             example: 'customer',
             description: 'your role in the system'
         }),
 }).refine(data => data.confirmPassword === data.password, { 
-    message: 'Passwords do not match',
+    message: 'do not match passwrod',
     path: ['confirmPassword'],
 }).openapi('RegisterCustomer');
 
@@ -70,13 +70,13 @@ export const registerEmployeeSchema = registerSchema.extend({
         .transform(val => (val.trim() === '' ? undefined : val))
         .optional()
         .default('employee')
-        .refine(val => val === 'employee', { message: 'role must be employee' })
+        .refine(val => val === 'employee', { message: 'must be employee' })
         .openapi({ 
             example: 'employee',
             description: 'your role in the system'
         }),
 }).refine(data => data.confirmPassword === data.password, {
-    message: 'Passwords do not match',
+    message: 'do not match password',
     path: ['confirmPassword'],
 }).openapi('RegisterEmployee');
 

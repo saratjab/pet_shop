@@ -50,12 +50,7 @@ export const handleError = (error: { name: string, errors: {path:string, message
     else if(name === 'ZodError'){
         errorsObj['ZodError'] = [];
         Object.values(error.errors).forEach((err) => {
-            if(err.received === 'undefined'){
-                errorsObj['ZodError']?.push(err.path + ' ' + err.message);
-            }
-            else{
-                errorsObj['ZodError']?.push(err.message);
-            }
+            errorsObj['ZodError']?.push(err.path + ' - ' +  err.message);
         })
     }
     else {

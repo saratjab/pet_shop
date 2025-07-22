@@ -3,7 +3,7 @@ import { paginationQuerySchema } from "../schemas/paginationSchema";
 import { loginSchema, loginResponseSchema, registerCustomerSchema, userResponseSchema, registerEmployeeSchema, paginatedUsersResponseSchema, updateUserSchema, usernameParamSchema, userIdParamSchema } from "../schemas/userSchema";
 
 // ToDo: 1- separate auth from users 2- change error messages 3- use more zod in controllers 
-//! description  for response 
+//! description for response 
 const userPath = '/api/users';
 
 export const registerUserDocs = (registry: OpenAPIRegistry) => {
@@ -48,7 +48,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
                 }
             },
             400: {
-                description: 'Bad Request',
+                description: 'Bad Request like ZodError',
                 content: {
                     "application/json": {
                         schema: {
@@ -57,6 +57,22 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
                                 message: {
                                     type: 'string',
                                     example: `Passwrod doesn't match`
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            500: {
+                description: 'Internal server error',
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                message: {
+                                    type: 'string',
+                                    example: 'Error saving user',
                                 },
                             },
                         },
