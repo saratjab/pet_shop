@@ -7,8 +7,8 @@ const generator = new OpenApiGeneratorV3(registry.definitions);
 const openApiDocument = generator.generateDocument({
   openapi: '3.0.0',
   info: {
-    title: 'User Auth API',
-    description: 'API endpoints for user register and login',
+    title: 'Pet Shop APIs',
+    description: 'API endpoints for Pet Shop',
     version: '1.0.0',
   },
   servers: [

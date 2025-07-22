@@ -1,6 +1,7 @@
 import { ZodSchema } from 'zod';
 import { handleError } from '../utils/handleErrors';
 import { Request, Response, NextFunction } from 'express';
+import logger from '../config/logger';
 
 export const validate = (body: ZodSchema | null, query: ZodSchema | null, params: ZodSchema | null) =>
 (req: Request, res: Response, next: NextFunction) =>{
@@ -17,6 +18,7 @@ export const validate = (body: ZodSchema | null, query: ZodSchema | null, params
             const parsed = params.parse(req.params);
             req.params = parsed;
         }
+        logger.debug(`Validatoin passed and parsed into ${req.body}`);
         next();
     }catch(err: any){
         const errors = handleError(err);
