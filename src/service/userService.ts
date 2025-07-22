@@ -5,16 +5,29 @@ import {  updateUserType } from '../types/userTypes';
 import logger from '../config/logger';
 
 export const findAllUsers = async (pagination: { limit: number, skip: number }): Promise<{ users: HydratedDocument<IUser>[]; total: number}> => {
-    const [users, total] = await Promise.all([
-        User.find({ isActive: true }).skip(pagination.skip).limit(pagination.limit),
-        User.countDocuments({ isActive: true }),
-    ]);
-    return { users, total };
+    try {
+        logger.debug(`Fetching users with limit=${pagination.limit}, skip=${pagination.skip}`);
+        const [users, total] = await Promise.all([
+            User.find({ isActive: true }).skip(pagination.skip).limit(pagination.limit),
+            User.countDocuments({ isActive: true }),
+        ]);
+        logger.info(`Found ${users.length} users out of ${total} total active users`);
+        return { users, total };
+    }
+    catch(err: any){
+        logger.error(`Error fetching users: ${err.message}`);
+        throw err;
+    }
 }
 
 export const findUserById = async (id: string):Promise<HydratedDocument<IUser>> => {
+    logger.debug(`Looking for active user with ID: ${id}`);
     const user = await User.findOne({ _id: id, isActive: true });
-    if(!user) throw Error('User not found');
+    if(!user) {
+        logger.warn(`User not found or inactive with ID: ${id}`);
+        throw Error('User not found');
+    }
+    logger.debug(`User found with ID: ${id}`);
     return user;
 }
 
@@ -57,6 +70,9 @@ export const verifyPassword = async (password: string, user: IUser): Promise<boo
 }
 
 export const update = async (user: IUser, UUser: updateUserType): Promise<IUser> => {
+    logger.debug(`Updating user: ${user.username}`);
     Object.assign(user, UUser);
+    const updatedUser = await user.save();
+    logger.info(`User ${user.username} updated successfully`);
     return await user.save();
 }
