@@ -8,6 +8,7 @@ import adoptRoutes from './routes/adoptRoutes';
 
 import { swaggerDocs } from './swaggerConfig';
 import { env } from './config/envConfig';
+import logger from './config/logger';
 
 const app = express();
 
@@ -20,6 +21,10 @@ app.use('/api/pets', petRoutes);
 app.use('/api/adopts', adoptRoutes);  
 
 app.get('/', (req, res) => {
+    logger.info('Get / route hit');
+    logger.warn('something looks off');
+    logger.error('something broke!');
+    logger.debug('for development');
     res.send(`Running in ${env.node_env} mode`);
 });
 

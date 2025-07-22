@@ -27,4 +27,3 @@ export const env = {
     ACCESS_TOKEN_SECRET: required('ACCESS_TOKEN_SECRET'),
     REFRESH_TOKEN_SECRET: required('REFRESH_TOKEN_SECRET'),
 };
-console.log(env);
