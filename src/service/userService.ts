@@ -72,7 +72,6 @@ export const verifyPassword = async (password: string, user: IUser): Promise<boo
 export const update = async (user: IUser, UUser: updateUserType): Promise<IUser> => {
     logger.debug(`Updating user: ${user.username}`);
     Object.assign(user, UUser);
-    const updatedUser = await user.save();
     logger.info(`User ${user.username} updated successfully`);
     return await user.save();
 }

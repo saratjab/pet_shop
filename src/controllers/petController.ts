@@ -27,8 +27,15 @@ export const registerPet = async (req: Request, res: Response): Promise<void> =>
 export const filterPets = async (req: Request, res: Response): Promise<void> => {
     try{
         const query = req.query as unknown as getPetsQuery;
+        logger.debug(`Filter pets called with query: ${JSON.stringify(query)}`);
+
         const { pets, total } = await filter(query);
-        if([].length == 0) res.status(200).json({ message: 'Pets not found' });
+        logger.info(`Filter result: ${pets.length} pets found out of ${total} total`);
+
+        if([].length == 0) {
+            logger.warn(`No pets found matching criteria: ${JSON.stringify(query)}`);
+            res.status(200).json({ message: 'Pets not found' });
+        }
         else res.status(200).json({
             data: pets.map(pet => (formatPetResponse(pet))),
             pagination: {
@@ -40,6 +47,7 @@ export const filterPets = async (req: Request, res: Response): Promise<void> => 
         });
     }
     catch(err: any){
+        logger.error(`Error filtering pets: ${err.message}`);
         const errors = handleError(err);
         res.json(404).json( errors );
     }
