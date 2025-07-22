@@ -9,7 +9,7 @@ export const paginationQuerySchema = z.object({
         .optional()
         .default('1')
         .transform(val => parseInt(val))
-        .refine(val => !isNaN(val) && val > 0, { message: 'Page must be a positive number'})
+        .refine(val => !isNaN(val) && val > 0, { message: 'must be a positive number'})
         .openapi({ 
             example: '3',
             description: 'page number',
@@ -19,7 +19,7 @@ export const paginationQuerySchema = z.object({
         .optional()
         .default('10')
         .transform(val => parseInt(val))
-        .refine(val => !isNaN(val) && val > 0, { message: 'Limit must be a positive number'})
+        .refine(val => !isNaN(val) && val > 0, { message: 'must be a positive number'})
         .openapi({
             example: '15',
             description: 'the maximum number of objects',
