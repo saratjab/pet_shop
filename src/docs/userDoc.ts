@@ -1,6 +1,6 @@
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 import { paginationQuerySchema } from "../schemas/paginationSchema";
-import { loginSchema, loginResponseSchema, registerCustomerSchema, userResponseSchema, registerEmployeeSchema, paginatedUsersResponseSchema, updateUserSchema, usernameParamSchema, userIdParamSchema } from "../schemas/userSchema";
+import { loginSchema, loginResponseSchema, registerCustomerSchema, userResponseSchema, registerEmployeeSchema, paginatedUsersResponseSchema, updateUserSchema, usernameParamSchema, userIdParamSchema, logoutSchema } from "../schemas/userSchema";
 
 // ToDo: 1- separate auth from users 2- change error messages 3- use more zod in controllers 
 //! description for response 
@@ -17,6 +17,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     registry.register('UpdateUser', updateUserSchema);
     registry.register('UsernameParam', usernameParamSchema);
     registry.register('IDParam', userIdParamSchema);
+    registry.register('Logout', logoutSchema);
 
     registry.registerPath({
         path: `${userPath}/register`,
@@ -152,6 +153,16 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
         description: `Accepts a valid refresh token from headers and issues a new access token.
         \nThis endpoint is used to maintain a user's session without requiring them to log in again.
         \nIf the refresh token is invalid or missing, it will return a 401 Unauthorized error.`,
+        request: {
+            body: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: logoutSchema,
+                    },
+                },
+            },
+        },
         responses: {
             200: {
                 description: `refresh token is valid then generate new access token`,
@@ -196,6 +207,16 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
         description: `Logs out the current user by blacklisting the refresh token.
         \nThis ensures the token cannot be reused to gain access to the system again.
         \nA valid refresh token must be provided, typically in the request's cookies or local storage.`,
+        request: {
+            body: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: logoutSchema,
+                    },
+                },
+            },
+        },
         responses:{
             200: {
                 description: 'logout successfully',

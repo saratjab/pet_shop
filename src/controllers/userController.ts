@@ -36,8 +36,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         logger.info(`Login successful for username: ${username}`);
 
         res.status(200).json({
-            token: token,
-            refreshToken: refreshToken,
+            token,
+            refreshToken,
             user: formatUserResponse(user),
         });
     }

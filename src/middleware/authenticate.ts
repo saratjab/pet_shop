@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from 'express';
 import { findUserById } from "../service/userService";
-import { handleError } from "../utils/handleErrors";
 import { localStorage } from "../utils/localStorage";
 import Blacklist from "../models/blacklistModel";
 import { accessTokenSecret, refresshTokenSecret } from "../app";
@@ -17,7 +16,9 @@ declare global {
 }
 
 export const authenticate = async (req:  Request, res: Response, next: NextFunction): Promise<void> => {
-    const authHeader = req.headers['authorization'] ;
+    logger.debug(`check headers for token`);
+    console.log(req.headers);
+    const authHeader = req.headers['authorization'];
     const token = authHeader?.split(' ')[1];
     if(!token){
         logger.warn('Authentication failed: Missing or invalid token format');
@@ -47,7 +48,7 @@ export const authenticate = async (req:  Request, res: Response, next: NextFunct
 }
 
 export const verifyRefreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> =>{
-    const token = localStorage.getItem('refreshToken');
+    const token = localStorage.getItem('refreshToken') || req.body.refreshToken;
     if(!token) {
         logger.warn('Refresh token missing in verifyRefreshToken');
         res.status(401).json({ message: 'Refresh Token missing' });

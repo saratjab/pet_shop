@@ -136,6 +136,14 @@ export const loginSchema = z.object({
         }),
 }).openapi('LoginInput');
 
+export const logoutSchema = z.object({
+    refreshToken: z.string(objError)
+        .nonempty()
+        .openapi({
+            example: 'refresh-token',
+        }),
+}).openapi('Logout');
+
 export const userIdParamSchema  = z.object({
     id: z.string(objError)
         .length(24, 'Invalid MongoDB ObjectId'),
