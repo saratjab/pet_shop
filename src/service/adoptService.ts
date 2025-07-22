@@ -90,10 +90,10 @@ export const findAdoptById = async (id: string): Promise<HydratedDocument<IAdopt
     return adopt;
 }
 
-export const findMyPets = async (user_id: string): Promise<HydratedDocument<IAdopt>> =>{
+export const findMyPets = async (user_id: string): Promise<string[]> =>{
     const adopt = await Adopt.findOne({ user_id });
     if(!adopt) throw Error('no adoption');
-    return adopt;
+    return adopt.pets;
 }
 
 export const getMoney = async (user_id: string): Promise<paymentSummary> =>{
