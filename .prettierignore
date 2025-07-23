@@ -1,0 +1,7 @@
+.env*
+/node_modules
+/dist
+/eslint.config.mjs
+/src/test
+/scratch
+/logs

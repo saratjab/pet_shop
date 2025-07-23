@@ -1,33 +1,33 @@
-import { IPet } from "../models/petModel";
-import { BaseClient } from "./BaseClient";
+import { IPet } from '../models/petModel';
+import { BaseClient } from './BaseClient';
 
 const client = new BaseClient();
 
 export const getAllPets = async (): Promise<IPet[]> => {
-    try{
-        const response = await client.get<IPet[]>(`/pets`);
-        return response.data;
-    }catch(err){
-        console.error('Error in getAllPets');
-        throw err;
-    }
-}
+  try {
+    const response = await client.get<IPet[]>(`/pets`);
+    return response.data;
+  } catch (err) {
+    console.error('Error in getAllPets');
+    throw err;
+  }
+};
 
-export const registerPet = async(pet: {
-    petTag: string,
-    name: string,
-    kind: string,
-    age: number,
-    price: number,
-    description?: string,
-    gender: string,
-    isAdopted: boolean
-}) =>{
-    try{
-        const savedPet = await client.post<IPet>('/pets', pet);
-        return savedPet.data;
-    }catch(err){
-        console.error('Error in registerPet', err);
-        throw err;
-    }
-}
+export const registerPet = async (pet: {
+  petTag: string;
+  name: string;
+  kind: string;
+  age: number;
+  price: number;
+  description?: string;
+  gender: string;
+  isAdopted: boolean;
+}) => {
+  try {
+    const savedPet = await client.post<IPet>('/pets', pet);
+    return savedPet.data;
+  } catch (err) {
+    console.error('Error in registerPet', err);
+    throw err;
+  }
+};

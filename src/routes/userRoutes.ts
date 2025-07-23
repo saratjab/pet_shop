@@ -3,8 +3,27 @@ import { validate } from '../middleware/validate';
 import { authorizeRoles } from '../middleware/authorize';
 import { logOut, refreshToken } from '../controllers/authControllers';
 import { verifyRefreshToken, authenticate } from '../middleware/authenticate';
-import { loginSchema, registerCustomerSchema, registerEmployeeSchema, updateUserSchema, userIdParamSchema, usernameParamSchema } from '../schemas/userSchema';
-import { registerUser, getUsers, login, registerEmployee, getUserById, getUserByUsername, updateByAdmin, updateUserData, deleteUserAccount, deleteUserById, deleteUserByUsername } from '../controllers/userController'
+import {
+  loginSchema,
+  registerCustomerSchema,
+  registerEmployeeSchema,
+  updateUserSchema,
+  userIdParamSchema,
+  usernameParamSchema,
+} from '../schemas/userSchema';
+import {
+  registerUser,
+  getUsers,
+  login,
+  registerEmployee,
+  getUserById,
+  getUserByUsername,
+  updateByAdmin,
+  updateUserData,
+  deleteUserAccount,
+  deleteUserById,
+  deleteUserByUsername,
+} from '../controllers/userController';
 import { paginationQuerySchema } from '../schemas/paginationSchema';
 const router = express.Router();
 
@@ -14,20 +33,69 @@ const router = express.Router();
 // DELETE /user/favorites/:petTag
 // Add optional hard delete for admins:
 
-router.post('/register', validate(registerCustomerSchema, null, null), registerUser); 
-router.post('/login', validate(loginSchema, null, null), login); 
+router.post(
+  '/register',
+  validate(registerCustomerSchema, null, null),
+  registerUser
+);
+router.post('/login', validate(loginSchema, null, null), login);
 router.post('/refresh-token', verifyRefreshToken, refreshToken);
 router.post('/logout', verifyRefreshToken, logOut);
-router.post('/employees', authenticate, authorizeRoles('admin'), validate(registerEmployeeSchema, null, null), registerEmployee);
+router.post(
+  '/employees',
+  authenticate,
+  authorizeRoles('admin'),
+  validate(registerEmployeeSchema, null, null),
+  registerEmployee
+);
 
-router.get('/', authenticate, validate(null, paginationQuerySchema, null), getUsers);
-router.patch('/alter', authenticate, validate(updateUserSchema, null, null), updateUserData); 
-router.patch('/role/:username', authenticate, authorizeRoles('admin'), validate(updateUserSchema, null, usernameParamSchema), updateByAdmin);
-router.get('/username/:username', authenticate, validate(null, null, usernameParamSchema), getUserByUsername); 
-router.get('/:id', authenticate, authorizeRoles('admin'), validate(null, null, userIdParamSchema),  getUserById); 
+router.get(
+  '/',
+  authenticate,
+  validate(null, paginationQuerySchema, null),
+  getUsers
+);
+router.patch(
+  '/alter',
+  authenticate,
+  validate(updateUserSchema, null, null),
+  updateUserData
+);
+router.patch(
+  '/role/:username',
+  authenticate,
+  authorizeRoles('admin'),
+  validate(updateUserSchema, null, usernameParamSchema),
+  updateByAdmin
+);
+router.get(
+  '/username/:username',
+  authenticate,
+  validate(null, null, usernameParamSchema),
+  getUserByUsername
+);
+router.get(
+  '/:id',
+  authenticate,
+  authorizeRoles('admin'),
+  validate(null, null, userIdParamSchema),
+  getUserById
+);
 
-router.patch('/me', authenticate, deleteUserAccount); 
-router.delete('/:id', authenticate, authorizeRoles('admin'), validate(null, null, userIdParamSchema), deleteUserById);
-router.delete('/username/:username', authenticate, authorizeRoles('admin'), validate(null, null, usernameParamSchema), deleteUserByUsername);
+router.patch('/me', authenticate, deleteUserAccount);
+router.delete(
+  '/:id',
+  authenticate,
+  authorizeRoles('admin'),
+  validate(null, null, userIdParamSchema),
+  deleteUserById
+);
+router.delete(
+  '/username/:username',
+  authenticate,
+  authorizeRoles('admin'),
+  validate(null, null, usernameParamSchema),
+  deleteUserByUsername
+);
 
 export default router;

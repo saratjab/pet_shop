@@ -31,7 +31,7 @@ paths:
           content:
             application/json:
               example:
-                error: "Passwords do not match"
+                error: 'Passwords do not match'
 
   /api/users/login:
     post:
@@ -56,7 +56,7 @@ paths:
           content:
             application/json:
               example:
-                error: "Invalid username or password"
+                error: 'Invalid username or password'
 
 components:
   schemas:
@@ -93,7 +93,7 @@ components:
           example: customer
         address:
           type: string
-          example: "Hebron, Palestine"
+          example: 'Hebron, Palestine'
         isActive:
           type: boolean
           example: true
@@ -126,7 +126,7 @@ components:
           example: sarat@example.com
         address:
           type: string
-          example: "Hebron, Palestine"
+          example: 'Hebron, Palestine'
 
     LoginResponse:
       type: object
