@@ -4,18 +4,17 @@ import path from 'path';
 const node_env = process.env.NODE_ENV || 'development';
 
 dotenv.config({
-    path: path.resolve(__dirname, `../../.env`),
+    path: path.resolve(process.cwd(), `.env`),
 });
 
 dotenv.config({
-    path: path.resolve(__dirname, `../../.env.${node_env}`),
+    path: path.resolve(process.cwd(), `.env.${node_env}`),
 });
 
 const required = (key: string): string => {
     const value = process.env[key];
     if(!value) {
-        console.error(`Missing required environment variable: ${key}`);
-        process.exit(1);
+        throw new Error(`Missing required environment variable: ${key}`);
     }
     return value;
 }
