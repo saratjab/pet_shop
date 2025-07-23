@@ -1,5 +1,6 @@
 import winston from "winston";
 import path from 'path';
+import fs from 'fs';
 
 const { combine, timestamp, printf, colorize, json } = winston.format;
 
@@ -21,6 +22,12 @@ const logger = winston.createLogger({
 });
 
 if(env === 'production') {
+    const logDir = path.join(process.cwd(), 'logs');
+
+    if(!fs.existsSync(logDir)){
+        fs.mkdirSync(logDir);
+    }
+    
     logger.add(new winston.transports.File({
         filename: path.join('logs', 'error.log'),
         level: 'error',
