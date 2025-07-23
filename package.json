@@ -4,12 +4,13 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "start": "node dist/app.js",
-    "build": "tsc",
     "dev": "tsc && npm start",
+    "clean": "rimraf dist",
+    "build": "npm run clean && tsc",
+    "start": "node dist/app.js",
     "start:dev": "npm run build && cross-env NODE_ENV=development npm start",
-    "dev:watch": "tsc-watch --onSuccess \"npm start\"",
-    "start:prod": "npm run build && cross-env NODE_ENV=production npm start"
+    "start:prod": "npm run build && cross-env NODE_ENV=production npm start",
+    "start:watch": "tsc-watch --onSuccess \"npm start\""
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.3.4",
