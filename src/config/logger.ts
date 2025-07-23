@@ -27,15 +27,15 @@ if(env === 'production') {
     if(!fs.existsSync(logDir)){
         fs.mkdirSync(logDir);
     }
-    
+
     logger.add(new winston.transports.File({
         filename: path.join('logs', 'error.log'),
         level: 'error',
-    }));
+    }));//? writes only error level logs to file calls logs/error.log
 
     logger.add(new winston.transports.File({
         filename: path.join('logs', 'combined.log'),
-    }));
+    })); //? writes all logs for production to logs/combined.log
 }
 
 export default logger;
