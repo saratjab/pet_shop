@@ -2,6 +2,7 @@ import Adopt, { IAdopt } from '../models/adoptModel';
 import Pets, { IPet } from '../models/petModel';
 import { HydratedDocument } from 'mongoose';
 import { findUserById } from '../service/userService';
+import logger from '../config/logger';
 
 type paymentSummary = {
     total: number,
@@ -10,12 +11,16 @@ type paymentSummary = {
 };
 
 export const isPetValid = async (pets: string[]): Promise<HydratedDocument<IPet>[]> => {
+    logger.debug(`Validation pets`);
     const petsData = await Pets.find({
         _id: { $in: pets }
     });
     if(petsData.some( p => !p || p.isAdopted )){
+        logger.warn('One or more pets not found or already adopted');
         throw Error('One or more pets not found or already adopted');
     }
+
+    logger.info('All pets are valid and available for adoption');
     return petsData;
 }
 
@@ -37,6 +42,8 @@ export const makePetsAdopted = async (pets: IPet[]): Promise<void> => {
 }
 
 export const saveAdopt = async (adopt: IAdopt): Promise<HydratedDocument<IAdopt>> => {
+    logger.info(`Attempting to save adoption for user ${adopt.user_id}`);
+
     const user = await findUserById( adopt.user_id );
     const pets = await isPetValid( adopt.pets );
     const total = await getTotalPrice( pets) ;
@@ -45,14 +52,19 @@ export const saveAdopt = async (adopt: IAdopt): Promise<HydratedDocument<IAdopt>
 
     let adoptDoc: HydratedDocument<IAdopt>;
     if(isOld){
+        logger.info(`Existing customer: ${user.id}, updating adoption record`);
         const userDB = await Adopt.findOne({ user_id: user.id });
-        if(!userDB) throw Error ('user adoption not found');
+        if(!userDB) {
+            logger.warn('User adoption not found');
+            throw Error ('user adoption not found');
+        }
         adoptDoc = userDB;
         adoptDoc.pets.push(...adopt.pets);
         adoptDoc.total! += total;
         adoptDoc.payMoney! += adopt.payMoney ?? 0;
     }
     else{
+        logger.info(`New customer ${user.id}, creating new adoption`);
         adoptDoc = new Adopt({
             user_id: adopt.user_id,
             pets: adopt.pets,
@@ -69,10 +81,12 @@ export const saveAdopt = async (adopt: IAdopt): Promise<HydratedDocument<IAdopt>
     }
     else{
         let remaining = adoptDoc.payMoney! - adoptDoc.total!;
+        logger.warn(`Overpayment detected, Refunding remaining: ${remaining}`);
         adoptDoc.payMoney = adoptDoc.total!;
         throw Error(`remining ${remaining}$`);
     }
 
+    logger.info(`Adoption saved for user ${user.id}`);
     return await adoptDoc.save();
 }
 
@@ -137,13 +151,21 @@ export const makePetsNotAdopted = async (pets: IPet[]): Promise<void> => {
 }
 
 export const cancelingPets = async (user_id: string, pets: string[]): Promise<HydratedDocument<IAdopt>> => {
+    logger.info(`User ${user_id} attempting to cancel adoption for pets`)
+
     const adopt = await Adopt.findOne({ user_id });
-    if(!adopt) throw Error('No adoption found');
+    if(!adopt)  {
+        logger.error('No adoption found for cancellation');
+        throw Error('No adoption found');
+    }
     
     const userAdoptedPets = adopt.pets.map(pet_id => pet_id.toString());
     const cancelablePetIds = pets.filter(id => userAdoptedPets.includes(id));
 
-    if(cancelablePetIds.length === 0) throw Error(`None of the selected pets are part of the user's pets`);
+    if(cancelablePetIds.length === 0) {
+        logger.warn(`None of the selected pets are part of the user's pets`);
+        throw Error(`None of the selected pets are part of the user's pets`);
+    }
 
     const petsToCancel = await Pets.find({
         _id: { $in: cancelablePetIds }
@@ -152,11 +174,14 @@ export const cancelingPets = async (user_id: string, pets: string[]): Promise<Hy
     const total = await getTotalPrice(petsToCancel);
 
     await makePetsNotAdopted(petsToCancel);
+    logger.info(`Marked pets as not adopted`);
+
     let newTotal = adopt.total! - total;
     
     if(newTotal === 0){
         adopt.payMoney = 0;
         adopt.status = 'cancelled';
+        logger.info(`All pets canceled. adoption fully cancelled for user`);
     }
     else if(adopt.payMoney! >= newTotal ){
         adopt.payMoney = newTotal;
@@ -168,6 +193,7 @@ export const cancelingPets = async (user_id: string, pets: string[]): Promise<Hy
     adopt.pets = adopt.pets.filter(pet => !pets.includes(pet.toString()));
 
     adopt.total = newTotal;
+    logger.info(`Adoption updated after cancellation for user ${user_id}`);
     return await adopt.save();
     
 }
