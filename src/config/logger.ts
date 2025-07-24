@@ -1,10 +1,11 @@
 import winston from 'winston';
 import path from 'path';
 import fs from 'fs';
+import { env } from 'process';
 
 const { combine, timestamp, printf, colorize, json } = winston.format;
 
-const env = process.env.NODE_ENV || 'development';
+const node_env = env.node_env || 'development';
 
 const logFormat = printf(({ level, message, timestamp }) => {
   return `[${timestamp}] ${level}: ${message}`;
@@ -12,17 +13,17 @@ const logFormat = printf(({ level, message, timestamp }) => {
 
 const consoleTransport = new winston.transports.Console({
   format:
-    env === 'development'
+    node_env === 'development'
       ? combine(colorize(), timestamp(), logFormat)
       : combine(timestamp(), json()),
 });
 
 const logger = winston.createLogger({
-  level: env === 'development' ? 'debug' : 'info',
+  level: node_env === 'development' ? 'debug' : 'info',
   transports: [consoleTransport],
 });
 
-if (env === 'production') {
+if (node_env === 'production') {
   const logDir = path.join(process.cwd(), 'logs');
 
   if (!fs.existsSync(logDir)) {

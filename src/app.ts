@@ -6,13 +6,13 @@ import userRoutes from './routes/userRoutes';
 import petRoutes from './routes/petRoutes';
 import adoptRoutes from './routes/adoptRoutes';
 
-import { swaggerDocs } from './swaggerConfig';
+import { swaggerDocs } from './config/swaggerConfig';
 import { env } from './config/envConfig';
 import logger from './config/logger';
 
 const app = express();
 
-app.use(cors());
+app.use(cors()); //? Cross-Origin Resource Sharing
 app.use(express.json());
 
 app.use('/api-docs', swaggerDocs.serve, swaggerDocs.setup);

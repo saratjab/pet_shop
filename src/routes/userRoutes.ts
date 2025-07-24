@@ -25,6 +25,7 @@ import {
   deleteUserByUsername,
 } from '../controllers/userController';
 import { paginationQuerySchema } from '../schemas/paginationSchema';
+
 const router = express.Router();
 
 // ToDo: Favorites or Saved Pets
