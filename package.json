@@ -5,7 +5,7 @@
   "scripts": {
     "test": "jest",
     "dev": "tsc && npm start",
-    "clean": "rimraf dist",
+    "clean": "rimraf dist && rimraf scratch && rimraf logs",
     "build": "npm run clean && tsc",
     "start": "node dist/app.js",
     "start:dev": "npm run build && cross-env NODE_ENV=development npm start",
