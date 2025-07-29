@@ -51,4 +51,52 @@ describe('findAllUsers Service', () => {
     expect(result.users).toEqual(mockUsers);
     expect(result.total).toBe(mockUsers.length);
   });
+
+  it('should apply skip and limit correctly', async () => {
+    const skipSpy = jest.fn().mockReturnThis();
+    const limitSpy = jest.fn().mockResolvedValueOnce(mockUsers);
+
+    (User.find as jest.Mock).mockReturnValueOnce({
+      skip: skipSpy,
+      limit: limitSpy,
+    });
+
+    (User.countDocuments as jest.Mock).mockResolvedValueOnce(2);
+
+    await findAllUsers({ skip: 5, limit: 3 });
+
+    expect(skipSpy).toHaveBeenCalledWith(5);
+    expect(limitSpy).toHaveBeenCalledWith(3);
+  });
+
+  it('should return empty array', async () => {
+    (User.find as jest.Mock).mockReturnValueOnce({
+      skip: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockResolvedValueOnce([]),
+    });
+
+    (User.countDocuments as jest.Mock).mockResolvedValueOnce(0);
+
+    const result = await findAllUsers({ limit: 4, skip: 0 });
+
+    expect(result.users).toEqual([]);
+    expect(result.total).toBe(0);
+  });
+
+  it('should throw error if countDocuments fails (Error Handling)', async () => {
+    const error = new Error('Count error');
+
+    (User.find as jest.Mock).mockReturnValueOnce({
+      skip: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockResolvedValueOnce(mockUsers),
+    });
+
+    (User.countDocuments as jest.Mock).mockImplementation(() => {
+      throw error;
+    });
+
+    await expect(findAllUsers({ skip: 0, limit: 10 })).rejects.toThrow(
+      'Count error'
+    );
+  });
 });
