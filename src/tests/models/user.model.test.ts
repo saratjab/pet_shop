@@ -1,5 +1,4 @@
 import User from '../../models/userModel';
-import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 describe('User Model', () => {
@@ -166,7 +165,7 @@ describe('User Model', () => {
     const originalPassword = user.password;
 
     user.username = 'username';
-    user.save();
+    await user.save();
 
     expect(user.password).toBe(originalPassword);
   });
@@ -202,5 +201,4 @@ describe('User Model', () => {
     expect(error).toBeDefined();
     expect(error.errors.role).toBeDefined();
   });
-
 });
