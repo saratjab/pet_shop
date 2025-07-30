@@ -11,18 +11,21 @@ const mockUsers = [
     username: 'sarat',
     role: 'admin',
     email: 'sarat@gmail.com',
+    isActive: true,
   },
   {
     id: new mongoose.Types.ObjectId(),
     username: 'user',
     role: 'customer',
     email: 'user@gmail.com',
+    isActive: true,
   },
   {
     id: new mongoose.Types.ObjectId(),
     username: 'person',
     role: 'employee',
     email: 'person@gmail.com',
+    isActive: false,
   },
 ];
 
