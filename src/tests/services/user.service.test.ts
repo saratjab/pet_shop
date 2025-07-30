@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import User from '../../models/userModel';
 import { findAllUsers } from '../../service/userService';
 
@@ -7,21 +6,21 @@ jest.mock('../../models/userModel'); //? fhis tells jest to mock User, so we can
 
 const mockUsers = [
   {
-    id: new mongoose.Types.ObjectId(),
+    id: '1',
     username: 'sarat',
     role: 'admin',
     email: 'sarat@gmail.com',
     isActive: true,
   },
   {
-    id: new mongoose.Types.ObjectId(),
+    id: '2',
     username: 'user',
     role: 'customer',
     email: 'user@gmail.com',
     isActive: true,
   },
   {
-    id: new mongoose.Types.ObjectId(),
+    id: '3',
     username: 'person',
     role: 'employee',
     email: 'person@gmail.com',
@@ -36,6 +35,7 @@ describe('findAllUsers Service', () => {
     jest.clearAllMocks(); //? to clear all mocks history calls, results, ...
   });
 
+  // Happy path
   it('should fetch all users', async () => {
     (User.find as jest.Mock).mockReturnValueOnce({
       skip: jest.fn().mockReturnThis(),
@@ -55,6 +55,7 @@ describe('findAllUsers Service', () => {
     expect(result.total).toBe(mockUsers.length);
   });
 
+  // pagination check
   it('should apply skip and limit correctly', async () => {
     const skipSpy = jest.fn().mockReturnThis();
     const limitSpy = jest.fn().mockResolvedValueOnce(mockUsers);
@@ -72,6 +73,7 @@ describe('findAllUsers Service', () => {
     expect(limitSpy).toHaveBeenCalledWith(3);
   });
 
+  // empty result
   it('should return empty array', async () => {
     (User.find as jest.Mock).mockReturnValueOnce({
       skip: jest.fn().mockReturnThis(),
@@ -86,6 +88,7 @@ describe('findAllUsers Service', () => {
     expect(result.total).toBe(0);
   });
 
+  // error handling
   it('should throw error if countDocuments fails (Error Handling)', async () => {
     const error = new Error('Count error');
 
