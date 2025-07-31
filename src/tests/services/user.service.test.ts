@@ -1,50 +1,32 @@
 import User from '../../models/userModel';
 import { findAllUsers } from '../../service/userService';
+import { buildUserData } from '../builder/userBuilder';
+import { buildUser } from '../helper/db';
 
-jest.mock('../../models/userModel'); //? fhis tells jest to mock User, so we can control how its methods behave inside the test
-//* to isolate real mongooes
-
-const mockUsers = [
-  {
-    id: '1',
-    username: 'sarat',
-    role: 'admin',
-    email: 'sarat@gmail.com',
-    isActive: true,
-  },
-  {
-    id: '2',
-    username: 'user',
-    role: 'customer',
-    email: 'user@gmail.com',
-    isActive: true,
-  },
-  {
-    id: '3',
-    username: 'person',
-    role: 'employee',
-    email: 'person@gmail.com',
-    isActive: false,
-  },
-];
-
-const mockFunciton = jest.fn((x) => x * 2);
+jest.mock('../../models/userModel'); // Mocking User to avoid real MongoDB operations during tests
 
 describe('findAllUsers Service', () => {
-  afterEach(() => {
-    jest.clearAllMocks(); //? to clear all mocks history calls, results, ...
+  let mockUsers: any[];
+
+  beforeEach(async () => {
+    jest.resetAllMocks();
+    mockUsers = [
+      buildUserData({ id: '1' }),
+      buildUserData({ id: '2' }),
+      buildUserData({ id: '3', isActive: false }),
+    ];
   });
 
-  // Happy path
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should fetch all users', async () => {
     (User.find as jest.Mock).mockReturnValueOnce({
       skip: jest.fn().mockReturnThis(),
       limit: jest.fn().mockResolvedValue(mockUsers),
-    }); //? mocks a mongoose query chain use.find -> return a fake object with
-    //? skip - mocked to return the same object; so .limit can be chined
-    //? limit - mocked to return a promise that resolves to mockUsers
+    });
 
-    // mockFunciton.
     (User.countDocuments as jest.Mock).mockResolvedValueOnce(mockUsers.length);
 
     const result = await findAllUsers({ limit: 4, skip: 0 });
@@ -55,7 +37,22 @@ describe('findAllUsers Service', () => {
     expect(result.total).toBe(mockUsers.length);
   });
 
-  // pagination check
+  it('should fetch only users where isActive is true', async () => {
+    const activeUsers = mockUsers.filter((u) => u.isActive !== false);
+    (User.find as jest.Mock).mockReturnValueOnce({
+      skip: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockResolvedValueOnce(activeUsers),
+    });
+
+    (User.countDocuments as jest.Mock).mockResolvedValueOnce(
+      activeUsers.length
+    );
+    const result = await findAllUsers({ skip: 0, limit: 10 });
+
+    expect(User.find).toHaveBeenCalledWith({ isActive: true });
+    expect(result.users.every((user) => user.isActive)).toBe(true);
+  });
+
   it('should apply skip and limit correctly', async () => {
     const skipSpy = jest.fn().mockReturnThis();
     const limitSpy = jest.fn().mockResolvedValueOnce(mockUsers);
@@ -67,13 +64,13 @@ describe('findAllUsers Service', () => {
 
     (User.countDocuments as jest.Mock).mockResolvedValueOnce(2);
 
-    await findAllUsers({ skip: 5, limit: 3 });
+    const result = await findAllUsers({ skip: 5, limit: 3 });
 
     expect(skipSpy).toHaveBeenCalledWith(5);
     expect(limitSpy).toHaveBeenCalledWith(3);
+    expect(result).toEqual({ users: mockUsers, total: 2 });
   });
 
-  // empty result
   it('should return empty array', async () => {
     (User.find as jest.Mock).mockReturnValueOnce({
       skip: jest.fn().mockReturnThis(),
@@ -88,7 +85,6 @@ describe('findAllUsers Service', () => {
     expect(result.total).toBe(0);
   });
 
-  // error handling
   it('should throw error if countDocuments fails (Error Handling)', async () => {
     const error = new Error('Count error');
 
