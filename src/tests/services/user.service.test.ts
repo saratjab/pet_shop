@@ -174,3 +174,17 @@ describe('findUserById Service', () => {
     );
   });
 });
+
+describe('findUserByUsername Service', async () => {
+  let mockUsers: any[];
+  const mockedLogger = logger as jest.Mocked<typeof logger>;
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    mockUsers = [
+      buildUserData({ username: 'user1' }),
+      buildUserData({ username: 'user2' }),
+      buildUserData({ username: 'user3', isAcitive: false }),
+    ];
+  });
+});
