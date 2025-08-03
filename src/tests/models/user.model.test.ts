@@ -1,5 +1,4 @@
 import User from '../../models/userModel';
-import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 describe('User Model', () => {
