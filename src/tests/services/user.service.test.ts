@@ -252,4 +252,9 @@ describe('verifyPassword Service', () => {
     expect(mockedLogger.debug).toHaveBeenCalledWith(`Verifying password for user: user1`);
     expect(mockedLogger.debug).toHaveBeenCalledWith(`Password verification successful for user: user1`);
   });
+  
+  it('should throw error when passwrod does not mtach', async () => {
+    await expect(verifyPassword('1234', mockUsers[0])).rejects.toThrow(`Wrong Password`);
+    expect(mockedLogger.warn).toHaveBeenCalledWith(`Password mismatch for user: user1`);
+  })
 });
