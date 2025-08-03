@@ -11,6 +11,9 @@ import bcrypt from 'bcryptjs';
 
 jest.mock('../../models/userModel'); // Mocking User to avoid real MongoDB operations during tests
 jest.mock('../../config/logger');
+jest.mock('bcryptjs', () => ({
+  compare: jest.fn(),
+}));
 
 describe('findAllUsers Service', () => {
   let mockUsers: any[];
@@ -229,32 +232,37 @@ describe('findUserByUsername Service', () => {
 });
 
 describe('verifyPassword Service', () => {
-
   let mockUsers: any[];
   const mockedLogger = logger as jest.Mocked<typeof logger>;
   beforeEach(() => {
     jest.resetAllMocks();
-    mockUsers = [
-      buildUserData({ username: 'user1', password: '12345678'}),
-    ];
+    mockUsers = [buildUserData({ username: 'user1', password: '12345678' })];
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('Should return true when the password matches the stored hash', async () => {
+  it('should return true when the password matches the stored hash', async () => {
     (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
     const result = await verifyPassword('12345678', mockUsers[0]);
 
     expect(result).toBe(true);
-    expect(mockedLogger.debug).toHaveBeenCalledWith(`Verifying password for user: user1`);
-    expect(mockedLogger.debug).toHaveBeenCalledWith(`Password verification successful for user: user1`);
+    expect(mockedLogger.debug).toHaveBeenCalledWith(
+      `Verifying password for user: user1`
+    );
+    expect(mockedLogger.debug).toHaveBeenCalledWith(
+      `Password verification successful for user: user1`
+    );
   });
-  
+
   it('should throw error when passwrod does not mtach', async () => {
-    await expect(verifyPassword('1234', mockUsers[0])).rejects.toThrow(`Wrong Password`);
-    expect(mockedLogger.warn).toHaveBeenCalledWith(`Password mismatch for user: user1`);
-  })
+    await expect(verifyPassword('1234', mockUsers[0])).rejects.toThrow(
+      `Wrong Password`
+    );
+    expect(mockedLogger.warn).toHaveBeenCalledWith(
+      `Password mismatch for user: user1`
+    );
+  });
 });
