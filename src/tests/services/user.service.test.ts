@@ -243,8 +243,23 @@ describe('saveUser service', () => {
     const result = await saveUser(mockUsers[0]);
 
     expect(result).toEqual(mockUsers[0]);
-    expect(mockedLogger.debug).toHaveBeenCalledWith('Saving new user to the database');
-    expect(mockedLogger.debug).toHaveBeenCalledWith('User saved with ID: 1');
+    expect(mockedLogger.debug).toHaveBeenCalledWith(
+      'Saving new user to the database'
+    );
+    expect(mockedLogger.debug).toHaveBeenCalledWith(
+      `User saved with ID: ${mockUsers[0]._id}`
+    );
   });
 
+  it('should throw an error if saving the user fails', async () => {
+    (User as unknown as jest.Mock).mockImplementation(() => ({
+      save: jest.fn().mockResolvedValue(null),
+    }));
+
+    await expect(saveUser(mockUsers[0])).rejects.toThrow('Error saving user');
+    expect(mockedLogger.debug).toHaveBeenCalledWith(
+      'Saving new user to the database'
+    );
+    expect(mockedLogger.error).toHaveBeenCalledWith('Failed to save user');
+  });
 });
