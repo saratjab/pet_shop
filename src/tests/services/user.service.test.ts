@@ -4,6 +4,7 @@ import {
   findAllUsers,
   findUserById,
   findUserByUsername,
+  saveUser,
 } from '../../service/userService';
 import { buildUserData } from '../builder/userBuilder';
 
@@ -223,14 +224,27 @@ describe('findUserByUsername Service', () => {
 });
 
 describe('saveUser service', () => {
-  let mockusers: any[];
+  let mockUsers: any[];
   const mockedLogger = logger as jest.Mocked<typeof logger>;
   beforeEach(() => {
     jest.resetAllMocks();
-    mockusers = [buildUserData({ id: '1' })];
+    mockUsers = [buildUserData({ id: '1' })];
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
+
+  it('should successfully save a valid user and return the saved document', async () => {
+    (User as unknown as jest.Mock).mockImplementation(() => ({
+      save: jest.fn().mockResolvedValue(mockUsers[0]), // not allow casting directly from one unrelated type to another
+    })); // save on instance not on the same model so User.save as jest.mock won't work
+
+    const result = await saveUser(mockUsers[0]);
+
+    expect(result).toEqual(mockUsers[0]);
+    expect(mockedLogger.debug).toHaveBeenCalledWith('Saving new user to the database');
+    expect(mockedLogger.debug).toHaveBeenCalledWith('User saved with ID: 1');
+  });
+
 });
