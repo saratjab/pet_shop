@@ -221,3 +221,16 @@ describe('findUserByUsername Service', () => {
     );
   });
 });
+
+describe('saveUser service', () => {
+  let mockusers: any[];
+  const mockedLogger = logger as jest.Mocked<typeof logger>;
+  beforeEach(() => {
+    jest.resetAllMocks();
+    mockusers = [buildUserData({ id: '1' })];
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+});
