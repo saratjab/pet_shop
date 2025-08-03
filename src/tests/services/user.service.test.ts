@@ -4,8 +4,10 @@ import {
   findAllUsers,
   findUserById,
   findUserByUsername,
+  verifyPassword,
 } from '../../service/userService';
 import { buildUserData } from '../builder/userBuilder';
+import bcrypt from 'bcryptjs';
 
 jest.mock('../../models/userModel'); // Mocking User to avoid real MongoDB operations during tests
 jest.mock('../../config/logger');
@@ -191,6 +193,10 @@ describe('findUserByUsername Service', () => {
     ];
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should fetch user by username', async () => {
     (User.findOne as jest.Mock).mockReturnValue(mockUsers[0]);
 
@@ -225,6 +231,7 @@ describe('findUserByUsername Service', () => {
 describe('verifyPassword Service', () => {
 
   let mockUsers: any[];
+  const mockedLogger = logger as jest.Mocked<typeof logger>;
   beforeEach(() => {
     jest.resetAllMocks();
     mockUsers = [
@@ -236,5 +243,13 @@ describe('verifyPassword Service', () => {
     jest.clearAllMocks();
   });
 
+  it('Should return true when the password matches the stored hash', async () => {
+    (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
+    const result = await verifyPassword('12345678', mockUsers[0]);
+
+    expect(result).toBe(true);
+    expect(mockedLogger.debug).toHaveBeenCalledWith(`Verifying password for user: user1`);
+    expect(mockedLogger.debug).toHaveBeenCalledWith(`Password verification successful for user: user1`);
+  });
 });

@@ -75,7 +75,7 @@ export const verifyPassword = async (
   password: string,
   user: IUser
 ): Promise<boolean> => {
-  logger.debug(`Verifying password for user: ${user.username}`);
+  (logger).debug(`Verifying password for user: ${user.username}`);
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
