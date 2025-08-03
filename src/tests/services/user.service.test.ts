@@ -131,3 +131,20 @@ describe('findAllUsers Service', () => {
   });
 });
 
+describe('findUserById Service', () => {
+  let mockUsers: any[];
+  let mockedLogger = logger as jest.Mocked<typeof logger>;
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    mockUsers = [
+      buildUserData({ id: '1' }),
+      buildUserData({ id: '2' }),
+      buildUserData({ id: '3', isActive: false }),
+    ];
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+});
