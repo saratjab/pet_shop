@@ -35,6 +35,12 @@ describe('findAllUsers Service', () => {
     expect(User.countDocuments).toHaveBeenCalledWith({ isActive: true });
     expect(result.users).toEqual(mockUsers);
     expect(result.total).toBe(mockUsers.length);
+    expect(logger.debug).toHaveBeenCalledWith(
+      `Fetching users with limit=4, skip=0`
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      `Found ${mockUsers.length} users out of ${mockUsers.length} total active users`
+    );
   });
 
   it('should fetch only users where isActive is true', async () => {
@@ -51,6 +57,13 @@ describe('findAllUsers Service', () => {
 
     expect(User.find).toHaveBeenCalledWith({ isActive: true });
     expect(result.users.every((user) => user.isActive)).toBe(true);
+    expect(result.total).toBe(activeUsers.length);
+    expect(logger.debug).toHaveBeenCalledWith(
+      `Fetching users with limit=10, skip=0`
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      `Found ${activeUsers.length} users out of ${activeUsers.length} total active users`
+    );
   });
 
   it('should apply skip and limit correctly', async () => {
@@ -69,6 +82,12 @@ describe('findAllUsers Service', () => {
     expect(skipSpy).toHaveBeenCalledWith(5);
     expect(limitSpy).toHaveBeenCalledWith(3);
     expect(result).toEqual({ users: mockUsers, total: 2 });
+    expect(logger.debug).toHaveBeenCalledWith(
+      `Fetching users with limit=3, skip=5`
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      `Found ${mockUsers.length} users out of 2 total active users`
+    );
   });
 
   it('should return empty array', async () => {
@@ -83,6 +102,12 @@ describe('findAllUsers Service', () => {
 
     expect(result.users).toEqual([]);
     expect(result.total).toBe(0);
+    expect(logger.debug).toHaveBeenCalledWith(
+      `Fetching users with limit=4, skip=0`
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      `Found 0 users out of 0 total active users`
+    );
   });
 
   it('should throw error if countDocuments fails (Error Handling)', async () => {
@@ -99,6 +124,9 @@ describe('findAllUsers Service', () => {
 
     await expect(findAllUsers({ skip: 0, limit: 10 })).rejects.toThrow(
       'Count error'
+    );
+    expect(logger.error).toHaveBeenCalledWith(
+      `Error fetching users: ${error.message}`
     );
   });
 });
