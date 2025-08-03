@@ -221,3 +221,20 @@ describe('findUserByUsername Service', () => {
     );
   });
 });
+
+describe('verifyPassword Service', () => {
+
+  let mockUsers: any[];
+  beforeEach(() => {
+    jest.resetAllMocks();
+    mockUsers = [
+      buildUserData({ username: 'user1', password: '12345678'}),
+    ];
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+
+});
