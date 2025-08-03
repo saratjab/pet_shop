@@ -201,5 +201,4 @@ describe('User Model', () => {
     expect(error).toBeDefined();
     expect(error.errors.role).toBeDefined();
   });
-
 });
