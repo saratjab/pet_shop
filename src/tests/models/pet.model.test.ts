@@ -1,4 +1,3 @@
-import { util } from 'zod/v4/core';
 import Pet, { IPet } from '../../models/petModel';
 import { petBuilderData } from '../builder/petBuilder';
 
@@ -7,8 +6,9 @@ describe('Pet Model', () => {
   beforeAll(() => {
     petData = petBuilderData();
   });
+
   it('should create and save a valid user', async () => {
-    const pet = await Pet.create({ ...petData });
+    const pet: IPet = await Pet.create({ ...petData });
 
     expect(pet).toBeDefined();
     expect(pet.petTag).toBeDefined();
@@ -17,8 +17,8 @@ describe('Pet Model', () => {
     expect(pet.age).toBe(petData.age);
     expect(pet.price).toBe(petData.price);
     expect(pet.isAdopted).toBe(false);
-    // expect(pet.createdAt).toBeDefined();
-    // expect(pet.updatedAt).toBeDefined();
+    expect(pet.createdAt).toBeDefined();
+    expect(pet.updatedAt).toBeDefined();
   });
 
   it('should throw validation errors if required fieds are missing', async () => {

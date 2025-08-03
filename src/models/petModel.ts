@@ -9,6 +9,8 @@ export interface IPet extends mongoose.Document {
   description?: string;
   gender: 'M' | 'F';
   isAdopted: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface UPet extends mongoose.Document {
