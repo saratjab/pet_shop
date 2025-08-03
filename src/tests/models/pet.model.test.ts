@@ -1,5 +1,5 @@
 import { util } from 'zod/v4/core';
-import Pet from '../../models/petModel';
+import Pet, { IPet } from '../../models/petModel';
 import { petBuilderData } from '../builder/petBuilder';
 
 describe('Pet Model', () => {
@@ -32,5 +32,10 @@ describe('Pet Model', () => {
       name: 'MongoServerError',
       code: 11000,
     });
+  });
+
+  it('should set default value isActive to true', async () => {
+    const pet = await Pet.create({ ...petData, isActive: undefined });
+    expect(pet.isAdopted).toBe(false);
   });
 });
