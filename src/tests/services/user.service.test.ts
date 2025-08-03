@@ -1,6 +1,6 @@
 import logger from '../../config/logger';
 import User from '../../models/userModel';
-import { findAllUsers, findUserById } from '../../service/userService';
+import { findAllUsers, findUserById, findUserByUsername } from '../../service/userService';
 import { buildUserData } from '../builder/userBuilder';
 
 jest.mock('../../models/userModel'); // Mocking User to avoid real MongoDB operations during tests
@@ -183,8 +183,17 @@ describe('findUserByUsername Service', async () => {
     jest.resetAllMocks();
     mockUsers = [
       buildUserData({ username: 'user1' }),
-      buildUserData({ username: 'user2' }),
-      buildUserData({ username: 'user3', isAcitive: false }),
+      buildUserData({ username: 'user2', isAcitive: false }),
     ];
+  });
+
+  it('should fetch user by username', async () => {
+    (User.findOne as jest.Mock).mockReturnValue(mockUsers[0]);
+
+    const result = await findUserByUsername('user1');
+
+    expect(result).toBe(mockUsers[0]);
+    expect(mockedLogger.debug).toBe(`Looking for active user with username: ${mockUsers[0].username}`);
+    expect(mockedLogger.debug).toBe(`User ${mockUsers[0].username} found`);
   });
 });
