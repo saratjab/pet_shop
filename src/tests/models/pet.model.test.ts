@@ -50,4 +50,19 @@ describe('Pet Model', () => {
     const pet = new Pet({ ...petData, gender: 'invalid gender' });
     await expect(pet.save()).rejects.toThrow(/validation failed/i);
   });
+
+  it('should allow optional description field', async () => {
+    const pet = await Pet.create({ ...petData, description: 'A lovely cat' });
+    expect(pet.description).toBe('A lovely cat');
+  });
+
+  it('should fail if price is negative', async () => {
+    const invalidPet = new Pet({ ...petData, price: -1 });
+    await expect(invalidPet.save()).rejects.toThrow(/validation failed/i);
+  });
+
+  it('should fail if age is negative', async () => {
+    const invalidPet = new Pet({ ...petData, age: -1 });
+    await expect(invalidPet.save()).rejects.toThrow(/validation failed/i);
+  });
 });
