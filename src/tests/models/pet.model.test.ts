@@ -19,4 +19,8 @@ describe('Pet Model', () => {
     // expect(pet.createdAt).toBeDefined();
     // expect(pet.updatedAt).toBeDefined();
   });
+
+  it('should throw validation errors if required fieds are missing', async () => {
+    await expect(Pet.create({})).rejects.toThrow(/validation failed/i);
+  });
 });

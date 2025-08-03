@@ -165,7 +165,7 @@ describe('User Model', () => {
     const originalPassword = user.password;
 
     user.username = 'username';
-    user.save();
+    await user.save();
 
     expect(user.password).toBe(originalPassword);
   });
