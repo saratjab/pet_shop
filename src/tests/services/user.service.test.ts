@@ -1,6 +1,10 @@
 import logger from '../../config/logger';
 import User from '../../models/userModel';
-import { findAllUsers, findUserById, findUserByUsername } from '../../service/userService';
+import {
+  findAllUsers,
+  findUserById,
+  findUserByUsername,
+} from '../../service/userService';
 import { buildUserData } from '../builder/userBuilder';
 
 jest.mock('../../models/userModel'); // Mocking User to avoid real MongoDB operations during tests
@@ -175,7 +179,7 @@ describe('findUserById Service', () => {
   });
 });
 
-describe('findUserByUsername Service', async () => {
+describe('findUserByUsername Service', () => {
   let mockUsers: any[];
   const mockedLogger = logger as jest.Mocked<typeof logger>;
 
@@ -193,7 +197,27 @@ describe('findUserByUsername Service', async () => {
     const result = await findUserByUsername('user1');
 
     expect(result).toBe(mockUsers[0]);
-    expect(mockedLogger.debug).toBe(`Looking for active user with username: ${mockUsers[0].username}`);
-    expect(mockedLogger.debug).toBe(`User ${mockUsers[0].username} found`);
+    expect(mockedLogger.debug).toHaveBeenCalledWith(
+      `Looking for active user with username: ${mockUsers[0].username}`
+    );
+    expect(mockedLogger.debug).toHaveBeenCalledWith(
+      `User ${mockUsers[0].username} found`
+    );
+  });
+
+  it('should throw error when user not exist', async () => {
+    await expect(findUserByUsername('invalid username')).rejects.toThrow(
+      'User not found'
+    );
+    expect(mockedLogger.warn).toHaveBeenCalledWith(
+      `User not found or inactive: invalid username`
+    );
+  });
+
+  it('should throw error when user not active', async () => {
+    await expect(findUserByUsername('user2')).rejects.toThrow('User not found');
+    expect(mockedLogger.warn).toHaveBeenCalledWith(
+      `User not found or inactive: user2`
+    );
   });
 });
