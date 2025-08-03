@@ -45,4 +45,9 @@ describe('Pet Model', () => {
 
     expect(pet.petTag).toBe(petTag.toLowerCase());
   });
+
+  it('should gender be either M or F', async () => {
+    const pet = new Pet({ ...petData, gender: 'invalid gender' });
+    await expect(pet.save()).rejects.toThrow(/validation failed/i);
+  });
 });
