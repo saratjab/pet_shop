@@ -38,4 +38,11 @@ describe('Pet Model', () => {
     const pet = await Pet.create({ ...petData, isActive: undefined });
     expect(pet.isAdopted).toBe(false);
   });
+
+  it('should store the petTag in lowercase', async () => {
+    const petTag = 'PETTAG';
+    const pet = await Pet.create({ ...petData, petTag });
+
+    expect(pet.petTag).toBe(petTag.toLowerCase());
+  });
 });
