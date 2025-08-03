@@ -147,4 +147,30 @@ describe('findUserById Service', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
+
+  it('should fetch user by ID', async () => {
+    (User.findOne as jest.Mock).mockReturnValue(mockUsers[0]);
+
+    const result = await findUserById('1');
+
+    expect(result).toBe(mockUsers[0]);
+    expect(mockedLogger.debug).toHaveBeenCalledWith(
+      `Looking for active user with ID: 1`
+    );
+    expect(mockedLogger.debug).toHaveBeenCalledWith(`User found with ID: 1`);
+  });
+
+  it('should throw Error when user not exist', async () => {
+    await expect(findUserById('4')).rejects.toThrow('User not found');
+    expect(mockedLogger.warn).toHaveBeenCalledWith(
+      `User not found or inactive with ID: 4`
+    );
+  });
+
+  it('should throw Error when user not active', async () => {
+    await expect(findUserById('3')).rejects.toThrow('User not found');
+    expect(mockedLogger.warn).toHaveBeenCalledWith(
+      `User not found or inactive with ID: 3`
+    );
+  });
 });
