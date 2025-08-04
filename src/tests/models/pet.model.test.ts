@@ -6,7 +6,7 @@ describe('Pet Model', () => {
   beforeAll(() => {
     petData = petBuilderData();
   });
-
+ 
   it('should create and save a valid user', async () => {
     const pet: IPet = await Pet.create({ ...petData });
 
