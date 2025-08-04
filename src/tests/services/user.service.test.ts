@@ -399,4 +399,15 @@ describe('update service', () => {
     expect(logger.debug).toHaveBeenCalledWith('Updating user: sarat');
     expect(logger.info).toHaveBeenCalledWith('User sarat updated successfully');
   });
+
+  it('should handle empty update data', async () => {
+    const updatedData = {};
+    mockUsers[0].save = jest.fn().mockResolvedValue(mockUsers[0]);
+
+    const result = await update(mockUsers[0], updatedData);
+
+    expect(result).toEqual(mockUsers[0]);
+    expect(logger.debug).toHaveBeenCalledWith('Updating user: sarat');
+    expect(logger.info).toHaveBeenCalledWith('User sarat updated successfully');
+  });
 });
