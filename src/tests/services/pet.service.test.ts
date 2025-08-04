@@ -49,4 +49,13 @@ describe('findPetByPetTag service', () => {
       'Pet not found with petTag: invalid-tag'
     );
   });
+
+  it('should call Pet.findOne with the correct petTag', async () => {
+    const spy = jest.spyOn(Pet, 'findOne');
+
+    await findPetByPetTag(petTag1);
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith({ isAdopted: false, petTag: petTag1 });
+  });
 });
