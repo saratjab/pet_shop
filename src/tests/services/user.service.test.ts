@@ -191,6 +191,10 @@ describe('findUserByUsername Service', () => {
     ];
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  
   it('should fetch user by username', async () => {
     (User.findOne as jest.Mock).mockReturnValue(mockUsers[0]);
 
