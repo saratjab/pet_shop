@@ -249,7 +249,10 @@ describe('verifyPassword Service', () => {
     const result = await verifyPassword('12345678', mockUsers[0]);
 
     expect(result).toBe(true);
-    expect(bcrypt.compare).toHaveBeenCalledWith('12345678', mockUsers[0].password);
+    expect(bcrypt.compare).toHaveBeenCalledWith(
+      '12345678',
+      mockUsers[0].password
+    );
     expect(mockedLogger.debug).toHaveBeenCalledWith(
       `Verifying password for user: user1`
     );
@@ -264,6 +267,7 @@ describe('verifyPassword Service', () => {
     await expect(verifyPassword('1234', mockUsers[0])).rejects.toThrow(
       `Wrong Password`
     );
+    expect(bcrypt.compare).toHaveBeenCalledWith('1234', mockUsers[0].password);
     expect(mockedLogger.warn).toHaveBeenCalledWith(
       `Password mismatch for user: user1`
     );
