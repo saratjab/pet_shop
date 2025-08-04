@@ -53,4 +53,13 @@ describe('findPetById service', () => {
       `Pet not found with ID: ${nonExistentId}`
     );
   });
+
+  it('should throw an error if ID is invalid', async () => {
+    const invalidId = 'invalid-id';
+
+    await expect(findPetById(invalidId)).rejects.toThrow(/invalid-id/i);
+    expect(logger.debug).toHaveBeenCalledWith(
+      `Searching for pet by ID: ${invalidId}`
+    );
+  });
 });
