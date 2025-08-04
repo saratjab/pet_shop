@@ -249,6 +249,7 @@ describe('verifyPassword Service', () => {
     const result = await verifyPassword('12345678', mockUsers[0]);
 
     expect(result).toBe(true);
+    expect(bcrypt.compare).toHaveBeenCalledWith('12345678', mockUsers[0].password);
     expect(mockedLogger.debug).toHaveBeenCalledWith(
       `Verifying password for user: user1`
     );
@@ -258,6 +259,8 @@ describe('verifyPassword Service', () => {
   });
 
   it('should throw error when passwrod does not mtach', async () => {
+    (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+
     await expect(verifyPassword('1234', mockUsers[0])).rejects.toThrow(
       `Wrong Password`
     );
