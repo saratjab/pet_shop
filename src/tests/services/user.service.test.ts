@@ -4,6 +4,7 @@ import {
   findAllUsers,
   findUserById,
   findUserByUsername,
+  saveUser,
   verifyPassword,
 } from '../../service/userService';
 import { buildUserData } from '../builder/userBuilder';
@@ -271,5 +272,46 @@ describe('verifyPassword Service', () => {
     expect(mockedLogger.warn).toHaveBeenCalledWith(
       `Password mismatch for user: user1`
     );
+  });
+});
+
+describe('saveUser service', () => {
+  let mockUsers: any[];
+  const mockedLogger = logger as jest.Mocked<typeof logger>;
+  beforeEach(() => {
+    jest.resetAllMocks();
+    mockUsers = [buildUserData({ id: '1' })];
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should successfully save a valid user and return the saved document', async () => {
+    (User as unknown as jest.Mock).mockImplementation(() => ({
+      save: jest.fn().mockResolvedValue(mockUsers[0]), // not allow casting directly from one unrelated type to another
+    })); // save on instance not on the same model so User.save as jest.mock won't work
+
+    const result = await saveUser(mockUsers[0]);
+
+    expect(result).toEqual(mockUsers[0]);
+    expect(mockedLogger.debug).toHaveBeenCalledWith(
+      'Saving new user to the database'
+    );
+    expect(mockedLogger.debug).toHaveBeenCalledWith(
+      `User saved with ID: ${mockUsers[0]._id}`
+    );
+  });
+
+  it('should throw an error if saving the user fails', async () => {
+    (User as unknown as jest.Mock).mockImplementation(() => ({
+      save: jest.fn().mockResolvedValue(null),
+    }));
+
+    await expect(saveUser(mockUsers[0])).rejects.toThrow('Error saving user');
+    expect(mockedLogger.debug).toHaveBeenCalledWith(
+      'Saving new user to the database'
+    );
+    expect(mockedLogger.error).toHaveBeenCalledWith('Failed to save user');
   });
 });
