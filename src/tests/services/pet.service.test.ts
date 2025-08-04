@@ -1,6 +1,6 @@
 import logger from '../../config/logger';
 import Pet from '../../models/petModel';
-import { findPetById } from '../../service/petService';
+import { findPetById, findPetByPetTag } from '../../service/petService';
 import { petBuilder } from '../builder/petBuilder';
 import mongoose from 'mongoose';
 
@@ -24,5 +24,17 @@ describe('findPetByPetTag service', () => {
   afterEach(async () => {
     jest.clearAllMocks();
     await Pet.deleteMany({});
+  });
+
+  it('should return the pet document', async () => {
+    const pet = await Pet.findOne({ petTag: petTag1 });
+
+    const result = await findPetByPetTag(petTag1);
+
+    expect(result).toEqual(pet);
+    expect(logger.debug).toHaveBeenCalledWith(
+      'Searching for pet by petTag: tag1'
+    );
+    expect(logger.debug).toHaveBeenCalledWith('pet found with petTag: tag1');
   });
 });
