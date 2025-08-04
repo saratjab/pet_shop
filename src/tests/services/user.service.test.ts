@@ -9,6 +9,7 @@ import {
 } from '../../service/userService';
 import { buildUserData } from '../builder/userBuilder';
 import bcrypt from 'bcryptjs';
+import { userFixture } from '../fixture/userFixture';
 
 jest.mock('../../models/userModel');
 jest.mock('../../config/logger');
@@ -289,8 +290,8 @@ describe('saveUser service', () => {
 
   it('should successfully save a valid user and return the saved document', async () => {
     (User as unknown as jest.Mock).mockImplementation(() => ({
-      save: jest.fn().mockResolvedValue(mockUsers[0]), // not allow casting directly from one unrelated type to another
-    })); // save on instance not on the same model so User.save as jest.mock won't work
+      save: jest.fn().mockResolvedValue(mockUsers[0]),
+    }));
 
     const result = await saveUser(mockUsers[0]);
 
@@ -313,5 +314,19 @@ describe('saveUser service', () => {
       'Saving new user to the database'
     );
     expect(mockedLogger.error).toHaveBeenCalledWith('Failed to save user');
+  });
+});
+
+describe('update service', () => {
+  let mockUsers: any[];
+  const mockedLogger = logger as jest.Mocked<typeof logger>;
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    mockUsers = [userFixture];
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 });
