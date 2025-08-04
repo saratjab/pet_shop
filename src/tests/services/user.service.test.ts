@@ -5,6 +5,7 @@ import {
   findUserById,
   findUserByUsername,
   saveUser,
+  update,
   verifyPassword,
 } from '../../service/userService';
 import { buildUserData } from '../builder/userBuilder';
@@ -328,5 +329,33 @@ describe('update service', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  it('should uccessfully updates user fields and calls save()', async () => {
+    const updatedData = {
+      username: 'newUsername',
+      role: 'employee' as const, // Ensure role is a valid enum value
+      password: 'newPassword',
+      email: 'newEmail',
+      address: 'newAddress',
+      isActive: false,
+    };
+
+    mockUsers[0].save = jest.fn().mockResolvedValue({
+      ...mockUsers[0],
+      ...updatedData,
+    });
+    const result = await update(mockUsers[0], updatedData);
+
+    expect(result.username).toBe('newUsername');
+    expect(result.role).toBe('employee');
+    expect(result.password).toBe('newPassword');
+    expect(result.email).toBe('newEmail');
+    expect(result.address).toBe('newAddress');
+    expect(result.isActive).toBe(false);
+    expect(logger.debug).toHaveBeenCalledWith('Updating user: sarat');
+    expect(logger.info).toHaveBeenCalledWith(
+      'User newUsername updated successfully'
+    );
   });
 });
