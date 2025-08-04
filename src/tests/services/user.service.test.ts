@@ -324,7 +324,7 @@ describe('update service', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    mockUsers = [userFixture];
+    mockUsers = [{ ...userFixture }];
   });
 
   afterEach(() => {
@@ -374,5 +374,29 @@ describe('update service', () => {
     await expect(update(mockUsers[0], updatedData)).rejects.toThrow(
       'Save failed'
     );
+  });
+
+  it('should update only some fields and ensure others remain unchanged', async () => {
+    const updatedData = {
+      role: 'employee' as const,
+      password: 'newPassword',
+      address: 'newAddress',
+      isActive: false,
+    };
+    console.log(mockUsers[0]);
+    mockUsers[0].save = jest.fn().mockResolvedValue({
+      ...mockUsers[0],
+      ...updatedData,
+    });
+    const result = await update(mockUsers[0], updatedData);
+
+    expect(result.username).toBe('sarat'); // Unchanged
+    expect(result.role).toBe('employee');
+    expect(result.password).toBe('newPassword');
+    expect(result.email).toBe('sarat@gmail.com'); // Unchanged
+    expect(result.address).toBe('newAddress');
+    expect(result.isActive).toBe(false);
+    expect(logger.debug).toHaveBeenCalledWith('Updating user: sarat');
+    expect(logger.info).toHaveBeenCalledWith('User sarat updated successfully');
   });
 });
