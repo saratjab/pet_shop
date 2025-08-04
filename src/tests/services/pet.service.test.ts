@@ -41,4 +41,16 @@ describe('findPetById service', () => {
     );
     expect(logger.debug).toHaveBeenCalledWith(`pet found with ID: ${id1}`);
   });
+
+  it('should throw an error if pet not found', async () => {
+    const nonExistentId = new mongoose.Types.ObjectId().toString();
+
+    await expect(findPetById(nonExistentId)).rejects.toThrow('pet not found');
+    expect(logger.debug).toHaveBeenCalledWith(
+      `Searching for pet by ID: ${nonExistentId}`
+    );
+    expect(logger.warn).toHaveBeenCalledWith(
+      `Pet not found with ID: ${nonExistentId}`
+    );
+  });
 });
