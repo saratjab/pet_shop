@@ -37,4 +37,16 @@ describe('findPetByPetTag service', () => {
     );
     expect(logger.debug).toHaveBeenCalledWith('pet found with petTag: tag1');
   });
+
+  it('should throw error if pet not found', async () => {
+    await expect(findPetByPetTag('invalid-tag')).rejects.toThrow(
+      'pet not found'
+    );
+    expect(logger.debug).toHaveBeenCalledWith(
+      'Searching for pet by petTag: invalid-tag'
+    );
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Pet not found with petTag: invalid-tag'
+    );
+  });
 });
