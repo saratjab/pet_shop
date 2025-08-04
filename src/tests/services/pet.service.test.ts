@@ -62,4 +62,13 @@ describe('findPetById service', () => {
       `Searching for pet by ID: ${invalidId}`
     );
   });
+
+  it('should call Pet.findById with the correct ID', async () => {
+    const spy = jest.spyOn(Pet, 'findById'); // This lets you track calls to Pet.findById without replacing its implementation.
+
+    await findPetById(id1.toString());
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(id1.toString());
+  });
 });
