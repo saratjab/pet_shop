@@ -358,4 +358,21 @@ describe('update service', () => {
       'User newUsername updated successfully'
     );
   });
+
+  it('should handle throw error', async () => {
+    const updatedData = {
+      username: 'newUsername',
+      role: 'employee' as const,
+      password: 'newPassword',
+      email: 'newEmail',
+      address: 'newAddress',
+      isActive: false,
+    };
+
+    mockUsers[0].save = jest.fn().mockRejectedValue(new Error('Save failed'));
+
+    await expect(update(mockUsers[0], updatedData)).rejects.toThrow(
+      'Save failed'
+    );
+  });
 });
