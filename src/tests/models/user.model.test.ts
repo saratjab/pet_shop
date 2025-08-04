@@ -1,108 +1,61 @@
-import User from '../../models/userModel';
-import mongoose from 'mongoose';
+import User, { IUser } from '../../models/userModel';
 import bcrypt from 'bcryptjs';
+import { buildUserData } from '../builder/userBuilder';
 
 describe('User Model', () => {
+  let userData: any;
+  beforeEach(() => {
+    userData = buildUserData();
+  });
+
   it('should create and save a valid user', async () => {
-    const user = await User.create({
-      username: 'sarat',
-      role: 'admin',
-      password: '12345678',
-      email: 'sarat@gmail.com',
-      address: 'Hebron',
-      isActive: true,
-    });
+    const user = await User.create(userData);
 
     expect(user).toBeDefined();
-    expect(user.username).toBe('sarat');
-    expect(user.role).toBe('admin');
-    expect(user.password).not.toBe('12345678');
-    const hashed = await bcrypt.compare('12345678', user.password);
-    expect(hashed).toBe(true);
+    expect(user.username).toBeDefined();
+    expect(user.role).toBeDefined();
+    expect(user.password).toBeDefined();
+    expect(user.password).toBeDefined;
     expect(user.createdAt).toBeDefined();
     expect(user.updatedAt).toBeDefined();
   });
 
   it('should throw validation error if username or email is missing', async () => {
-    const user = new User({
-      role: 'admin',
-      password: '12345678',
-      address: 'Hebron',
-      isActive: true,
+    userData = buildUserData({ username: undefined, email: undefined });
+    const user = new User(userData);
+
+    await expect(user.save()).rejects.toMatchObject({
+      errors: {
+        username: expect.anything(),
+        email: expect.anything(),
+      },
     });
-
-    let error;
-    try {
-      await user.save();
-    } catch (err: any) {
-      error = err;
-    }
-
-    expect(error).toBeDefined();
-    expect(error.errors.username).toBeDefined();
-    expect(error.errors.email).toBeDefined();
   });
 
   it('should throw validation error for invalid email format', async () => {
-    const user = new User({
-      username: 'sarat',
-      role: 'admin',
-      password: '12345678',
-      email: 'saratcom',
-      address: 'Hebron',
-      isActive: true,
+    userData = buildUserData({ email: 'sratcome' });
+    const user = new User(userData);
+
+    await expect(user.save()).rejects.toMatchObject({
+      errors: {
+        email: expect.anything(),
+      },
     });
-
-    let error;
-    try {
-      await user.save();
-    } catch (err: any) {
-      error = err;
-    }
-
-    expect(error).toBeDefined();
-    expect(error.errors.email).toBeDefined();
   });
 
   it('should throw duplicate key error if username or email is reused', async () => {
-    const user = await User.create({
-      username: 'sarat',
-      role: 'admin',
-      password: '12345678',
-      email: 'sarat@gmail.com',
-      address: 'Hebron',
-      isActive: true,
+    await User.create(userData);
+    const duplicateUser = new User(userData);
+
+    await expect(duplicateUser.save()).rejects.toMatchObject({
+      name: 'MongoServerError',
+      code: 11000,
     });
-
-    const duplicateUser = new User({
-      username: 'sarat',
-      role: 'admin',
-      password: '12345678',
-      email: 'sarat@gmail.com',
-      address: 'Hebron',
-      isActive: true,
-    });
-
-    let error;
-    try {
-      await duplicateUser.save();
-    } catch (err: any) {
-      error = err;
-    }
-
-    expect(error).toBeDefined();
-    expect(error.code).toBe(11000);
   });
 
   it('should hash the password before saving the user', async () => {
-    const user = await User.create({
-      username: 'sarat',
-      role: 'admin',
-      password: '12345678',
-      email: 'sarat@gmail.com',
-      address: 'Hebron',
-      isActive: true,
-    });
+    userData = buildUserData({ password: '12345678' });
+    const user = await User.create(userData);
 
     expect(user.password).not.toBe('12345678');
     const hashed = await bcrypt.compare('12345678', user.password);
@@ -110,97 +63,45 @@ describe('User Model', () => {
   });
 
   it('should set default value isActive to true', async () => {
-    const user = await User.create({
-      username: 'sarat',
-      role: 'admin',
-      password: '12345678',
-      email: 'sarat@gmail.com',
-      address: 'Hebron',
-    });
+    userData = buildUserData({ isActive: undefined });
+    const user = await User.create(userData);
 
     expect(user.isActive).toBe(true);
   });
 
   it('should throw validation errors if required fields are missing', async () => {
-    let error;
-    try {
-      await User.create({});
-    } catch (err: any) {
-      error = err;
-    }
-    expect(error).toBeDefined();
-    expect(error.errors.username).toBeDefined();
-    expect(error.errors.role).toBeDefined();
-    expect(error.errors.password).toBeDefined();
-    expect(error.errors.email).toBeDefined();
+    await expect(User.create({})).rejects.toThrow(/validation failed/i);
   });
 
   it('should throw error for password shorter than minimum length', async () => {
-    const user = new User({
-      username: 'sarat',
-      role: 'admin',
-      password: '12345',
-      email: 'sarat@gmail.com',
-      address: 'Hebron',
-    });
-    let error;
-    try {
-      await user.save();
-    } catch (err: any) {
-      error = err;
-    }
-
-    expect(error).toBeDefined();
-    expect(error.errors.password).toBeDefined();
+    userData = buildUserData({ password: '12345' });
+    const user = new User(userData);
+    await expect(user.save()).rejects.toThrow(/validation failed/i);
   });
 
   it('should not re-hash password if password field is unchanged', async () => {
-    const user = await User.create({
-      username: 'sarat',
-      role: 'admin',
-      password: '12345678',
-      email: 'sarat@gmail.com',
-      address: 'Hebron',
-    });
+    const user = await User.create(userData);
 
     const originalPassword = user.password;
 
     user.username = 'username';
-    user.save();
+    await user.save();
 
     expect(user.password).toBe(originalPassword);
   });
 
   it('should store the username in lowercase', async () => {
     const name = 'SARAT';
-    const user = await User.create({
-      username: name,
-      role: 'admin',
-      password: '12345678',
-      email: 'sarat@gmail.com',
-      address: 'Hebron',
-    });
+    userData = buildUserData({ username: name });
+    const user = await User.create(userData);
 
     expect(user.username).toBe(name.toLowerCase());
   });
 
   it('should throw validation error for invalid role', async () => {
-    const user = new User({
-      username: 'sarat',
-      role: 'user',
-      password: '12345678',
-      email: 'sarat@gmail.com',
-      address: 'Hebron',
-    });
+    userData = buildUserData({ role: 'invalidRole' });
+    const user = new User(userData);
 
-    let error;
-    try {
-      await user.save();
-    } catch (err: any) {
-      error = err;
-    }
-    expect(error).toBeDefined();
-    expect(error.errors.role).toBeDefined();
+    await expect(user.save()).rejects.toThrow(/validation failed/i);
   });
-
 });

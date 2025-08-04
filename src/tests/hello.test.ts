@@ -14,6 +14,6 @@ describe('GET /hello', () => {
     //? it is a jest function that defines a single test case
     const res = await request(app).get('/hello'); //? request use a superset to simulate a real http request to express app
     expect(res.status).toBe(200);
-    expect(res.text).toBe('hello world');
-  }); //? sends GET /hello request to the express app / asserts the request /
+    expect(res.text).toBe('hello world'); //? sends GET /hello request to the express app / asserts the request /
+  });
 });
