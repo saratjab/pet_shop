@@ -9,7 +9,7 @@ import {
 import { buildUserData } from '../builder/userBuilder';
 import bcrypt from 'bcryptjs';
 
-jest.mock('../../models/userModel'); // Mocking User to avoid real MongoDB operations during tests
+jest.mock('../../models/userModel');
 jest.mock('../../config/logger');
 jest.mock('bcryptjs', () => ({
   compare: jest.fn(),
