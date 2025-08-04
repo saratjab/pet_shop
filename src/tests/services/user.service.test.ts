@@ -4,11 +4,16 @@ import {
   findAllUsers,
   findUserById,
   findUserByUsername,
+  verifyPassword,
 } from '../../service/userService';
 import { buildUserData } from '../builder/userBuilder';
+import bcrypt from 'bcryptjs';
 
-jest.mock('../../models/userModel'); // Mocking User to avoid real MongoDB operations during tests
+jest.mock('../../models/userModel');
 jest.mock('../../config/logger');
+jest.mock('bcryptjs', () => ({
+  compare: jest.fn(),
+}));
 
 describe('findAllUsers Service', () => {
   let mockUsers: any[];
@@ -194,7 +199,7 @@ describe('findUserByUsername Service', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  
+
   it('should fetch user by username', async () => {
     (User.findOne as jest.Mock).mockReturnValue(mockUsers[0]);
 
@@ -222,6 +227,49 @@ describe('findUserByUsername Service', () => {
     await expect(findUserByUsername('user2')).rejects.toThrow('User not found');
     expect(mockedLogger.warn).toHaveBeenCalledWith(
       `User not found or inactive: user2`
+    );
+  });
+});
+
+describe('verifyPassword Service', () => {
+  let mockUsers: any[];
+  const mockedLogger = logger as jest.Mocked<typeof logger>;
+  beforeEach(() => {
+    jest.resetAllMocks();
+    mockUsers = [buildUserData({ username: 'user1', password: '12345678' })];
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return true when the password matches the stored hash', async () => {
+    (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+    const result = await verifyPassword('12345678', mockUsers[0]);
+
+    expect(result).toBe(true);
+    expect(bcrypt.compare).toHaveBeenCalledWith(
+      '12345678',
+      mockUsers[0].password
+    );
+    expect(mockedLogger.debug).toHaveBeenCalledWith(
+      `Verifying password for user: user1`
+    );
+    expect(mockedLogger.debug).toHaveBeenCalledWith(
+      `Password verification successful for user: user1`
+    );
+  });
+
+  it('should throw error when passwrod does not mtach', async () => {
+    (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+    await expect(verifyPassword('1234', mockUsers[0])).rejects.toThrow(
+      `Wrong Password`
+    );
+    expect(bcrypt.compare).toHaveBeenCalledWith('1234', mockUsers[0].password);
+    expect(mockedLogger.warn).toHaveBeenCalledWith(
+      `Password mismatch for user: user1`
     );
   });
 });
