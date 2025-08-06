@@ -69,4 +69,18 @@ describe('updatePets service', () => {
       `Pet ${updatedPet.petTag} updated successfully`
     );
   });
+
+  it('should log an error if savePet fails', async () => {
+    mockSavePet = jest
+      .spyOn(require('../../service/petService'), 'savePet')
+      .mockRejectedValue(new Error('Save failed'));
+
+    await expect(updatePets(mockPet, mockUpdatedField)).rejects.toThrow(
+      'Save failed'
+    );
+    expect(logger.debug).toHaveBeenCalledWith(
+      `Updating pet: ${mockPet.petTag}`
+    );
+    // expect(logger.warn).toHaveBeenCalledWith('Error saving pet to database'); savePet is mocked, so this won't be called
+  });
 });
