@@ -30,4 +30,23 @@ describe('updatePets Service', () => {
     jest.resetModules();
     jest.unmock('../../service/petService');
   });
+
+  it('should update pet details', async () => {
+    const updatedData = {
+      ...mockPet,
+      name: 'Updated Pet',
+      age: 3,
+    };
+    const updatedPet = await updatePets(mockPet, updatedData);
+
+    expect(updatedPet).toBeDefined();
+    expect(updatedPet.name).toBe('Updated Pet');
+    expect(updatedPet.age).toBe(3);
+    expect(logger.debug).toHaveBeenCalledWith(
+      `Updating pet: ${updatedPet.petTag}`
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      `Pet ${updatedPet.petTag} updated successfully`
+    );
+  });
 });
