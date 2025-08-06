@@ -49,4 +49,48 @@ describe('deletePets service', () => {
     });
     expect(logger.info).toHaveBeenCalledWith('Deleting pets by petTags');
   });
+
+  it('should throw error if no IDs or petTags are provided', async () => {
+    await expect(deletePets()).rejects.toThrow(
+      'Either id or petTag must be provided'
+    );
+    expect(Pet.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it('should handle empty arrays for IDs and petTags', async () => {
+    await deletePets([], []);
+    expect(Pet.deleteMany).toHaveBeenCalled();
+    expect(Pet.deleteMany).toHaveBeenCalledWith({
+      _id: { $in: [] },
+    });
+    expect(Pet.deleteMany).toHaveBeenCalledWith({
+      petTag: { $in: [] },
+    });
+  });
+
+  it('should delete pets by both IDs and petTags', async () => {
+    await deletePets(
+      mockIds.map((id) => id.toString()),
+      mockTags
+    );
+
+    expect(Pet.deleteMany).toHaveBeenCalledTimes(2);
+    expect(Pet.deleteMany).toHaveBeenCalledWith({
+      _id: { $in: mockIds.map((id) => id.toString()) },
+    });
+    expect(Pet.deleteMany).toHaveBeenCalledWith({
+      petTag: { $in: mockTags },
+    });
+  });
+
+  it('should log an error if deletion fails', async () => {
+    Pet.deleteMany = jest.fn().mockRejectedValue(new Error('Deletion failed'));
+
+    await expect(
+      deletePets(
+        mockIds.map((id) => id.toString()),
+        mockTags
+      )
+    ).rejects.toThrow('Deletion failed');
+  });
 });
