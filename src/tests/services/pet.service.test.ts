@@ -54,4 +54,19 @@ describe('updatePets service', () => {
       `Pet ${updatedPet.petTag} updated successfully`
     );
   });
+
+  it('should handle empty update fields', async () => {
+    const emptyUpdate = {};
+    const updatedPet = await updatePets(mockPet, emptyUpdate);
+
+    expect(mockSavePet).toHaveBeenCalledTimes(1);
+    expect(mockSavePet).toHaveBeenCalledWith(mockPet);
+    expect(updatedPet).toEqual(mockPet);
+    expect(logger.debug).toHaveBeenCalledWith(
+      `Updating pet: ${updatedPet.petTag}`
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      `Pet ${updatedPet.petTag} updated successfully`
+    );
+  });
 });
