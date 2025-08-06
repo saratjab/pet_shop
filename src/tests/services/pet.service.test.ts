@@ -53,4 +53,13 @@ describe('savePet service', () => {
     expect(saveSpy).toHaveBeenCalled();
     saveSpy.mockRestore();
   });
+
+    it('should correctly pass the pet model', async () => {
+    const saveSpy = jest.spyOn(Pet.prototype, 'save');
+
+    await savePet(mockPets[0]);
+
+    expect(saveSpy).toHaveBeenCalledTimes(1);
+    saveSpy.mockRestore();
+  });
 });
