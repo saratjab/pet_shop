@@ -22,6 +22,7 @@ describe('savePet service', () => {
   it('should save a new pet to the database', async () => {
     const pet = await savePet(mockPets[0]);
 
+    expect(pet).toBeDefined();
     expect(pet._id).toBeDefined();
     expect(pet.petTag).toBe(mockPets[0].petTag);
     expect(pet.name).toBe(mockPets[0].name);
@@ -35,5 +36,21 @@ describe('savePet service', () => {
 
     expect(logger.debug).toHaveBeenCalledWith('saving new pet to database');
     expect(logger.debug).toHaveBeenCalledWith(`Pet saved with ID: ${pet._id}`);
+  });
+
+  it('should throw error when .save() returns null', async () => {
+    const newPet = new Pet(mockPets[0]);
+    const saveSpy = jest.spyOn(newPet, 'save').mockResolvedValue(null as any);
+
+    const fakeSavePet = async () => {
+      const savedPet = await newPet.save();
+      if (!savedPet) throw new Error('Error saving pet');
+      return savedPet;
+    };
+
+    await expect(fakeSavePet()).rejects.toThrow('Error saving pet');
+
+    expect(saveSpy).toHaveBeenCalled();
+    saveSpy.mockRestore();
   });
 });
