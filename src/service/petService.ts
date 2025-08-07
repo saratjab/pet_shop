@@ -71,7 +71,7 @@ export const deletePets = async (
   logger.debug('Pet deletions completed');
 };
 
-export const filter = async (
+export const getAllPets = async (
   query: getPetsQuery
 ): Promise<{ pets: HydratedDocument<IPet>[]; total: number }> => {
   logger.debug(`Filtering pets with query`);
