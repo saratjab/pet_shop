@@ -312,4 +312,58 @@ describe('getAllPets service', () => {
       `Filtered ${pets.length} pets (Total: ${total})`
     );
   });
+
+  it('should return all pets sorted by name in ascending order', async () => {
+    limitMock.mockResolvedValue(mockPets);
+    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+
+    const { pets, total } = await getAllPets({
+      ...mockPagination, // includes sortBy: 'name', order: 1
+    });
+
+    expect(Pet.find).toHaveBeenCalledWith({});
+    expect(sortMock).toHaveBeenCalledWith({ name: 1 });
+    expect(pets).toEqual(mockPets);
+    expect(total).toBe(mockPets.length);
+  });
+
+  it('should skip and limit correctly', async () => {
+    const page = 1;
+    const limitValue = 1;
+    const skipValue = (page - 1) * limitValue;
+
+    limitMock.mockResolvedValue([mockPets[skipValue]]);
+    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+
+    const { pets, total } = await getAllPets({
+      ...mockPagination,
+      page,
+      limit: limitValue,
+    });
+
+    expect(Pet.find).toHaveBeenCalledWith({});
+    expect(skipMock).toHaveBeenCalledWith(skipValue);
+    expect(limitMock).toHaveBeenCalledWith(limitValue);
+    expect(pets).toEqual([mockPets[skipValue]]);
+    expect(total).toBe(mockPets.length);
+  });
+
+  it('should handle empty results', async () => {
+    limitMock.mockResolvedValue([]);
+    (Pet.countDocuments as jest.Mock).mockResolvedValue(0);
+
+    const { pets, total } = await getAllPets({
+      ...mockPagination,
+      kind: 'nonexistent',
+    });
+
+    expect(Pet.find).toHaveBeenCalledWith({ kind: 'nonexistent' });
+    expect(pets).toEqual([]);
+    expect(total).toBe(0);
+
+    expect(logger.debug).toHaveBeenCalledWith('Filtering pets with query');
+    expect(logger.info).toHaveBeenCalledWith(
+      `Filtered ${pets.length} pets (Total: ${total})`
+    );
+  });
 });
