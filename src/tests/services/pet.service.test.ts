@@ -148,6 +148,78 @@ describe('getAllPets service', () => {
     );
   });
 
+  it('should getAllPets based on their age range', async () => {
+    const filteredPets = mockPets.filter(
+      (pet: any) => pet.age >= 1 && pet.age <= 3
+    );
+
+    limitMock.mockResolvedValue(filteredPets);
+    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+
+    const { pets, total } = await getAllPets({
+      ...mockPagination,
+      minAge: 1,
+      maxAge: 3,
+    });
+
+    expect(Pet.find).toHaveBeenCalledWith({
+      age: { $gte: 1, $lte: 3 },
+    });
+    expect(pets).toEqual(filteredPets);
+    expect(total).toBe(mockPets.length);
+
+    expect(logger.debug).toHaveBeenCalledWith('Filtering pets with query');
+    expect(logger.info).toHaveBeenCalledWith(
+      `Filtered ${pets.length} pets (Total: ${total})`
+    );
+  });
+
+  it('should getAllPets based on their age range with min', async () => {
+    const filteredPets = mockPets.filter((pet: any) => pet.age >= 1);
+
+    limitMock.mockResolvedValue(filteredPets);
+    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+
+    const { pets, total } = await getAllPets({
+      ...mockPagination,
+      minAge: 1,
+    });
+
+    expect(Pet.find).toHaveBeenCalledWith({
+      age: { $gte: 1 },
+    });
+    expect(pets).toEqual(filteredPets);
+    expect(total).toBe(mockPets.length);
+
+    expect(logger.debug).toHaveBeenCalledWith('Filtering pets with query');
+    expect(logger.info).toHaveBeenCalledWith(
+      `Filtered ${pets.length} pets (Total: ${total})`
+    );
+  });
+
+  it('should getAllPets based on their age range with max', async () => {
+    const filteredPets = mockPets.filter((pet: any) => pet.age <= 2);
+
+    limitMock.mockResolvedValue(filteredPets);
+    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+
+    const { pets, total } = await getAllPets({
+      ...mockPagination,
+      maxAge: 2,
+    });
+
+    expect(Pet.find).toHaveBeenCalledWith({
+      age: { $lte: 2 },
+    });
+    expect(pets).toEqual(filteredPets);
+    expect(total).toBe(mockPets.length);
+
+    expect(logger.debug).toHaveBeenCalledWith('Filtering pets with query');
+    expect(logger.info).toHaveBeenCalledWith(
+      `Filtered ${pets.length} pets (Total: ${total})`
+    );
+  });
+
   it('should getAllPets based on their price', async () => {
     const filteredPets = mockPets.filter((pet: any) => pet.price === 100);
 
