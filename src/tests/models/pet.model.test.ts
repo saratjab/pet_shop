@@ -93,4 +93,19 @@ describe('Pet Model', () => {
       code: 11000,
     });
   });
+
+  it('should modified updatedAt after modification and static createdAt', async () => {
+    const pet = await Pet.create(petData);
+    const originalTimeUpdate = pet.updatedAt;
+    const originalTimeCreate = pet.createdAt;
+
+    pet.name = 'New name';
+    await pet.save();
+
+    expect(pet).toBeDefined();
+    expect(originalTimeUpdate?.getTime()).toBeLessThan(
+      pet.updatedAt!.getTime()
+    );
+    expect(originalTimeCreate?.getTime()).toBe(pet.createdAt!.getTime());
+  });
 });
