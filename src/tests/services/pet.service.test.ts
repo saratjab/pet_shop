@@ -240,4 +240,76 @@ describe('getAllPets service', () => {
       `Filtered ${pets.length} pets (Total: ${total})`
     );
   });
+
+  it('should getAllPets based on their price range', async () => {
+    const filteredPets = mockPets.filter(
+      (pet: any) => pet.price >= 50 && pet.price <= 150
+    );
+
+    limitMock.mockResolvedValue(filteredPets);
+    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+
+    const { pets, total } = await getAllPets({
+      ...mockPagination,
+      minPrice: 50,
+      maxPrice: 150,
+    });
+
+    expect(Pet.find).toHaveBeenCalledWith({
+      price: { $gte: 50, $lte: 150 },
+    });
+    expect(pets).toEqual(filteredPets);
+    expect(total).toBe(mockPets.length);
+
+    expect(logger.debug).toHaveBeenCalledWith('Filtering pets with query');
+    expect(logger.info).toHaveBeenCalledWith(
+      `Filtered ${pets.length} pets (Total: ${total})`
+    );
+  });
+
+  it('should getAllPets based on their price range with min', async () => {
+    const filteredPets = mockPets.filter((pet: any) => pet.price >= 50);
+
+    limitMock.mockResolvedValue(filteredPets);
+    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+
+    const { pets, total } = await getAllPets({
+      ...mockPagination,
+      minPrice: 50,
+    });
+
+    expect(Pet.find).toHaveBeenCalledWith({
+      price: { $gte: 50 },
+    });
+    expect(pets).toEqual(filteredPets);
+    expect(total).toBe(mockPets.length);
+
+    expect(logger.debug).toHaveBeenCalledWith('Filtering pets with query');
+    expect(logger.info).toHaveBeenCalledWith(
+      `Filtered ${pets.length} pets (Total: ${total})`
+    );
+  });
+
+  it('should getAllPets based on their price range with max', async () => {
+    const filteredPets = mockPets.filter((pet: any) => pet.price <= 150);
+
+    limitMock.mockResolvedValue(filteredPets);
+    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+
+    const { pets, total } = await getAllPets({
+      ...mockPagination,
+      maxPrice: 150,
+    });
+
+    expect(Pet.find).toHaveBeenCalledWith({
+      price: { $lte: 150 },
+    });
+    expect(pets).toEqual(filteredPets);
+    expect(total).toBe(mockPets.length);
+
+    expect(logger.debug).toHaveBeenCalledWith('Filtering pets with query');
+    expect(logger.info).toHaveBeenCalledWith(
+      `Filtered ${pets.length} pets (Total: ${total})`
+    );
+  });
 });
