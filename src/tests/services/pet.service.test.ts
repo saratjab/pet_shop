@@ -7,11 +7,13 @@ import { petFixture } from '../fixture/petFixture';
 jest.mock('../../config/logger');
 
 describe('savePet service', () => {
-  let mockPets: any[];
+  let mockPet: any;
+  let mockedLogger: any;
 
   beforeEach(async () => {
-    jest.resetAllMocks();
-    mockPets = [petBuilder(petFixture)];
+    // jest.resetAllMocks();
+    mockedLogger = logger as jest.Mocked<typeof logger>;
+    mockPet = petBuilder(petFixture);
   });
 
   afterEach(async () => {
@@ -20,39 +22,56 @@ describe('savePet service', () => {
   });
 
   it('should save a new pet to the database', async () => {
-    const pet = await savePet(mockPets[0]);
+    const pet = await savePet(mockPet);
 
     expect(pet).toBeDefined();
     expect(pet._id).toBeDefined();
-    expect(pet.petTag).toBe(mockPets[0].petTag);
-    expect(pet.name).toBe(mockPets[0].name);
-    expect(pet.kind).toBe(mockPets[0].kind);
-    expect(pet.age).toBe(mockPets[0].age);
-    expect(pet.price).toBe(mockPets[0].price);
-    expect(pet.description).toBe(mockPets[0].description);
+    expect(pet.petTag).toBe(mockPet.petTag);
+    expect(pet.name).toBe(mockPet.name);
+    expect(pet.kind).toBe(mockPet.kind);
+    expect(pet.age).toBe(mockPet.age);
+    expect(pet.price).toBe(mockPet.price);
+    expect(pet.description).toBe(mockPet.description);
 
     const petInDb = await Pet.findById(pet._id);
     expect(petInDb).toBeDefined();
 
-    expect(logger.debug).toHaveBeenCalledWith('saving new pet to database');
-    expect(logger.debug).toHaveBeenCalledWith(`Pet saved with ID: ${pet._id}`);
+    expect(mockedLogger.debug.mock.calls[0][0]).toBe(
+      'saving new pet to database'
+    );
+    expect(mockedLogger.debug.mock.calls[1][0]).toBe(
+      `Pet saved with ID: ${pet._id}`
+    );
   });
 
   it('should throw error when .save() returns null', async () => {
-    const saveSpy = jest.spyOn(Pet.prototype, 'save').mockResolvedValue(null as any);
+    const saveSpy = jest
+      .spyOn(Pet.prototype, 'save')
+      .mockResolvedValue(null as any);
 
-    await expect(savePet(mockPets[0])).rejects.toThrow('Error saving pet');
+    await expect(savePet(mockPet[0])).rejects.toThrow('Error saving pet');
+    expect(mockedLogger.debug.mock.calls[0][0]).toBe(
+      'saving new pet to database'
+    );
+    expect(mockedLogger.warn.mock.calls[0][0]).toBe(
+      'Error saving pet to database'
+    );
 
     expect(saveSpy).toHaveBeenCalled();
-    saveSpy.mockRestore(); // reset the method to it's original behavior 
+    saveSpy.mockRestore(); // reset the method to it's original behavior
   });
 
-    it('should correctly pass the pet model', async () => {
+  it('should correctly pass the pet model', async () => {
     const saveSpy = jest.spyOn(Pet.prototype, 'save');
 
-    await savePet(mockPets[0]);
+    await savePet(mockPet);
 
     expect(saveSpy).toHaveBeenCalledTimes(1);
     saveSpy.mockRestore();
+  });
+
+  it('should handle DB error', async () => {
+    jest.spyOn(Pet.prototype, 'save').mockRejectedValue(new Error('DB error'));
+    await expect(savePet(mockPet)).rejects.toThrow('DB error');
   });
 });
