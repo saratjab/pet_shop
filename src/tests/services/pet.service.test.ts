@@ -12,12 +12,12 @@ describe('getAllPets service', () => {
   let sortMock: jest.Mock;
   let skipMock: jest.Mock;
   let limitMock: jest.Mock;
-  
+
   beforeEach(async () => {
     mockPets = [
-      petBuilder({ kind: 'kind' }),
-      petBuilder({ kind: 'kind' }),
-      petBuilder({ kind: 'other' }),
+      petBuilder({ kind: 'kind', gender: 'F', isAdopted: false }),
+      petBuilder({ kind: 'kind', gender: 'F', isAdopted: false }),
+      petBuilder({ kind: 'other', gender: 'M', isAdopted: true }),
     ];
 
     mockPagination = {
@@ -58,6 +58,48 @@ describe('getAllPets service', () => {
     });
 
     expect(Pet.find).toHaveBeenCalledWith({ kind: 'kind' });
+    expect(pets).toEqual(filteredPets);
+    expect(total).toBe(mockPets.length);
+
+    expect(logger.debug).toHaveBeenCalledWith('Filtering pets with query');
+    expect(logger.info).toHaveBeenCalledWith(
+      `Filtered ${pets.length} pets (Total: ${total})`
+    );
+  });
+
+  it('should getAllPets based on their gender', async () => {
+    const filteredPets = mockPets.filter((pet: any) => pet.gender === 'F');
+
+    limitMock.mockResolvedValue(filteredPets);
+    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+
+    const { pets, total } = await getAllPets({
+      ...mockPagination,
+      gender: 'F',
+    });
+
+    expect(Pet.find).toHaveBeenCalledWith({ gender: 'F' });
+    expect(pets).toEqual(filteredPets);
+    expect(total).toBe(mockPets.length);
+
+    expect(logger.debug).toHaveBeenCalledWith('Filtering pets with query');
+    expect(logger.info).toHaveBeenCalledWith(
+      `Filtered ${pets.length} pets (Total: ${total})`
+    );
+  });
+
+  it('should getAllPets based on their isAdopted', async () => {
+    const filteredPets = mockPets.filter((pet: any) => pet.isAdopted === false);
+
+    limitMock.mockResolvedValue(filteredPets);
+    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+
+    const { pets, total } = await getAllPets({
+      ...mockPagination,
+      isAdopted: false,
+    });
+
+    expect(Pet.find).toHaveBeenCalledWith({ isAdopted: false });
     expect(pets).toEqual(filteredPets);
     expect(total).toBe(mockPets.length);
 
