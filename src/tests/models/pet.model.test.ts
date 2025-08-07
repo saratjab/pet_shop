@@ -6,9 +6,9 @@ describe('Pet Model', () => {
   beforeAll(() => {
     petData = petBuilderData();
   });
- 
+
   it('should create and save a valid user', async () => {
-    const pet: IPet = await Pet.create({ ...petData });
+    const pet: IPet = await Pet.create(petData);
 
     expect(pet).toBeDefined();
     expect(pet.petTag).toBeDefined();
@@ -21,7 +21,7 @@ describe('Pet Model', () => {
     expect(pet.updatedAt).toBeDefined();
   });
 
-  it('should throw validation errors if required fieds are missing', async () => {
+  it('should throw validation errors if required fields are missing', async () => {
     await expect(Pet.create({})).rejects.toThrow(/validation failed/i);
   });
 
@@ -34,7 +34,7 @@ describe('Pet Model', () => {
     });
   });
 
-  it('should set default value isActive to true', async () => {
+  it('should set default value true to isActive', async () => {
     const pet = await Pet.create({ ...petData, isActive: undefined });
     expect(pet.isAdopted).toBe(false);
   });
