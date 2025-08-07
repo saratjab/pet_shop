@@ -1,6 +1,5 @@
 import logger from '../../config/logger';
 import { updatePets } from '../../service/petService';
-import { petBuilder } from '../builder/petBuilder';
 import { petFixture } from '../fixture/petFixture';
 
 jest.mock('../../config/logger');
@@ -10,8 +9,10 @@ describe('updatePets service', () => {
   let mockUpdatedField: any;
   let mcokSavedUpdates: any;
   let mockSavePet: any;
+  let mockedLogger: any;
 
   beforeEach(() => {
+    mockedLogger = logger as jest.Mocked<typeof logger>;
     mockPet = petFixture;
     mockUpdatedField = { name: 'updated name', age: 3 };
     mcokSavedUpdates = { ...mockPet, ...mockUpdatedField };
@@ -29,10 +30,10 @@ describe('updatePets service', () => {
 
     expect(mockSavePet).toHaveBeenCalledTimes(1);
     expect(mockSavePet).toHaveBeenCalledWith(mcokSavedUpdates);
-    expect(logger.debug).toHaveBeenCalledWith(
+    expect(mockedLogger.debug.mock.calls[0][0]).toBe(
       `Updating pet: ${updatedPet.petTag}`
     );
-    expect(logger.info).toHaveBeenCalledWith(
+    expect(mockedLogger.info.mock.calls[0][0]).toBe(
       `Pet ${updatedPet.petTag} updated successfully`
     );
   });
@@ -47,10 +48,12 @@ describe('updatePets service', () => {
     expect(updatedPet.kind).toBe(mockPet.kind);
     expect(updatedPet.price).toBe(mockPet.price);
     expect(updatedPet.description).toBe(mockPet.description);
-    expect(logger.debug).toHaveBeenCalledWith(
+    expect(updatedPet.isAdopted).toBe(mockPet.isAdopted);
+
+    expect(mockedLogger.debug.mock.calls[0][0]).toBe(
       `Updating pet: ${updatedPet.petTag}`
     );
-    expect(logger.info).toHaveBeenCalledWith(
+    expect(mockedLogger.info.mock.calls[0][0]).toBe(
       `Pet ${updatedPet.petTag} updated successfully`
     );
   });
@@ -62,10 +65,11 @@ describe('updatePets service', () => {
     expect(mockSavePet).toHaveBeenCalledTimes(1);
     expect(mockSavePet).toHaveBeenCalledWith(mockPet);
     expect(updatedPet).toEqual(mockPet);
-    expect(logger.debug).toHaveBeenCalledWith(
+
+    expect(mockedLogger.debug.mock.calls[0][0]).toBe(
       `Updating pet: ${updatedPet.petTag}`
     );
-    expect(logger.info).toHaveBeenCalledWith(
+    expect(mockedLogger.info.mock.calls[0][0]).toBe(
       `Pet ${updatedPet.petTag} updated successfully`
     );
   });
@@ -78,7 +82,7 @@ describe('updatePets service', () => {
     await expect(updatePets(mockPet, mockUpdatedField)).rejects.toThrow(
       'Save failed'
     );
-    expect(logger.debug).toHaveBeenCalledWith(
+    expect(mockedLogger.debug.mock.calls[0][0]).toBe(
       `Updating pet: ${mockPet.petTag}`
     );
     // expect(logger.warn).toHaveBeenCalledWith('Error saving pet to database'); savePet is mocked, so this won't be called
