@@ -57,6 +57,7 @@ export const deletePets = async (
   petTag?: string[]
 ): Promise<void> => {
   if (!id && !petTag) {
+    logger.warn('Nither id nor petTag has been provided');
     throw new Error('Either id or petTag must be provided');
   }
   if (id) {
