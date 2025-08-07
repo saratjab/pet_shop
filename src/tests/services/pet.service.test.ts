@@ -15,9 +15,27 @@ describe('getAllPets service', () => {
 
   beforeEach(async () => {
     mockPets = [
-      petBuilder({ kind: 'kind', gender: 'F', isAdopted: false }),
-      petBuilder({ kind: 'kind', gender: 'F', isAdopted: false }),
-      petBuilder({ kind: 'other', gender: 'M', isAdopted: true }),
+      petBuilder({
+        kind: 'kind',
+        gender: 'F',
+        isAdopted: false,
+        age: 2,
+        price: 100,
+      }),
+      petBuilder({
+        kind: 'kind',
+        gender: 'F',
+        isAdopted: false,
+        age: 2,
+        price: 100,
+      }),
+      petBuilder({
+        kind: 'other',
+        gender: 'M',
+        isAdopted: true,
+        age: 5,
+        price: 200,
+      }),
     ];
 
     mockPagination = {
@@ -100,6 +118,48 @@ describe('getAllPets service', () => {
     });
 
     expect(Pet.find).toHaveBeenCalledWith({ isAdopted: false });
+    expect(pets).toEqual(filteredPets);
+    expect(total).toBe(mockPets.length);
+
+    expect(logger.debug).toHaveBeenCalledWith('Filtering pets with query');
+    expect(logger.info).toHaveBeenCalledWith(
+      `Filtered ${pets.length} pets (Total: ${total})`
+    );
+  });
+
+  it('should getAllPets based on their age', async () => {
+    const filteredPets = mockPets.filter((pet: any) => pet.age === 2);
+
+    limitMock.mockResolvedValue(filteredPets);
+    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+
+    const { pets, total } = await getAllPets({
+      ...mockPagination,
+      age: 2,
+    });
+
+    expect(Pet.find).toHaveBeenCalledWith({ age: 2 });
+    expect(pets).toEqual(filteredPets);
+    expect(total).toBe(mockPets.length);
+
+    expect(logger.debug).toHaveBeenCalledWith('Filtering pets with query');
+    expect(logger.info).toHaveBeenCalledWith(
+      `Filtered ${pets.length} pets (Total: ${total})`
+    );
+  });
+
+  it('should getAllPets based on their price', async () => {
+    const filteredPets = mockPets.filter((pet: any) => pet.price === 100);
+
+    limitMock.mockResolvedValue(filteredPets);
+    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+
+    const { pets, total } = await getAllPets({
+      ...mockPagination,
+      price: 100,
+    });
+
+    expect(Pet.find).toHaveBeenCalledWith({ price: 100 });
     expect(pets).toEqual(filteredPets);
     expect(total).toBe(mockPets.length);
 
