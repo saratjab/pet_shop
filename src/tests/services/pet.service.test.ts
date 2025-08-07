@@ -366,4 +366,20 @@ describe('getAllPets service', () => {
       `Filtered ${pets.length} pets (Total: ${total})`
     );
   });
+
+  it('should handle error when Pet.find fails', async () => {
+    limitMock.mockRejectedValue(new Error('failed finding pets'));
+    await expect(getAllPets(mockPagination)).rejects.toThrow(
+      'failed finding pets'
+    );
+  });
+
+  it('should handle error when Pet.countDocuments fails', async () => {
+    (Pet.countDocuments as jest.Mock).mockRejectedValue(
+      new Error('failed counting pets')
+    );
+    await expect(getAllPets(mockPagination)).rejects.toThrow(
+      'failed counting pets'
+    );
+  });
 });
