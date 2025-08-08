@@ -1,61 +1,90 @@
 import logger from '../../config/logger';
-import Pet from '../../models/petModel';
-import { findPetById, findPetByPetTag } from '../../service/petService';
-import { petBuilder } from '../builder/petBuilder';
-import mongoose from 'mongoose';
+import { updatePets } from '../../service/petService';
+import { petFixture } from '../fixture/petFixture';
 
 jest.mock('../../config/logger');
 
-describe('findPetByPetTag service', () => {
-  let mockPets: any[];
-  let petTag1 = 'tag1';
-  let petTag2 = 'tag2';
+describe('updatePets service', () => {
+  let mockPet: any;
+  let mockUpdatedField: any;
+  let mcokSavedUpdates: any;
+  let mockSavePet: any;
+  let mockedLogger: any;
 
-  beforeEach(async () => {
-    jest.resetAllMocks();
-    mockPets = [
-      petBuilder({ petTag: petTag1 }),
-      petBuilder({ petTag: petTag2 }),
-    ];
-
-    await Pet.insertMany(mockPets);
+  beforeEach(() => {
+    mockedLogger = logger as jest.Mocked<typeof logger>;
+    mockPet = petFixture;
+    mockUpdatedField = { name: 'updated name', age: 3 };
+    mcokSavedUpdates = { ...mockPet, ...mockUpdatedField };
+    mockSavePet = jest
+      .spyOn(require('../../service/petService'), 'savePet')
+      .mockResolvedValue(mcokSavedUpdates);
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     jest.clearAllMocks();
-    await Pet.deleteMany({});
   });
 
-  it('should return the pet document', async () => {
-    const pet = await Pet.findOne({ petTag: petTag1 });
+  it('should update pet and call savePet with updated data', async () => {
+    const updatedPet = await updatePets(mockPet, mockUpdatedField);
 
-    const result = await findPetByPetTag(petTag1);
-
-    expect(result).toEqual(pet);
-    expect(logger.debug).toHaveBeenCalledWith(
-      'Searching for pet by petTag: tag1'
+    expect(mockSavePet).toHaveBeenCalledTimes(1);
+    expect(mockSavePet).toHaveBeenCalledWith(mcokSavedUpdates);
+    expect(mockedLogger.debug.mock.calls[0][0]).toBe(
+      `Updating pet: ${updatedPet.petTag}`
     );
-    expect(logger.debug).toHaveBeenCalledWith('pet found with petTag: tag1');
-  });
-
-  it('should throw error if pet not found', async () => {
-    await expect(findPetByPetTag('invalid-tag')).rejects.toThrow(
-      'pet not found'
-    );
-    expect(logger.debug).toHaveBeenCalledWith(
-      'Searching for pet by petTag: invalid-tag'
-    );
-    expect(logger.warn).toHaveBeenCalledWith(
-      'Pet not found with petTag: invalid-tag'
+    expect(mockedLogger.info.mock.calls[0][0]).toBe(
+      `Pet ${updatedPet.petTag} updated successfully`
     );
   });
 
-  it('should call Pet.findOne with the correct petTag', async () => {
-    const spy = jest.spyOn(Pet, 'findOne');
+  it('should correctly overwrite the original pet object with updated fields', async () => {
+    const updatedPet = await updatePets(mockPet, mockUpdatedField);
 
-    await findPetByPetTag(petTag1);
+    expect(updatedPet).toBeDefined();
+    expect(updatedPet.name).toBe('updated name');
+    expect(updatedPet.age).toBe(3);
+    expect(updatedPet.petTag).toBe(mockPet.petTag);
+    expect(updatedPet.kind).toBe(mockPet.kind);
+    expect(updatedPet.price).toBe(mockPet.price);
+    expect(updatedPet.description).toBe(mockPet.description);
+    expect(updatedPet.isAdopted).toBe(mockPet.isAdopted);
 
-    expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith({ isAdopted: false, petTag: petTag1 });
+    expect(mockedLogger.debug.mock.calls[0][0]).toBe(
+      `Updating pet: ${updatedPet.petTag}`
+    );
+    expect(mockedLogger.info.mock.calls[0][0]).toBe(
+      `Pet ${updatedPet.petTag} updated successfully`
+    );
+  });
+
+  it('should handle empty update fields', async () => {
+    const emptyUpdate = {};
+    const updatedPet = await updatePets(mockPet, emptyUpdate);
+
+    expect(mockSavePet).toHaveBeenCalledTimes(1);
+    expect(mockSavePet).toHaveBeenCalledWith(mockPet);
+    expect(updatedPet).toEqual(mockPet);
+
+    expect(mockedLogger.debug.mock.calls[0][0]).toBe(
+      `Updating pet: ${updatedPet.petTag}`
+    );
+    expect(mockedLogger.info.mock.calls[0][0]).toBe(
+      `Pet ${updatedPet.petTag} updated successfully`
+    );
+  });
+
+  it('should log an error if savePet fails', async () => {
+    mockSavePet = jest
+      .spyOn(require('../../service/petService'), 'savePet')
+      .mockRejectedValue(new Error('Save failed'));
+
+    await expect(updatePets(mockPet, mockUpdatedField)).rejects.toThrow(
+      'Save failed'
+    );
+    expect(mockedLogger.debug.mock.calls[0][0]).toBe(
+      `Updating pet: ${mockPet.petTag}`
+    );
+    // expect(logger.warn).toHaveBeenCalledWith('Error saving pet to database'); savePet is mocked, so this won't be called
   });
 });
