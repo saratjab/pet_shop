@@ -1,61 +1,106 @@
-import logger from '../../config/logger';
-import Pet from '../../models/petModel';
-import { findPetById, findPetByPetTag } from '../../service/petService';
-import { petBuilder } from '../builder/petBuilder';
 import mongoose from 'mongoose';
+import Pet from '../../models/petModel';
+import { deletePets } from '../../service/petService';
+import { petBuilder } from '../builder/petBuilder';
+import logger from '../../config/logger';
 
 jest.mock('../../config/logger');
 
-describe('findPetByPetTag service', () => {
-  let mockPets: any[];
-  let petTag1 = 'tag1';
-  let petTag2 = 'tag2';
+describe('deletePets service', () => {
+  let mockIds: mongoose.Types.ObjectId[];
+  let mockTags: string[];
+  let mockedLogger: any;
 
   beforeEach(async () => {
-    jest.resetAllMocks();
-    mockPets = [
-      petBuilder({ petTag: petTag1 }),
-      petBuilder({ petTag: petTag2 }),
-    ];
+    mockedLogger = logger as jest.Mocked<typeof logger>;
+    mockIds = [new mongoose.Types.ObjectId(), new mongoose.Types.ObjectId()];
+    mockTags = ['tag1', 'tag2'];
 
-    await Pet.insertMany(mockPets);
+    // await Pet.insertMany(mockPets);
+    Pet.deleteMany = jest.fn().mockResolvedValue({ deletedCount: 2 });
   });
 
   afterEach(async () => {
     jest.clearAllMocks();
-    await Pet.deleteMany({});
   });
 
-  it('should return the pet document', async () => {
-    const pet = await Pet.findOne({ petTag: petTag1 });
+  it('should call deleteMany with correct IDs', async () => {
+    const idStrings = mockIds.map((id) => id.toString());
+    await deletePets(idStrings, undefined);
 
-    const result = await findPetByPetTag(petTag1);
+    expect(Pet.deleteMany).toHaveBeenCalledTimes(1);
+    expect(Pet.deleteMany).toHaveBeenCalledWith({
+      _id: { $in: idStrings },
+    });
 
-    expect(result).toEqual(pet);
-    expect(logger.debug).toHaveBeenCalledWith(
-      'Searching for pet by petTag: tag1'
-    );
-    expect(logger.debug).toHaveBeenCalledWith('pet found with petTag: tag1');
+    expect(mockedLogger.info.mock.calls[0][0]).toBe('Deleting pets by IDs');
+    expect(mockedLogger.debug.mock.calls[0][0]).toBe('Pet deletions completed');
   });
 
-  it('should throw error if pet not found', async () => {
-    await expect(findPetByPetTag('invalid-tag')).rejects.toThrow(
-      'pet not found'
+  it('should call deleteMany with correct petTags', async () => {
+    await deletePets(undefined, mockTags);
+
+    expect(Pet.deleteMany).toHaveBeenCalledTimes(1);
+    expect(Pet.deleteMany).toHaveBeenCalledWith({
+      petTag: { $in: mockTags },
+    });
+
+    expect(mockedLogger.info.mock.calls[0][0]).toBe('Deleting pets by petTags');
+  });
+
+  it('should throw error if no IDs or petTags are provided', async () => {
+    await expect(deletePets()).rejects.toThrow(
+      'Either id or petTag must be provided'
     );
-    expect(logger.debug).toHaveBeenCalledWith(
-      'Searching for pet by petTag: invalid-tag'
-    );
-    expect(logger.warn).toHaveBeenCalledWith(
-      'Pet not found with petTag: invalid-tag'
+    expect(Pet.deleteMany).not.toHaveBeenCalled();
+    expect(mockedLogger.warn.mock.calls[0][0]).toBe(
+      'Nither id nor petTag has been provided'
     );
   });
 
-  it('should call Pet.findOne with the correct petTag', async () => {
-    const spy = jest.spyOn(Pet, 'findOne');
+  it('should handle empty arrays for IDs', async () => {
+    await deletePets([], undefined);
+    expect(Pet.deleteMany).toHaveBeenCalled();
+    expect(Pet.deleteMany).toHaveBeenCalledWith({
+      _id: { $in: [] },
+    });
+  });
 
-    await findPetByPetTag(petTag1);
+  it('should handle empty arrays for petTags', async () => {
+    await deletePets(undefined, []);
+    expect(Pet.deleteMany).toHaveBeenCalled();
+    expect(Pet.deleteMany).toHaveBeenCalledWith({
+      petTag: { $in: [] },
+    });
+  });
 
-    expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith({ isAdopted: false, petTag: petTag1 });
+  it('should delete pets by both IDs and petTags', async () => {
+    await deletePets(
+      mockIds.map((id) => id.toString()),
+      mockTags
+    );
+
+    expect(Pet.deleteMany).toHaveBeenCalledTimes(2);
+    expect(Pet.deleteMany).toHaveBeenCalledWith({
+      _id: { $in: mockIds.map((id) => id.toString()) },
+    });
+    expect(Pet.deleteMany).toHaveBeenCalledWith({
+      petTag: { $in: mockTags },
+    });
+
+    expect(mockedLogger.info.mock.calls[0][0]).toBe('Deleting pets by IDs');
+    expect(mockedLogger.info.mock.calls[1][0]).toBe('Deleting pets by petTags');
+    expect(mockedLogger.debug.mock.calls[0][0]).toBe('Pet deletions completed');
+  });
+
+  it('should log an error if deletion fails', async () => {
+    Pet.deleteMany = jest.fn().mockRejectedValue(new Error('Deletion failed'));
+
+    await expect(
+      deletePets(
+        mockIds.map((id) => id.toString()),
+        mockTags
+      )
+    ).rejects.toThrow('Deletion failed');
   });
 });
