@@ -7,7 +7,7 @@ export const petBuilderData = (override = {}) => {
     kind: faker.animal.type(),
     age: faker.number.int({ min: 1, max: 10 }),
     price: faker.number.float({ min: 10, max: 100, fractionDigits: 1 }),
-    gender: 'F',
+    gender: faker.helpers.arrayElement(['M', 'F']),
     isAdopted: false,
     ...override,
   };

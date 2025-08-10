@@ -4,7 +4,7 @@ import { petBuilderData } from '../builder/petBuilder';
 describe('Pet Model', () => {
   let petData: any;
 
-  beforeAll(() => {
+  beforeEach(() => {
     petData = petBuilderData();
   });
 
@@ -39,25 +39,27 @@ describe('Pet Model', () => {
     expect(pet.description).toBe('A lovely cat');
   });
 
-  it('should accept M for gender', async () => {
-    const pet = new Pet({ ...petData, gender: 'M' });
-    expect(pet).toBeDefined();
-    expect(pet.gender).toBe('M');
-  });
+  describe('gender field', () => {
+    it('should accept M for gender', async () => {
+      const pet = new Pet({ ...petData, gender: 'M' });
+      expect(pet).toBeDefined();
+      expect(pet.gender).toBe('M');
+    });
 
-  it('should accept F for gender', async () => {
-    const pet = new Pet({ ...petData, gender: 'F' });
-    expect(pet).toBeDefined();
-    expect(pet.gender).toBe('F');
+    it('should accept F for gender', async () => {
+      const pet = new Pet({ ...petData, gender: 'F' });
+      expect(pet).toBeDefined();
+      expect(pet.gender).toBe('F');
+    });
+
+    it('should throw error if gender is neither M or F', async () => {
+      const pet = new Pet({ ...petData, gender: 'invalid-gender' });
+      await expect(pet.save()).rejects.toThrow(/validation failed/i);
+    });
   });
 
   it('should throw validation errors if required fields are missing', async () => {
     await expect(Pet.create({})).rejects.toThrow(/validation failed/i);
-  });
-
-  it('should throw error if gender is neither M or F', async () => {
-    const pet = new Pet({ ...petData, gender: 'invalid-gender' });
-    await expect(pet.save()).rejects.toThrow(/validation failed/i);
   });
 
   it('should fail if price is negative', async () => {
