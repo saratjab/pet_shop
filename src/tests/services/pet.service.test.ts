@@ -1,7 +1,7 @@
 import Pet from '../../models/petModel';
+import logger from '../../config/logger';
 import { petBuilder } from '../builder/petBuilder';
 import { getAllPets } from '../../service/petService';
-import logger from '../../config/logger';
 
 jest.mock('../../config/logger');
 
