@@ -1,14 +1,15 @@
 import logger from '../../config/logger';
-import Pet from '../../models/petModel';
+import Pet, { IPet } from '../../models/petModel';
 import { savePet } from '../../service/petService';
+import { createPetType } from '../../types/petTypes';
 import { petBuilder } from '../builder/petBuilder';
 import { petFixture } from '../fixture/petFixture';
 
 jest.mock('../../config/logger');
 
 describe('savePet service', () => {
-  let mockPet: any;
-  let mockedLogger: any;
+  let mockPet: createPetType;
+  let mockedLogger: jest.Mocked<typeof logger>;
 
   beforeEach(async () => {
     // jest.resetAllMocks();
@@ -22,7 +23,7 @@ describe('savePet service', () => {
   });
 
   it('should save a new pet to the database', async () => {
-    const pet = await savePet(mockPet);
+    const pet = await savePet(mockPet as IPet);
 
     expect(pet).toBeDefined();
     expect(pet._id).toBeDefined();
@@ -49,7 +50,7 @@ describe('savePet service', () => {
       .spyOn(Pet.prototype, 'save')
       .mockResolvedValue(null as any);
 
-    await expect(savePet(mockPet)).rejects.toThrow('Error saving pet');
+    await expect(savePet(mockPet as IPet)).rejects.toThrow('Error saving pet');
     expect(mockedLogger.debug.mock.calls[0][0]).toBe(
       'saving new pet to database'
     );
@@ -64,7 +65,7 @@ describe('savePet service', () => {
   it('should call save method on the pet instance', async () => {
     const saveSpy = jest.spyOn(Pet.prototype, 'save');
 
-    await savePet(mockPet);
+    await savePet(mockPet as IPet);
 
     expect(saveSpy).toHaveBeenCalledTimes(1);
     saveSpy.mockRestore();
@@ -72,6 +73,6 @@ describe('savePet service', () => {
 
   it('should handle DB error', async () => {
     jest.spyOn(Pet.prototype, 'save').mockRejectedValue(new Error('DB error'));
-    await expect(savePet(mockPet)).rejects.toThrow('DB error');
+    await expect(savePet(mockPet as IPet)).rejects.toThrow('DB error');
   });
 });
