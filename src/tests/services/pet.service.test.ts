@@ -1,5 +1,5 @@
 import logger from '../../config/logger';
-import { updatePets } from '../../service/petService';
+import { savePet, updatePets } from '../../service/petService';
 import { petFixture } from '../fixture/petFixture';
 
 jest.mock('../../config/logger');
@@ -7,7 +7,7 @@ jest.mock('../../config/logger');
 describe('updatePets service', () => {
   let mockPet: any;
   let mockUpdatedField: any;
-  let mcokSavedUpdates: any;
+  let mockSavedUpdates: any;
   let mockSavePet: any;
   let mockedLogger: any;
 
@@ -15,10 +15,10 @@ describe('updatePets service', () => {
     mockedLogger = logger as jest.Mocked<typeof logger>;
     mockPet = petFixture;
     mockUpdatedField = { name: 'updated name', age: 3 };
-    mcokSavedUpdates = { ...mockPet, ...mockUpdatedField };
+    mockSavedUpdates = { ...mockPet, ...mockUpdatedField };
     mockSavePet = jest
-      .spyOn(require('../../service/petService'), 'savePet')
-      .mockResolvedValue(mcokSavedUpdates);
+      .spyOn({ savePet }, 'savePet')
+      .mockResolvedValue(mockSavedUpdates);
   });
 
   afterEach(() => {
@@ -29,7 +29,7 @@ describe('updatePets service', () => {
     const updatedPet = await updatePets(mockPet, mockUpdatedField);
 
     expect(mockSavePet).toHaveBeenCalledTimes(1);
-    expect(mockSavePet).toHaveBeenCalledWith(mcokSavedUpdates);
+    expect(mockSavePet).toHaveBeenCalledWith(mockSavedUpdates);
     expect(mockedLogger.debug.mock.calls[0][0]).toBe(
       `Updating pet: ${updatedPet.petTag}`
     );
