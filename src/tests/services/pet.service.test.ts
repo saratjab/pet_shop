@@ -94,11 +94,13 @@ describe('findPetByPetTag service', () => {
 
   beforeEach(async () => {
     mockedLogger = logger as jest.Mocked<typeof logger>;
-    ((mockPet = petBuilder({ petTag })), await Pet.insertMany(mockPet));
+    mockPet = petBuilder({ petTag });
+    await Pet.insertMany(mockPet);
   });
 
   afterEach(async () => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
     await Pet.deleteMany({});
   });
 
@@ -114,6 +116,7 @@ describe('findPetByPetTag service', () => {
     expect(mockedLogger.debug.mock.calls[1][0]).toBe(
       'pet found with petTag: tag1'
     );
+    expect(mockedLogger.debug).toHaveBeenCalledTimes(2);
   });
 
   it('should throw error if pet not found', async () => {
