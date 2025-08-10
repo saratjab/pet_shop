@@ -49,7 +49,7 @@ describe('savePet service', () => {
       .spyOn(Pet.prototype, 'save')
       .mockResolvedValue(null as any);
 
-    await expect(savePet(mockPet[0])).rejects.toThrow('Error saving pet');
+    await expect(savePet(mockPet)).rejects.toThrow('Error saving pet');
     expect(mockedLogger.debug.mock.calls[0][0]).toBe(
       'saving new pet to database'
     );
@@ -61,7 +61,7 @@ describe('savePet service', () => {
     saveSpy.mockRestore(); // reset the method to it's original behavior
   });
 
-  it('should correctly pass the pet model', async () => {
+  it('should call save method on the pet instance', async () => {
     const saveSpy = jest.spyOn(Pet.prototype, 'save');
 
     await savePet(mockPet);
