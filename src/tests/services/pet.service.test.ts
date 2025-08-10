@@ -1,22 +1,25 @@
 import logger from '../../config/logger';
 import Pet from '../../models/petModel';
 import { findPetByPetTag } from '../../service/petService';
+import { createPetType } from '../../types/petTypes';
 import { petBuilder } from '../builder/petBuilder';
 
 jest.mock('../../config/logger');
 
 describe('findPetByPetTag service', () => {
-  let mockPet: any;
-  let mockedLogger: any;
+  let mockPet: createPetType;
+  let mockedLogger: jest.Mocked<typeof logger>;
   let petTag = 'tag1';
 
   beforeEach(async () => {
     mockedLogger = logger as jest.Mocked<typeof logger>;
-    ((mockPet = petBuilder({ petTag })), await Pet.insertMany(mockPet));
+    mockPet = petBuilder({ petTag });
+    await Pet.insertMany(mockPet);
   });
 
   afterEach(async () => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
     await Pet.deleteMany({});
   });
 
@@ -32,6 +35,7 @@ describe('findPetByPetTag service', () => {
     expect(mockedLogger.debug.mock.calls[1][0]).toBe(
       'pet found with petTag: tag1'
     );
+    expect(mockedLogger.debug).toHaveBeenCalledTimes(2);
   });
 
   it('should throw error if pet not found', async () => {
