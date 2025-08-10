@@ -1,4 +1,4 @@
-import User, { IUser } from '../../models/userModel';
+import User from '../../models/userModel';
 import bcrypt from 'bcryptjs';
 import { buildUserData } from '../builder/userBuilder';
 
