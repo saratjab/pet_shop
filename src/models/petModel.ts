@@ -9,6 +9,8 @@ export interface IPet extends mongoose.Document {
   description?: string;
   gender: 'M' | 'F';
   isAdopted: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface UPet extends mongoose.Document {
@@ -39,10 +41,12 @@ const petSchema = new mongoose.Schema(
     age: {
       type: Number,
       required: [true, 'Enter age'],
+      min: [0, 'Age cannot be negative'],
     },
     price: {
       type: Number,
       required: [true, 'Enter the price'],
+      min: [0, 'Price cannot be negative'],
     },
     description: {
       type: String,
