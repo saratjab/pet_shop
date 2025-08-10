@@ -1,21 +1,22 @@
-import mongoose from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 import logger from '../../config/logger';
-import Pet from '../../models/petModel';
+import Pet, { IPet } from '../../models/petModel';
 import { findPetById } from '../../service/petService';
 import { petBuilder } from '../builder/petBuilder';
+import { createPetType } from '../../types/petTypes';
 
 jest.mock('../../config/logger');
 
 describe('findPetById service', () => {
-  let mockPet: any;
-  let mockedLogger: any;
+  let mockPet: createPetType;
+  let mockedLogger: jest.Mocked<typeof logger>;
   let id: mongoose.Types.ObjectId;
 
   beforeEach(async () => {
     // jest.resetAllMocks();//? it reset mock implementations created jest.fn() to return it to a normal function
     //? reset mock calls history
     mockedLogger = logger as jest.Mocked<typeof logger>;
-    id = new mongoose.Types.ObjectId('507f1f77bcf86cd799439011');
+    id = new mongoose.Types.ObjectId();
     mockPet = petBuilder({ _id: id });
 
     await Pet.insertMany(mockPet); // Using insertMany for better performance
