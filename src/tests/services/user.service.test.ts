@@ -5,10 +5,12 @@ import {
   findUserById,
   findUserByUsername,
   saveUser,
+  update,
   verifyPassword,
 } from '../../service/userService';
 import { buildUserData } from '../builder/userBuilder';
 import bcrypt from 'bcryptjs';
+import { userFixture } from '../fixture/userFixture';
 
 jest.mock('../../models/userModel');
 jest.mock('../../config/logger');
@@ -289,8 +291,8 @@ describe('saveUser service', () => {
 
   it('should successfully save a valid user and return the saved document', async () => {
     (User as unknown as jest.Mock).mockImplementation(() => ({
-      save: jest.fn().mockResolvedValue(mockUsers[0]), // not allow casting directly from one unrelated type to another
-    })); // save on instance not on the same model so User.save as jest.mock won't work
+      save: jest.fn().mockResolvedValue(mockUsers[0]),
+    }));
 
     const result = await saveUser(mockUsers[0]);
 
@@ -313,5 +315,99 @@ describe('saveUser service', () => {
       'Saving new user to the database'
     );
     expect(mockedLogger.error).toHaveBeenCalledWith('Failed to save user');
+  });
+});
+
+describe('update service', () => {
+  let mockUsers: any[];
+  const mockedLogger = logger as jest.Mocked<typeof logger>;
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    mockUsers = [{ ...userFixture }];
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should uccessfully updates user fields and calls save()', async () => {
+    const updatedData = {
+      username: 'newUsername',
+      role: 'employee' as const, // Ensure role is a valid enum value
+      password: 'newPassword',
+      email: 'newEmail',
+      address: 'newAddress',
+      isActive: false,
+    };
+
+    mockUsers[0].save = jest.fn().mockResolvedValue({
+      ...mockUsers[0],
+      ...updatedData,
+    });
+    const result = await update(mockUsers[0], updatedData);
+
+    expect(result.username).toBe('newUsername');
+    expect(result.role).toBe('employee');
+    expect(result.password).toBe('newPassword');
+    expect(result.email).toBe('newEmail');
+    expect(result.address).toBe('newAddress');
+    expect(result.isActive).toBe(false);
+    expect(logger.debug).toHaveBeenCalledWith('Updating user: sarat');
+    expect(logger.info).toHaveBeenCalledWith(
+      'User newUsername updated successfully'
+    );
+  });
+
+  it('should handle throw error', async () => {
+    const updatedData = {
+      username: 'newUsername',
+      role: 'employee' as const,
+      password: 'newPassword',
+      email: 'newEmail',
+      address: 'newAddress',
+      isActive: false,
+    };
+
+    mockUsers[0].save = jest.fn().mockRejectedValue(new Error('Save failed'));
+
+    await expect(update(mockUsers[0], updatedData)).rejects.toThrow(
+      'Save failed'
+    );
+  });
+
+  it('should update only some fields and ensure others remain unchanged', async () => {
+    const updatedData = {
+      role: 'employee' as const,
+      password: 'newPassword',
+      address: 'newAddress',
+      isActive: false,
+    };
+    console.log(mockUsers[0]);
+    mockUsers[0].save = jest.fn().mockResolvedValue({
+      ...mockUsers[0],
+      ...updatedData,
+    });
+    const result = await update(mockUsers[0], updatedData);
+
+    expect(result.username).toBe('sarat'); // Unchanged
+    expect(result.role).toBe('employee');
+    expect(result.password).toBe('newPassword');
+    expect(result.email).toBe('sarat@gmail.com'); // Unchanged
+    expect(result.address).toBe('newAddress');
+    expect(result.isActive).toBe(false);
+    expect(logger.debug).toHaveBeenCalledWith('Updating user: sarat');
+    expect(logger.info).toHaveBeenCalledWith('User sarat updated successfully');
+  });
+
+  it('should handle empty update data', async () => {
+    const updatedData = {};
+    mockUsers[0].save = jest.fn().mockResolvedValue(mockUsers[0]);
+
+    const result = await update(mockUsers[0], updatedData);
+
+    expect(result).toEqual(mockUsers[0]);
+    expect(logger.debug).toHaveBeenCalledWith('Updating user: sarat');
+    expect(logger.info).toHaveBeenCalledWith('User sarat updated successfully');
   });
 });
