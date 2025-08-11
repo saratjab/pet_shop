@@ -2,16 +2,29 @@ import Pet from '../../models/petModel';
 import logger from '../../config/logger';
 import { petBuilder } from '../builder/petBuilder';
 import { getAllPets } from '../../service/petService';
+import { createPetType } from '../../types/petTypes';
 
 jest.mock('../../config/logger');
 
 describe('getAllPets service', () => {
-  let mockPets: any;
-  let mockPagination: any;
+  let mockPets: createPetType[];
+  let mockPagination: {
+    page: number;
+    limit: number;
+    sortBy: 'name' | 'price' | 'age';
+    order: 1 | -1;
+  };
 
   let sortMock: jest.Mock;
   let skipMock: jest.Mock;
   let limitMock: jest.Mock;
+
+  const mockFindAndCount = (filteredPets: any[], totalCount?: number) => {
+    limitMock.mockResolvedValue(filteredPets);
+    (Pet.countDocuments as jest.Mock).mockResolvedValue(
+      totalCount || mockPets.length
+    );
+  };
 
   beforeEach(async () => {
     mockPets = [
@@ -59,16 +72,15 @@ describe('getAllPets service', () => {
     // await Pet.insertMany(mockPets); useleless - mocking find, countDocument
   });
 
-  afterEach(() => {
-    Pet.deleteMany({});
+  afterEach(async () => {
+    await Pet.deleteMany({});
     jest.resetAllMocks();
   });
 
   it('should getAllPets based on their kind', async () => {
     const filteredPets = mockPets.filter((pet: any) => pet.kind === 'kind');
 
-    limitMock.mockResolvedValue(filteredPets);
-    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+    mockFindAndCount(filteredPets);
 
     const { pets, total } = await getAllPets({
       ...mockPagination,
@@ -88,8 +100,7 @@ describe('getAllPets service', () => {
   it('should getAllPets based on their gender', async () => {
     const filteredPets = mockPets.filter((pet: any) => pet.gender === 'F');
 
-    limitMock.mockResolvedValue(filteredPets);
-    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+    mockFindAndCount(filteredPets);
 
     const { pets, total } = await getAllPets({
       ...mockPagination,
@@ -109,8 +120,7 @@ describe('getAllPets service', () => {
   it('should getAllPets based on their isAdopted', async () => {
     const filteredPets = mockPets.filter((pet: any) => pet.isAdopted === false);
 
-    limitMock.mockResolvedValue(filteredPets);
-    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+    mockFindAndCount(filteredPets);
 
     const { pets, total } = await getAllPets({
       ...mockPagination,
@@ -130,8 +140,7 @@ describe('getAllPets service', () => {
   it('should getAllPets based on their age', async () => {
     const filteredPets = mockPets.filter((pet: any) => pet.age === 2);
 
-    limitMock.mockResolvedValue(filteredPets);
-    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+    mockFindAndCount(filteredPets);
 
     const { pets, total } = await getAllPets({
       ...mockPagination,
@@ -152,9 +161,7 @@ describe('getAllPets service', () => {
     const filteredPets = mockPets.filter(
       (pet: any) => pet.age >= 1 && pet.age <= 3
     );
-
-    limitMock.mockResolvedValue(filteredPets);
-    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+    mockFindAndCount(filteredPets);
 
     const { pets, total } = await getAllPets({
       ...mockPagination,
@@ -176,9 +183,7 @@ describe('getAllPets service', () => {
 
   it('should getAllPets based on their age range with min', async () => {
     const filteredPets = mockPets.filter((pet: any) => pet.age >= 1);
-
-    limitMock.mockResolvedValue(filteredPets);
-    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+    mockFindAndCount(filteredPets);
 
     const { pets, total } = await getAllPets({
       ...mockPagination,
@@ -200,8 +205,7 @@ describe('getAllPets service', () => {
   it('should getAllPets based on their age range with max', async () => {
     const filteredPets = mockPets.filter((pet: any) => pet.age <= 2);
 
-    limitMock.mockResolvedValue(filteredPets);
-    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+    mockFindAndCount(filteredPets);
 
     const { pets, total } = await getAllPets({
       ...mockPagination,
@@ -223,8 +227,7 @@ describe('getAllPets service', () => {
   it('should getAllPets based on their price', async () => {
     const filteredPets = mockPets.filter((pet: any) => pet.price === 100);
 
-    limitMock.mockResolvedValue(filteredPets);
-    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+    mockFindAndCount(filteredPets);
 
     const { pets, total } = await getAllPets({
       ...mockPagination,
@@ -246,8 +249,7 @@ describe('getAllPets service', () => {
       (pet: any) => pet.price >= 50 && pet.price <= 150
     );
 
-    limitMock.mockResolvedValue(filteredPets);
-    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+    mockFindAndCount(filteredPets);
 
     const { pets, total } = await getAllPets({
       ...mockPagination,
@@ -270,8 +272,7 @@ describe('getAllPets service', () => {
   it('should getAllPets based on their price range with min', async () => {
     const filteredPets = mockPets.filter((pet: any) => pet.price >= 50);
 
-    limitMock.mockResolvedValue(filteredPets);
-    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+    mockFindAndCount(filteredPets);
 
     const { pets, total } = await getAllPets({
       ...mockPagination,
@@ -293,8 +294,7 @@ describe('getAllPets service', () => {
   it('should getAllPets based on their price range with max', async () => {
     const filteredPets = mockPets.filter((pet: any) => pet.price <= 150);
 
-    limitMock.mockResolvedValue(filteredPets);
-    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+    mockFindAndCount(filteredPets);
 
     const { pets, total } = await getAllPets({
       ...mockPagination,
@@ -314,8 +314,7 @@ describe('getAllPets service', () => {
   });
 
   it('should return all pets sorted by name in ascending order', async () => {
-    limitMock.mockResolvedValue(mockPets);
-    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+    mockFindAndCount(mockPets);
 
     const { pets, total } = await getAllPets({
       ...mockPagination, // includes sortBy: 'name', order: 1
@@ -332,8 +331,7 @@ describe('getAllPets service', () => {
     const limitValue = 1;
     const skipValue = (page - 1) * limitValue;
 
-    limitMock.mockResolvedValue([mockPets[skipValue]]);
-    (Pet.countDocuments as jest.Mock).mockResolvedValue(mockPets.length);
+    mockFindAndCount([mockPets[skipValue]]);
 
     const { pets, total } = await getAllPets({
       ...mockPagination,
@@ -349,8 +347,7 @@ describe('getAllPets service', () => {
   });
 
   it('should handle empty results', async () => {
-    limitMock.mockResolvedValue([]);
-    (Pet.countDocuments as jest.Mock).mockResolvedValue(0);
+    mockFindAndCount([], 0);
 
     const { pets, total } = await getAllPets({
       ...mockPagination,
