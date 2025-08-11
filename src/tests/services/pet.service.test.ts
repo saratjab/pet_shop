@@ -21,9 +21,10 @@ describe('getAllPets service', () => {
 
   const mockFindAndCount = (filteredPets: any[], totalCount?: number) => {
     limitMock.mockResolvedValue(filteredPets);
-    (Pet.countDocuments as jest.Mock).mockResolvedValue(
-      totalCount || mockPets.length
-    );
+    if (totalCount === undefined) {
+      totalCount = mockPets.length;
+    }
+    (Pet.countDocuments as jest.Mock).mockResolvedValue(totalCount);
   };
 
   beforeEach(async () => {
@@ -74,7 +75,7 @@ describe('getAllPets service', () => {
 
   afterEach(async () => {
     await Pet.deleteMany({});
-    jest.resetAllMocks();
+    jest.restoreAllMocks();
   });
 
   it('should getAllPets based on their kind', async () => {
