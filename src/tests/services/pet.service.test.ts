@@ -3,6 +3,7 @@ import Pet from '../../models/petModel';
 import { deletePets } from '../../service/petService';
 import { petBuilder } from '../builder/petBuilder';
 import logger from '../../config/logger';
+import { E } from '@faker-js/faker/dist/airline-CLphikKp';
 
 jest.mock('../../config/logger');
 
@@ -17,11 +18,12 @@ describe('deletePets service', () => {
     mockTags = ['tag1', 'tag2'];
 
     // await Pet.insertMany(mockPets);
-    Pet.deleteMany = jest.fn().mockResolvedValue({ deletedCount: 2 });
+    jest.spyOn(Pet, 'deleteMany').mockResolvedValue({ deletedCount: 2 } as any);
   });
 
   afterEach(async () => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   it('should call deleteMany with correct IDs', async () => {
@@ -102,5 +104,18 @@ describe('deletePets service', () => {
         mockTags
       )
     ).rejects.toThrow('Deletion failed');
+  });
+
+  it('shuold handle if no pets deleted', async () => {
+    Pet.deleteMany = jest.fn().mockResolvedValue({ deletedCount: 0 });
+    await deletePets(
+      mockIds.map((id) => id.toString()),
+      undefined
+    );
+
+    expect(Pet.deleteMany).toHaveBeenCalledTimes(1);
+    expect(Pet.deleteMany).toHaveBeenCalledWith({
+      _id: { $in: mockIds.map((id) => id.toString()) },
+    });
   });
 });
