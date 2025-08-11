@@ -7,6 +7,7 @@ export const buildUserData = (overrides = {}) => {
     password: faker.internet.password(),
     role: 'admin',
     isActive: true,
+    gender: 'F',
     ...overrides,
   };
 };
