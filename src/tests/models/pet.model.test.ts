@@ -1,11 +1,11 @@
 import Pet, { IPet } from '../../models/petModel';
-import { petBuilderData } from '../builder/petBuilder';
+import { petBuilder } from '../builder/petBuilder';
 
 describe('Pet Model', () => {
   let petData: any;
 
   beforeEach(() => {
-    petData = petBuilderData();
+    petData = petBuilder();
   });
 
   it('should create and save a valid user', async () => {
