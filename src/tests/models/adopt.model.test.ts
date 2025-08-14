@@ -12,6 +12,7 @@ describe('Adopt model', () => {
   it('should create and save a valid adoption', async () => {
     const adopt: IAdopt = await Adopt.create(mockAdoptData);
 
+    expect(adopt).toBeDefined();
     expect(adopt.user_id).toBeDefined();
     expect(adopt.pets).toBeDefined();
     expect(adopt.payMoney).toBe(mockAdoptData.payMoney);
@@ -19,5 +20,27 @@ describe('Adopt model', () => {
     expect(adopt.status).toBe(mockAdoptData.status);
     expect(adopt.createdAt).toBeDefined();
     expect(adopt.updatedAt).toBeDefined();
+  });
+
+  describe('should set default values', () => {
+    it('should set default value for payMoney to be 0', async () => {
+      const adopt: IAdopt = await Adopt.create({
+        ...mockAdoptData,
+        payMoney: undefined,
+      });
+
+      expect(adopt).toBeDefined();
+      expect(adopt.payMoney).toBe(0);
+    });
+
+    it('should set default value for status to be pending', async () => {
+      const adopt: IAdopt = await Adopt.create({
+        ...mockAdoptData,
+        status: undefined,
+      });
+
+      expect(adopt).toBeDefined();
+      expect(adopt.status).toBe('pending');
+    });
   });
 });
