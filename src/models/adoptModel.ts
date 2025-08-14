@@ -6,6 +6,8 @@ export interface IAdopt extends Document {
   payMoney?: number;
   total?: number;
   status?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface Pay extends Document {
