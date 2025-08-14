@@ -44,6 +44,41 @@ describe('Adopt model', () => {
     });
   });
 
+  describe('status filed', () => {
+    it('should accept pending for status', async () => {
+      const adopt = await Adopt.create({ ...mockAdoptData, status: 'pending' });
+
+      expect(adopt).toBeDefined();
+      expect(adopt.status).toBe('pending');
+    });
+
+    it('should accept completed for status', async () => {
+      const adopt = await Adopt.create({
+        ...mockAdoptData,
+        status: 'completed',
+      });
+
+      expect(adopt).toBeDefined();
+      expect(adopt.status).toBe('completed');
+    });
+
+    it('should accept cancelled for status', async () => {
+      const adopt = await Adopt.create({
+        ...mockAdoptData,
+        status: 'cancelled',
+      });
+
+      expect(adopt).toBeDefined();
+      expect(adopt.status).toBe('cancelled');
+    });
+
+    it('should throw error if status is niether pending, completed nor cancelled', async () => {
+      const adopt = new Adopt({ ...mockAdoptData, status: 'invalid-status' });
+
+      await expect(adopt.save()).rejects.toThrow(/validation failed/i);
+    });
+  });
+
   it('should allow optional total field', async () => {
     const adopt = await Adopt.create({ ...mockAdoptData, total: 70 });
 
