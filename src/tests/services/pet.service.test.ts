@@ -283,10 +283,7 @@ describe('updatePets service', () => {
 
   it('should handle empty update fields', async () => {
     const emptyUpdate = {};
-    console.log('mockPet', mockPet);
     const updatedPet = await updatePets(mockPet as IPet, emptyUpdate);
-    console.log('mockPet', mockPet);
-    console.log('updatedPet', updatedPet);
     expect(mockSavePet).toHaveBeenCalledTimes(1);
     expect(mockSavePet).toHaveBeenCalledWith(mockPet);
     expect(updatedPet).toEqual(mockPet);
