@@ -6,6 +6,6 @@ export const adoptBuilder = (override = {}) => {
     pets: [faker.string.hexadecimal({ length: 24 })],
     payMoney: faker.number.float({ min: 10, max: 50 }),
     total: faker.number.float({ min: 50, max: 100 }),
-    statu: faker.helpers.arrayElement(['pending', 'completed', 'cancelled']),
+    status: faker.helpers.arrayElement(['pending', 'completed', 'cancelled']),
   };
 };
