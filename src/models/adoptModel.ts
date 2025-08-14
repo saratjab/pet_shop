@@ -35,7 +35,7 @@ const adoptSchema = new mongoose.Schema(
     total: {
       type: Number,
       required: [true, 'total not calculated'],
-      min: [0, 'total cannot be negative'],
+      min: [0, 'Age cannot be negative'],
     },
     status: {
       type: String,

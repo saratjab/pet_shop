@@ -138,4 +138,19 @@ describe('Adopt model', () => {
     expect(adopt).toBeDefined();
     expect(adopt.total).toBe(70);
   });
+
+  it('should modified updatedAt after modification and static createdAt', async () => {
+    const adopt = await Adopt.create(mockAdoptData);
+    const originalTimeUpdate = adopt.updatedAt;
+    const originalTimeCreate = adopt.createdAt;
+
+    adopt.payMoney = adopt.payMoney! + 10;
+    await adopt.save();
+
+    expect(adopt).toBeDefined();
+    expect(originalTimeUpdate?.getTime()).toBeLessThan(
+      adopt.updatedAt!.getTime()
+    );
+    expect(originalTimeCreate?.getTime()).toBe(adopt.createdAt!.getTime());
+  });
 });
