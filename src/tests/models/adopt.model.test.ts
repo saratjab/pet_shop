@@ -43,4 +43,11 @@ describe('Adopt model', () => {
       expect(adopt.status).toBe('pending');
     });
   });
+
+  it('should allow optional total field', async () => {
+    const adopt = await Adopt.create({ ...mockAdoptData, total: 70 });
+
+    expect(adopt).toBeDefined();
+    expect(adopt.total).toBe(70);
+  });
 });
