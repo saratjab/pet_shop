@@ -79,6 +79,59 @@ describe('Adopt model', () => {
     });
   });
 
+  describe('validatoin error', () => {
+    it('should throw validation errors if required fields are missing', async () => {
+      await expect(Adopt.create({})).rejects.toThrow(/validation failed/i);
+    });
+
+    it('should throw error if user_id is not a valid mongoose id', async () => {
+      const invalidAdopt = new Adopt({
+        ...mockAdoptData,
+        user_id: 'invalid-id',
+      });
+      await expect(invalidAdopt.save()).rejects.toThrow(/validation failed/i);
+    });
+
+    it('should throw error if pets are not an array', async () => {
+      const invalidAdopt = new Adopt({ ...mockAdoptData, pets: 'invalid-id' });
+      await expect(invalidAdopt.save()).rejects.toThrow(/validation failed/i);
+    });
+
+    it('should throw error if pets are not a valid mongoose id', async () => {
+      const invalidAdopt = new Adopt({
+        ...mockAdoptData,
+        pets: ['invalid-id'],
+      });
+      await expect(invalidAdopt.save()).rejects.toThrow(/validation failed/i);
+    });
+
+    it('should fail if payMoney is not a number', async () => {
+      const invalidAdopt = new Adopt({
+        ...mockAdoptData,
+        payMoney: 'invalid-payMoney',
+      });
+      await expect(invalidAdopt.save()).rejects.toThrow(/validation failed/i);
+    });
+
+    it('should fail if payMoney is negative', async () => {
+      const invalidAdopt = new Adopt({ ...mockAdoptData, payMoney: -1 });
+      await expect(invalidAdopt.save()).rejects.toThrow(/validation failed/i);
+    });
+
+    it('should fail if total is not a number', async () => {
+      const invalidAdopt = new Adopt({
+        ...mockAdoptData,
+        total: 'invalid-total',
+      });
+      await expect(invalidAdopt.save()).rejects.toThrow(/validation failed/i);
+    });
+
+    it('should fail if total is negative', async () => {
+      const invalidAdopt = new Adopt({ ...mockAdoptData, total: -1 });
+      await expect(invalidAdopt.save()).rejects.toThrow(/validation failed/i);
+    });
+  });
+
   it('should allow optional total field', async () => {
     const adopt = await Adopt.create({ ...mockAdoptData, total: 70 });
 

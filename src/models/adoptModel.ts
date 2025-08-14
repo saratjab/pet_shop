@@ -30,10 +30,12 @@ const adoptSchema = new mongoose.Schema(
     payMoney: {
       type: Number,
       default: 0,
+      min: [0, 'payMoney cannot be negative'],
     },
     total: {
       type: Number,
       required: [true, 'total not calculated'],
+      min: [0, 'total cannot be negative'],
     },
     status: {
       type: String,
