@@ -6,6 +6,8 @@ export interface IAdopt extends Document {
   payMoney?: number;
   total?: number;
   status?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface Pay extends Document {
@@ -28,10 +30,12 @@ const adoptSchema = new mongoose.Schema(
     payMoney: {
       type: Number,
       default: 0,
+      min: [0, 'payMoney cannot be negative'],
     },
     total: {
       type: Number,
       required: [true, 'total not calculated'],
+      min: [0, 'Age cannot be negative'],
     },
     status: {
       type: String,
