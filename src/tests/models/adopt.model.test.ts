@@ -1,9 +1,10 @@
+import mongoose from 'mongoose';
 import Adopt, { IAdopt } from '../../models/adoptModel';
 import { createAdopt } from '../../types/adoptTypes';
 import { adoptBuilder } from '../builder/adoptBuilder';
 
 describe('Adopt model', () => {
-  let mockAdoptData: any;
+  let mockAdoptData: createAdopt;
 
   beforeEach(() => {
     mockAdoptData = adoptBuilder();
