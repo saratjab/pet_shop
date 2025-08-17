@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { errorType } from '../types/errorType';
 
 let mongo: MongoMemoryServer;
 
@@ -8,9 +9,11 @@ beforeAll(async () => {
     mongo = await MongoMemoryServer.create();
 
     const uri = mongo.getUri();
-    const db = await mongoose.connect(uri);
-  } catch (err: any) {
-    throw new Error(`Failed to connect to the database: ${err.message}`);
+    await mongoose.connect(uri);
+  } catch (err: unknown) {
+    throw new Error(
+      `Failed to connect to the database: ${(err as errorType).message}`
+    );
   }
 });
 

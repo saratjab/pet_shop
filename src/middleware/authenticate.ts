@@ -5,12 +5,12 @@ import { localStorage } from '../utils/localStorage';
 import Blacklist from '../models/blacklistModel';
 import { accessTokenSecret, refresshTokenSecret } from '../app';
 import logger from '../config/logger';
+import { errorType } from '../types/errorType';
+import { IUser } from '../models/userModel';
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: any;
-    }
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: IUser;
   }
 }
 
@@ -45,8 +45,8 @@ export const authenticate = async (
     req.user = user;
     logger.info(`Authenticated user: ${user.username}`);
     next();
-  } catch (err: any) {
-    logger.error(`Authentication error: ${err.message}`);
+  } catch (err: unknown) {
+    logger.error(`Authentication error: ${(err as errorType).message}`);
     res.status(401).json({
       message: 'Authentication required. Please log in',
     });
@@ -81,8 +81,10 @@ export const verifyRefreshToken = async (
     req.user = user;
     logger.info(`Verified refresh token for user: ${user.username}`);
     next();
-  } catch (err: any) {
-    logger.error(`Refresh token verification failed: ${err.message}`);
+  } catch (err: unknown) {
+    logger.error(
+      `Refresh token verification failed: ${(err as errorType).message}`
+    );
     res.status(401).json({
       message: 'Authentication required. Please log in',
     });

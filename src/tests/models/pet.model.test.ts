@@ -1,8 +1,9 @@
 import Pet, { IPet } from '../../models/petModel';
+import { createPetType } from '../../types/petTypes';
 import { petBuilder } from '../builder/petBuilder';
 
 describe('Pet Model', () => {
-  let petData: any;
+  let petData: createPetType;
 
   beforeEach(() => {
     petData = petBuilder();
@@ -88,7 +89,7 @@ describe('Pet Model', () => {
   });
 
   it('should throw duplicate key error if petTag is not unique', async () => {
-    const pet = await Pet.create(petData);
+    await Pet.create(petData);
     const petDuplicate = new Pet(petData);
     await expect(petDuplicate.save()).rejects.toMatchObject({
       name: 'MongoServerError',

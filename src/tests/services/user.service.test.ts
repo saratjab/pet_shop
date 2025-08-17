@@ -1,5 +1,5 @@
 import logger from '../../config/logger';
-import User from '../../models/userModel';
+import User, { IUser } from '../../models/userModel';
 import {
   findAllUsers,
   findUserById,
@@ -11,6 +11,7 @@ import {
 import { buildUserData } from '../builder/userBuilder';
 import bcrypt from 'bcryptjs';
 import { userFixture } from '../fixture/userFixture';
+import { userType } from '../../types/userTypes';
 
 jest.mock('../../models/userModel');
 jest.mock('../../config/logger');
@@ -19,7 +20,7 @@ jest.mock('bcryptjs', () => ({
 }));
 
 describe('findAllUsers Service', () => {
-  let mockUsers: any[];
+  let mockUsers: userType[];
   beforeEach(async () => {
     jest.resetAllMocks();
     mockUsers = [
@@ -144,8 +145,8 @@ describe('findAllUsers Service', () => {
 });
 
 describe('findUserById Service', () => {
-  let mockUsers: any[];
-  let mockedLogger = logger as jest.Mocked<typeof logger>;
+  let mockUsers: userType[];
+  const mockedLogger = logger as jest.Mocked<typeof logger>;
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -188,7 +189,7 @@ describe('findUserById Service', () => {
 });
 
 describe('findUserByUsername Service', () => {
-  let mockUsers: any[];
+  let mockUsers: userType[];
   const mockedLogger = logger as jest.Mocked<typeof logger>;
 
   beforeEach(() => {
@@ -235,11 +236,12 @@ describe('findUserByUsername Service', () => {
 });
 
 describe('verifyPassword Service', () => {
-  let mockUsers: any[];
+  let mockUser: IUser;
   const mockedLogger = logger as jest.Mocked<typeof logger>;
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.resetAllMocks();
-    mockUsers = [buildUserData({ username: 'user1', password: '12345678' })];
+    const data = buildUserData({ username: 'user1', password: '12345678' });
+    mockUser = await User.create(data);
   });
 
   afterEach(() => {
@@ -249,13 +251,10 @@ describe('verifyPassword Service', () => {
   it('should return true when the password matches the stored hash', async () => {
     (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
-    const result = await verifyPassword('12345678', mockUsers[0]);
+    const result = await verifyPassword('12345678', mockUser);
 
     expect(result).toBe(true);
-    expect(bcrypt.compare).toHaveBeenCalledWith(
-      '12345678',
-      mockUsers[0].password
-    );
+    expect(bcrypt.compare).toHaveBeenCalledWith('12345678', mockUser.password);
     expect(mockedLogger.debug).toHaveBeenCalledWith(
       `Verifying password for user: user1`
     );
@@ -267,10 +266,10 @@ describe('verifyPassword Service', () => {
   it('should throw error when passwrod does not mtach', async () => {
     (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-    await expect(verifyPassword('1234', mockUsers[0])).rejects.toThrow(
+    await expect(verifyPassword('1234', mockUser)).rejects.toThrow(
       `Wrong Password`
     );
-    expect(bcrypt.compare).toHaveBeenCalledWith('1234', mockUsers[0].password);
+    expect(bcrypt.compare).toHaveBeenCalledWith('1234', mockUser.password);
     expect(mockedLogger.warn).toHaveBeenCalledWith(
       `Password mismatch for user: user1`
     );
@@ -278,11 +277,12 @@ describe('verifyPassword Service', () => {
 });
 
 describe('saveUser service', () => {
-  let mockUsers: any[];
+  let mockUser: IUser;
   const mockedLogger = logger as jest.Mocked<typeof logger>;
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.resetAllMocks();
-    mockUsers = [buildUserData({ id: '1' })];
+    const data = buildUserData({ id: '1' });
+    mockUser = await User.create(data);
   });
 
   afterEach(() => {
@@ -291,17 +291,17 @@ describe('saveUser service', () => {
 
   it('should successfully save a valid user and return the saved document', async () => {
     (User as unknown as jest.Mock).mockImplementation(() => ({
-      save: jest.fn().mockResolvedValue(mockUsers[0]),
+      save: jest.fn().mockResolvedValue(mockUser),
     }));
 
-    const result = await saveUser(mockUsers[0]);
+    const result = await saveUser(mockUser);
 
-    expect(result).toEqual(mockUsers[0]);
+    expect(result).toEqual(mockUser);
     expect(mockedLogger.debug).toHaveBeenCalledWith(
       'Saving new user to the database'
     );
     expect(mockedLogger.debug).toHaveBeenCalledWith(
-      `User saved with ID: ${mockUsers[0]._id}`
+      `User saved with ID: ${mockUser._id}`
     );
   });
 
@@ -310,7 +310,7 @@ describe('saveUser service', () => {
       save: jest.fn().mockResolvedValue(null),
     }));
 
-    await expect(saveUser(mockUsers[0])).rejects.toThrow('Error saving user');
+    await expect(saveUser(mockUser)).rejects.toThrow('Error saving user');
     expect(mockedLogger.debug).toHaveBeenCalledWith(
       'Saving new user to the database'
     );
@@ -319,12 +319,12 @@ describe('saveUser service', () => {
 });
 
 describe('update service', () => {
-  let mockUsers: any[];
+  let mockUser: IUser;
   const mockedLogger = logger as jest.Mocked<typeof logger>;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    mockUsers = [{ ...userFixture }];
+    mockUser = new User(userFixture);
   });
 
   afterEach(() => {
@@ -341,11 +341,11 @@ describe('update service', () => {
       isActive: false,
     };
 
-    mockUsers[0].save = jest.fn().mockResolvedValue({
-      ...mockUsers[0],
+    mockUser.save = jest.fn().mockResolvedValue({
+      ...mockUser,
       ...updatedData,
     });
-    const result = await update(mockUsers[0], updatedData);
+    const result = await update(mockUser, updatedData);
 
     expect(result.username).toBe('newUsername');
     expect(result.role).toBe('employee');
@@ -353,8 +353,8 @@ describe('update service', () => {
     expect(result.email).toBe('newEmail');
     expect(result.address).toBe('newAddress');
     expect(result.isActive).toBe(false);
-    expect(logger.debug).toHaveBeenCalledWith('Updating user: sarat');
-    expect(logger.info).toHaveBeenCalledWith(
+    expect(mockedLogger.debug).toHaveBeenCalledWith('Updating user: sarat');
+    expect(mockedLogger.info).toHaveBeenCalledWith(
       'User newUsername updated successfully'
     );
   });
@@ -369,11 +369,9 @@ describe('update service', () => {
       isActive: false,
     };
 
-    mockUsers[0].save = jest.fn().mockRejectedValue(new Error('Save failed'));
+    mockUser.save = jest.fn().mockRejectedValue(new Error('Save failed'));
 
-    await expect(update(mockUsers[0], updatedData)).rejects.toThrow(
-      'Save failed'
-    );
+    await expect(update(mockUser, updatedData)).rejects.toThrow('Save failed');
   });
 
   it('should update only some fields and ensure others remain unchanged', async () => {
@@ -383,12 +381,12 @@ describe('update service', () => {
       address: 'newAddress',
       isActive: false,
     };
-    console.log(mockUsers[0]);
-    mockUsers[0].save = jest.fn().mockResolvedValue({
-      ...mockUsers[0],
+    console.log(mockUser);
+    mockUser.save = jest.fn().mockResolvedValue({
+      ...mockUser,
       ...updatedData,
     });
-    const result = await update(mockUsers[0], updatedData);
+    const result = await update(mockUser, updatedData);
 
     expect(result.username).toBe('sarat'); // Unchanged
     expect(result.role).toBe('employee');
@@ -396,18 +394,22 @@ describe('update service', () => {
     expect(result.email).toBe('sarat@gmail.com'); // Unchanged
     expect(result.address).toBe('newAddress');
     expect(result.isActive).toBe(false);
-    expect(logger.debug).toHaveBeenCalledWith('Updating user: sarat');
-    expect(logger.info).toHaveBeenCalledWith('User sarat updated successfully');
+    expect(mockedLogger.debug).toHaveBeenCalledWith('Updating user: sarat');
+    expect(mockedLogger.info).toHaveBeenCalledWith(
+      'User sarat updated successfully'
+    );
   });
 
   it('should handle empty update data', async () => {
     const updatedData = {};
-    mockUsers[0].save = jest.fn().mockResolvedValue(mockUsers[0]);
+    mockUser.save = jest.fn().mockResolvedValue(mockUser);
 
-    const result = await update(mockUsers[0], updatedData);
+    const result = await update(mockUser, updatedData);
 
-    expect(result).toEqual(mockUsers[0]);
-    expect(logger.debug).toHaveBeenCalledWith('Updating user: sarat');
-    expect(logger.info).toHaveBeenCalledWith('User sarat updated successfully');
+    expect(result).toEqual(mockUser);
+    expect(mockedLogger.debug).toHaveBeenCalledWith('Updating user: sarat');
+    expect(mockedLogger.info).toHaveBeenCalledWith(
+      'User sarat updated successfully'
+    );
   });
 });

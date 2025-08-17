@@ -1,4 +1,5 @@
 import { IPet } from '../models/petModel';
+import { createPetType } from '../types/petTypes';
 import { BaseClient } from './BaseClient';
 
 const client = new BaseClient();
@@ -13,16 +14,7 @@ export const getAllPets = async (): Promise<IPet[]> => {
   }
 };
 
-export const registerPet = async (pet: {
-  petTag: string;
-  name: string;
-  kind: string;
-  age: number;
-  price: number;
-  description?: string;
-  gender: string;
-  isAdopted: boolean;
-}) => {
+export const registerPet = async (pet: createPetType) => {
   try {
     const savedPet = await client.post<IPet>('/pets', pet);
     return savedPet.data;

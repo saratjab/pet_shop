@@ -81,7 +81,7 @@ export const saveAdopt = async (
   } else if (adoptDoc.payMoney === adoptDoc.total!) {
     adoptDoc.status = 'completed';
   } else {
-    let remaining = adoptDoc.payMoney! - adoptDoc.total!;
+    const remaining = adoptDoc.payMoney! - adoptDoc.total!;
     logger.warn(`Overpayment detected, Refunding remaining: ${remaining}`);
     adoptDoc.payMoney = adoptDoc.total!;
     throw Error(`remining ${remaining}$`);
@@ -186,7 +186,7 @@ export const cancelingPets = async (
   await makePetsNotAdopted(petsToCancel);
   logger.info(`Marked pets as not adopted`);
 
-  let newTotal = adopt.total! - total;
+  const newTotal = adopt.total! - total;
 
   if (newTotal === 0) {
     adopt.payMoney = 0;

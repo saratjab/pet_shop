@@ -5,7 +5,7 @@ export const buildUserData = (overrides = {}) => {
     username: faker.internet.username(),
     email: faker.internet.email(),
     password: faker.internet.password(),
-    role: 'admin',
+    role: faker.helpers.arrayElement(['customer', 'employee', 'admin']),
     isActive: true,
     gender: 'F',
     ...overrides,

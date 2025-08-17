@@ -12,6 +12,7 @@ import {
 } from '../service/adoptService';
 import { pagination } from '../types/paginationTypes';
 import logger from '../config/logger';
+import { errorType } from '../types/errorType';
 
 export const getAdoptions = async (
   req: Request,
@@ -41,16 +42,16 @@ export const getAdoptions = async (
         },
       });
     }
-  } catch (err: any) {
-    logger.error(`Failed to get adoptions: ${err.message}`);
-    const errors = handleError(err);
+  } catch (err: unknown) {
+    logger.error(`Failed to get adoptions: ${(err as errorType).message}`);
+    const errors = handleError(err as errorType);
     res.status(404).json(errors);
   }
 };
 
 export const adoption = async (req: Request, res: Response): Promise<void> => {
   try {
-    const user_id = req.user.id;
+    const user_id = req.user!.id;
     if (!user_id) {
       logger.warn('User ID missing on adoption request');
       throw Error('User not found');
@@ -62,12 +63,11 @@ export const adoption = async (req: Request, res: Response): Promise<void> => {
     const savedAdopt = await saveAdopt(adopt);
     logger.info(`Adoption saved successfully with id: ${savedAdopt._id}`);
     res.status(201).json(formatAdoptResponse(adopt));
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.error('Failed to save adoption', {
-      message: err.message,
-      stack: err.stack,
+      message: (err as errorType).message,
     });
-    const errors = handleError(err);
+    const errors = handleError(err as errorType);
     res.status(400).json(errors);
   }
 };
@@ -75,7 +75,7 @@ export const adoption = async (req: Request, res: Response): Promise<void> => {
 export const getMyPets = async (req: Request, res: Response): Promise<void> => {
   try {
     //! test
-    const user_id = req.user.id;
+    const user_id = req.user!.id;
     if (!user_id) {
       logger.warn('User ID missing on getMyPets request');
       throw Error('User not found');
@@ -86,12 +86,11 @@ export const getMyPets = async (req: Request, res: Response): Promise<void> => {
 
     logger.info(`Returning ${pets.length} pets for user: ${user_id}`);
     res.status(200).json(pets);
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.error('Failed to get user pets', {
-      message: err.message,
-      stack: err.stack,
+      message: (err as errorType).message,
     });
-    const errors = handleError(err);
+    const errors = handleError(err as errorType);
     res.status(404).json(errors);
   }
 };
@@ -101,7 +100,7 @@ export const getRemains = async (
   res: Response
 ): Promise<void> => {
   try {
-    const user_id = req.user.id;
+    const user_id = req.user!.id;
     if (!user_id) {
       logger.warn('User ID missing on getRemains request');
       throw Error('User not found');
@@ -112,12 +111,11 @@ export const getRemains = async (
 
     logger.info(`Remaining balance retrieved for user: ${user_id}`);
     res.status(200).json(infoPay);
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.error('Failed to get remaining payment info', {
-      message: err.message,
-      stack: err.stack,
+      message: (err as errorType).message,
     });
-    const errors = handleError(err);
+    const errors = handleError(err as errorType);
     res.status(500).json(errors);
   }
 };
@@ -125,7 +123,7 @@ export const getRemains = async (
 export const payment = async (req: Request, res: Response): Promise<void> => {
   try {
     const money = req.body.payMoney;
-    const user_id = req.user.id;
+    const user_id = req.user!.id;
     if (!user_id) {
       logger.warn('User ID missing on payment request');
       throw Error('User not found');
@@ -135,12 +133,11 @@ export const payment = async (req: Request, res: Response): Promise<void> => {
     const pays = await payments(user_id, money);
     logger.info(`Payment successful for user: ${user_id}, amount: ${money}`);
     res.status(200).json(pays);
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.error('Payment processing failed', {
-      message: err.message,
-      stack: err.stack,
+      message: (err as errorType).message,
     });
-    const errors = handleError(err);
+    const errors = handleError(err as errorType);
     res.status(400).json(errors);
   }
 };
@@ -151,7 +148,7 @@ export const cancelPets = async (
 ): Promise<void> => {
   try {
     const pets = req.body.pets;
-    const user_id = req.user.id;
+    const user_id = req.user!.id;
 
     logger.debug(
       `User ${user_id} requested to cancel pets: ${JSON.stringify(pets)}`
@@ -160,12 +157,11 @@ export const cancelPets = async (
 
     logger.info(`Pets cancelled for user ${user_id}`);
     res.status(200).json(adopt);
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.error('Failed to cancel pets', {
-      message: err.message,
-      stack: err.stack,
+      message: (err as errorType).message,
     });
-    const errors = handleError(err);
+    const errors = handleError(err as errorType);
     res.status(400).json(errors);
   }
 };
@@ -182,12 +178,11 @@ export const getAdoption = async (
 
     logger.info(`Adoption retrieved: ${adopt_id}`);
     res.status(200).json(formatAdoptResponse(adopt));
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.error('Failed to get adoption', {
-      message: err.message,
-      stack: err.stack,
+      message: (err as errorType).message,
     });
-    const errors = handleError(err);
+    const errors = handleError(err as errorType);
     res.status(400).json(errors);
   }
 };

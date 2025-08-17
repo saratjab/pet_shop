@@ -176,8 +176,3 @@ export const paginatedUsersResponseSchema = z
     pagination: paginationSchema,
   })
   .openapi('PaginatedUsersResponse');
-
-const x = { a: 1, b: 2 };
-function sayHi(name: string) {
-  console.log('hi', name);
-}

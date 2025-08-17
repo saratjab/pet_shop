@@ -39,7 +39,7 @@ if (!mongoUrl) throw new Error('Mongo Url is not define');
 
 mongoose
   .connect(mongoUrl)
-  .then((data) =>
+  .then(() =>
     app.listen(parseInt(env.PORT), () => console.log('Server started'))
   )
   .catch((err) => new Error(err));

@@ -12,6 +12,7 @@ import {
 } from '../service/userService';
 import { pagination } from '../types/paginationTypes';
 import logger from '../config/logger';
+import { errorType } from '../types/errorType';
 
 export const registerUser = async (
   req: Request,
@@ -26,9 +27,9 @@ export const registerUser = async (
 
     logger.info(`User registered successfully: ${savedUser._id}`);
     res.status(201).json(formatUserResponse(savedUser));
-  } catch (err: any) {
-    logger.error(`Registration failed: ${err.message}`);
-    const errors = handleError(err);
+  } catch (err: unknown) {
+    logger.error(`Registration failed: ${(err as errorType).message}`);
+    const errors = handleError(err as errorType);
     res.status(500).json(errors);
   }
 };
@@ -49,11 +50,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       refreshToken,
       user: formatUserResponse(user),
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.error(
-      `Login failed for username: ${req.body?.username} - ${err.message}`
+      `Login failed for username: ${req.body?.username} - ${(err as errorType).message}`
     );
-    const errors = handleError(err);
+    const errors = handleError(err as errorType);
     res.status(404).json(errors);
   }
 };
@@ -71,9 +72,9 @@ export const registerEmployee = async (
 
     logger.info(`User registered successfully: ${savedEmp._id}`);
     res.status(201).json(formatUserResponse(savedEmp));
-  } catch (err: any) {
-    logger.error(`Registration failed: ${err.message}`);
-    const errors = handleError(err);
+  } catch (err: unknown) {
+    logger.error(`Registration failed: ${(err as errorType).message}`);
+    const errors = handleError(err as errorType);
     res.status(400).json(errors);
   }
 };
@@ -104,9 +105,9 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
         },
       });
     }
-  } catch (err: any) {
-    logger.error(`Error fetching users: ${err.message}`);
-    const errors = handleError(err);
+  } catch (err: unknown) {
+    logger.error(`Error fetching users: ${(err as errorType).message}`);
+    const errors = handleError(err as errorType);
     res.status(500).json(errors);
   }
 };
@@ -122,9 +123,9 @@ export const getUserById = async (
     const user = await findUserById(id);
     logger.info(`User found: ${user.username}`);
     res.status(200).json(formatUserResponse(user));
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.warn(`User not found with ID: ${req.params.id}`);
-    const errors = handleError(err);
+    const errors = handleError(err as errorType);
     res.status(404).json(errors);
   }
 };
@@ -140,9 +141,9 @@ export const getUserByUsername = async (
     const user = await findUserByUsername(username);
     logger.info(`User found: ${username}`);
     res.status(200).json(formatUserResponse(user));
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.warn(`User not found: ${req.params.username}`);
-    const errors = handleError(err);
+    const errors = handleError(err as errorType);
     res.status(404).json(errors);
   }
 };
@@ -153,7 +154,7 @@ export const updateUserData = async (
 ): Promise<void> => {
   try {
     const updatedData = req.body;
-    const id = req.user.id;
+    const id = req.user!.id;
 
     logger.debug(`User [${id}] requested profile update`);
     const user = await findUserById(id);
@@ -162,9 +163,11 @@ export const updateUserData = async (
 
     logger.info(`User [${id}] profile updated successfully`);
     res.status(200).json(formatUserResponse(updatedUser));
-  } catch (err: any) {
-    logger.error(`Failed to update user [${req.user?.id}]: ${err.message}`);
-    const errors = handleError(err);
+  } catch (err: unknown) {
+    logger.error(
+      `Failed to update user [${req.user?.id}]: ${(err as errorType).message}`
+    );
+    const errors = handleError(err as errorType);
     res.status(500).json(errors);
   }
 };
@@ -184,11 +187,11 @@ export const updateByAdmin = async (
 
     logger.info(`Admin successfully updated user [${username}]`);
     res.status(200).json(formatUserResponse(updatedUser));
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.error(
-      `Admin failed to update user [${req.params.username}]: ${err.message}`
+      `Admin failed to update user [${req.params.username}]: ${(err as errorType).message}`
     );
-    const errors = handleError(err);
+    const errors = handleError(err as errorType);
     res.status(500).json(errors);
   }
 };
@@ -198,7 +201,7 @@ export const deleteUserAccount = async (
   res: Response
 ): Promise<void> => {
   try {
-    const id = req.user.id;
+    const id = req.user!.id;
 
     logger.debug(`User [${id}] requested account deletion`);
     const user = await findUserById(id);
@@ -207,11 +210,11 @@ export const deleteUserAccount = async (
 
     logger.info(`User [${user.username}] account deleted (soft delete)`);
     res.status(200).json({ message: `${user.username} has been deleted` });
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.error(
-      `Error deleting user account [${req.user?.id}]: ${err.message}`
+      `Error deleting user account [${req.user?.id}]: ${(err as errorType).message}`
     );
-    const errors = handleError(err);
+    const errors = handleError(err as errorType);
     res.status(404).json(errors);
   }
 };
@@ -230,11 +233,11 @@ export const deleteUserById = async (
 
     logger.info(`User [${user.username}] deleted by ID [${id}]`);
     res.status(200).json({ message: `${user.username} has been deleted` });
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.error(
-      `Error deleting user by ID [${req.params.id}]: ${err.message}`
+      `Error deleting user by ID [${req.params.id}]: ${(err as errorType).message}`
     );
-    const errors = handleError(err);
+    const errors = handleError(err as errorType);
     res.status(404).json(errors);
   }
 };
@@ -253,11 +256,11 @@ export const deleteUserByUsername = async (
 
     logger.info(`User [${username}] deleted`);
     res.status(200).json({ message: `${user.username} have been deleted` });
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.error(
-      `Error deleting user [${req.params.username}]: ${err.message}`
+      `Error deleting user [${req.params.username}]: ${(err as errorType).message}`
     );
-    const errors = handleError(err);
+    const errors = handleError(err as errorType);
     res.status(404).json(errors);
   }
 };

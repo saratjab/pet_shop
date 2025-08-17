@@ -1,7 +1,6 @@
 import { localStorage } from '../utils/localStorage';
 import { IUser } from '../models/userModel';
 import { BaseClient } from './BaseClient';
-import { resolveTypeReferenceDirective } from 'typescript';
 
 interface TokenTake {
   token: string;
@@ -18,8 +17,8 @@ const client = new BaseClient();
 
 export const loginInfo = async () => {
   try {
-    let username = 'sarat';
-    let password = '123';
+    const username = 'sarat';
+    const password = '123';
     const response = await client.post<TokenTake>(`/login`, {
       username,
       password,
@@ -33,10 +32,10 @@ export const loginInfo = async () => {
 };
 
 export const register = async (info: {
-  username: string;
-  role: string;
-  password: string;
-  email: string;
+  username?: string;
+  role?: 'admin' | 'employee' | 'customer';
+  password?: string;
+  email?: string;
   address?: string;
 }) => {
   try {
@@ -74,7 +73,7 @@ export const refreshing = async () => {
 
 export const logingOut = async () => {
   try {
-    const response = await client.post('/logout');
+    await client.post('/logout');
     console.log('Success log out');
     return;
   } catch (err) {

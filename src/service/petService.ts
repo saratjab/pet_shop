@@ -1,5 +1,5 @@
 import Pets, { IPet } from '../models/petModel';
-import { HydratedDocument } from 'mongoose';
+import { FilterQuery, HydratedDocument } from 'mongoose';
 import { getPetsQuery, updatePetType } from '../types/petTypes';
 import logger from '../config/logger';
 
@@ -80,7 +80,7 @@ export const filter = async (
 ): Promise<{ pets: HydratedDocument<IPet>[]; total: number }> => {
   logger.debug(`Filtering pets with query`);
 
-  let newQuery: any = {};
+  const newQuery: FilterQuery<IPet> = {};
   if (query.kind) newQuery.kind = query.kind;
   if (query.gender) newQuery.gender = query.gender;
   if (query.isAdopted !== undefined) newQuery.isAdopted = query.isAdopted;

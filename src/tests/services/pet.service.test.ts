@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { DeleteResult, HydratedDocument } from 'mongoose';
 import logger from '../../config/logger';
 import Pet, { IPet } from '../../models/petModel';
 import { petFixture } from '../fixture/petFixture';
@@ -89,17 +89,15 @@ describe('findPetById service', () => {
   });
 
   it('should handle database error', async () => {
-    const mockFindById = jest
-      .spyOn(Pet, 'findById')
-      .mockRejectedValue(new Error('DB error'));
+    jest.spyOn(Pet, 'findById').mockRejectedValue(new Error('DB error'));
     await expect(findPetById(id.toString())).rejects.toThrow('DB error');
   });
 });
 
 describe('findPetByPetTag service', () => {
-  let mockPet: any;
-  let mockedLogger: any;
-  let petTag = 'tag1';
+  let mockPet: createPetType;
+  let mockedLogger: jest.Mocked<typeof logger>;
+  const petTag = 'tag1';
 
   beforeEach(async () => {
     mockedLogger = logger as jest.Mocked<typeof logger>;
@@ -195,9 +193,7 @@ describe('savePet service', () => {
   });
 
   it('should throw error when .save() returns null', async () => {
-    const saveSpy = jest
-      .spyOn(Pet.prototype, 'save')
-      .mockResolvedValue(null as any);
+    const saveSpy = jest.spyOn(Pet.prototype, 'save').mockResolvedValue(null);
 
     await expect(savePet(mockPet as IPet)).rejects.toThrow('Error saving pet');
     expect(mockedLogger.debug.mock.calls[0][0]).toBe(
@@ -240,7 +236,7 @@ describe('updatePets service', () => {
     mockSavedUpdates = { ...mockPet, ...mockUpdatedField };
     mockSavePet = jest
       .spyOn(petService, 'savePet')
-      .mockImplementation((pet) => pet as any);
+      .mockImplementation(async (pet: IPet) => pet as HydratedDocument<IPet>);
   });
 
   afterEach(() => {
@@ -298,7 +294,7 @@ describe('updatePets service', () => {
 
   it('should log an error if savePet fails', async () => {
     mockSavePet = jest
-      .spyOn(require('../../service/petService'), 'savePet')
+      .spyOn(petService, 'savePet')
       .mockRejectedValue(new Error('Save failed'));
 
     await expect(updatePets(mockPet as IPet, mockUpdatedField)).rejects.toThrow(
@@ -314,7 +310,7 @@ describe('updatePets service', () => {
 describe('deletePets service', () => {
   let mockIds: mongoose.Types.ObjectId[];
   let mockTags: string[];
-  let mockedLogger: any;
+  let mockedLogger: jest.Mocked<typeof logger>;
 
   beforeEach(async () => {
     mockedLogger = logger as jest.Mocked<typeof logger>;
@@ -322,7 +318,9 @@ describe('deletePets service', () => {
     mockTags = ['tag1', 'tag2'];
 
     // await Pet.insertMany(mockPets);
-    jest.spyOn(Pet, 'deleteMany').mockResolvedValue({ deletedCount: 2 } as any);
+    jest
+      .spyOn(Pet, 'deleteMany')
+      .mockResolvedValue({ deletedCount: 2 } as DeleteResult);
   });
 
   afterEach(async () => {

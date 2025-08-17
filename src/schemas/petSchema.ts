@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { paginationQuerySchema, paginationSchema } from './paginationSchema';
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
-import { registerPet } from '../controllers/petController';
 
 extendZodWithOpenApi(z);
 const objError = { required_error: 'field is required' };

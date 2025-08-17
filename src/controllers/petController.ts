@@ -12,6 +12,7 @@ import {
   deletePets,
 } from '../service/petService';
 import logger from '../config/logger';
+import { errorType } from '../types/errorType';
 
 export const registerPet = async (
   req: Request,
@@ -26,9 +27,9 @@ export const registerPet = async (
 
     logger.info(`Pet registered successfully: ${savedPet}`);
     res.status(201).json(formatPetResponse(savedPet));
-  } catch (err: any) {
-    logger.error(`Registration failed: ${err.message}`);
-    const errors = handleError(err);
+  } catch (err: unknown) {
+    logger.error(`Registration failed: ${(err as errorType).message}`);
+    const errors = handleError(err as errorType);
     res.status(400).json(errors);
   }
 };
@@ -59,9 +60,9 @@ export const filterPets = async (
           pages: Math.ceil(total / query.limit),
         },
       });
-  } catch (err: any) {
-    logger.error(`Error filtering pets: ${err.message}`);
-    const errors = handleError(err);
+  } catch (err: unknown) {
+    logger.error(`Error filtering pets: ${(err as errorType).message}`);
+    const errors = handleError(err as errorType);
     res.json(404).json(errors);
   }
 };
@@ -74,12 +75,12 @@ export const getPetById = async (
     const id = req.params.id;
     logger.debug(`Fetching pet by ID: ${id}`);
 
-    let pet = await findPetById(id);
+    const pet = await findPetById(id);
     logger.info(`Pet found: ${pet.petTag}`);
     res.status(200).json(formatPetResponse(pet));
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.warn(`Pet not found with ID: ${req.params.id}`);
-    const errors = handleError(err);
+    const errors = handleError(err as errorType);
     res.status(404).json(errors);
   }
 };
@@ -92,12 +93,12 @@ export const getPetByPetTag = async (
     const petTag = req.params.petTag;
     logger.debug(`Fetching pet by petTag: ${petTag}`);
 
-    let pet = await findPetByPetTag(petTag);
+    const pet = await findPetByPetTag(petTag);
     logger.info(`Pet found: ${petTag}`);
     res.status(200).json(formatPetResponse(pet));
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.warn(`Pet not found: ${req.params.petTag}`);
-    const errors = handleError(err);
+    const errors = handleError(err as errorType);
     res.status(404).json(errors);
   }
 };
@@ -115,9 +116,11 @@ export const updatePetById = async (
     const updatedPet = await updatePets(pet, updatedData);
     logger.info(`Pet [${id}] info updated successfully`);
     res.status(200).json(formatPetResponse(updatedPet));
-  } catch (err: any) {
-    logger.error(`Failed to update pet: [${req.params.id}]: ${err.message}`);
-    const errors = handleError(err);
+  } catch (err: unknown) {
+    logger.error(
+      `Failed to update pet: [${req.params.id}]: ${(err as errorType).message}`
+    );
+    const errors = handleError(err as errorType);
     res.status(400).json(errors);
   }
 };
@@ -135,9 +138,11 @@ export const updatePetByPetTag = async (
     const updatedPet = await updatePets(pet, updatedData);
     logger.info(`Pet [${petTag}] info updated successfully`);
     res.status(200).json(formatPetResponse(updatedPet));
-  } catch (err: any) {
-    logger.error(`Failed to update pet: [${req.params.id}]: ${err.message}`);
-    const errors = handleError(err);
+  } catch (err: unknown) {
+    logger.error(
+      `Failed to update pet: [${req.params.id}]: ${(err as errorType).message}`
+    );
+    const errors = handleError(err as errorType);
     res.status(400).json(errors);
   }
 };
@@ -153,11 +158,11 @@ export const deletePetById = async (
     await deletePets(id);
     logger.info(`Pet [${id}] has been deleted`);
     res.status(204).json({ message: 'you deleted pets' });
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.error(
-      `Error deleting user by ID [${req.params.id}]: ${err.message}`
+      `Error deleting user by ID [${req.params.id}]: ${(err as errorType).message}`
     );
-    const errors = handleError(err);
+    const errors = handleError(err as errorType);
     res.status(400).json(errors);
   }
 };
@@ -173,9 +178,11 @@ export const deletePetByPetTag = async (
     await deletePets(undefined, petTag);
     logger.info(`Pets has been deleted`);
     res.status(204).json({ message: 'you deleted pets' });
-  } catch (err: any) {
-    logger.error(`Error deleting pets by pet tag: ${err.message}`);
-    const errors = handleError(err);
+  } catch (err: unknown) {
+    logger.error(
+      `Error deleting pets by pet tag: ${(err as errorType).message}`
+    );
+    const errors = handleError(err as errorType);
     res.status(400).json(errors);
   }
 };

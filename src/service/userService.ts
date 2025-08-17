@@ -3,6 +3,7 @@ import User, { IUser } from '../models/userModel';
 import { HydratedDocument } from 'mongoose';
 import { updateUserType } from '../types/userTypes';
 import logger from '../config/logger';
+import { errorType } from '../types/errorType';
 
 export const findAllUsers = async (pagination: {
   limit: number;
@@ -22,8 +23,8 @@ export const findAllUsers = async (pagination: {
       `Found ${users.length} users out of ${total} total active users`
     );
     return { users, total };
-  } catch (err: any) {
-    logger.error(`Error fetching users: ${err.message}`);
+  } catch (err: unknown) {
+    logger.error(`Error fetching users: ${(err as errorType).message}`);
     throw err;
   }
 };
