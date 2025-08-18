@@ -25,4 +25,4 @@ jobs:
         run: npm ci
 
       - name: Run ESLint
-        run: npx eslint . -f github --max-warnings=0
+        run: npm run lint
