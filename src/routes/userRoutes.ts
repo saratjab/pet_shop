@@ -1,4 +1,5 @@
 import express from 'express';
+
 import { validate } from '../middleware/validate';
 import { authorizeRoles } from '../middleware/authorize';
 import { logOut, refreshToken } from '../controllers/authControllers';

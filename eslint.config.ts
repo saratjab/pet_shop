@@ -15,45 +15,45 @@
 //
 // eslint.config.ts
 
-import { defineConfig } from "eslint/config";
-import tsParser from "@typescript-eslint/parser";
-import tsPlugin from "@typescript-eslint/eslint-plugin";
-import importPlugin from "eslint-plugin-import";
+import { defineConfig } from 'eslint/config';
+import tsParser from '@typescript-eslint/parser';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
+import importPlugin from 'eslint-plugin-import';
 
 export default defineConfig([
   {
-    ignores: ["dist/**", "node_modules/**"],
+    ignores: ['dist/**', 'node_modules/**', "**config.ts"],
   },
   {
-    files: ["**/*.ts"],
+    files: ['**/*.ts'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
         project: "./tsconfig.json",
-        sourceType: "module",
+        sourceType: 'module',
       },
     },
     plugins: {
-      "@typescript-eslint": tsPlugin as any,
+      '@typescript-eslint': tsPlugin as any,
       import: importPlugin,
     },
     rules: {
       // Style
-      indent: ["error", 2],
-      quotes: ["error", "single"],
-      semi: ["error", "always"],
-      "prefer-const": "error",
+      indent: ['error', 2],
+      quotes: ['error', 'single'],
+      semi: ['error', 'always'],
+      'prefer-const': 'error',
 
       // TypeScript
-      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
-      "@typescript-eslint/no-explicit-any": "warn",
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'warn',
 
       // Import rules
-      "import/order": [
-        "error",
+      'import/order': [
+        'error',
         {
-          groups: [["builtin", "external"], ["internal"], ["parent", "sibling", "index"]],
-          "newlines-between": "always",
+          groups: [['builtin', 'external'], ['internal'], ['parent', 'sibling', 'index']],
+          'newlines-between': 'always',
         },
       ],
     },

@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { paginationQuerySchema, paginationSchema } from './paginationSchema';
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
+
+import { paginationQuerySchema, paginationSchema } from './paginationSchema';
 
 extendZodWithOpenApi(z);
 const objError = { required_error: 'field is required' };
@@ -84,7 +85,7 @@ export const petIdDeleteSchema = z
       .array(z.string(objError).length(24, 'Invalid MongooDB ObjectId'))
       .nonempty('At least one ID is required')
       .openapi({
-        description: `an array of id's`,
+        description: 'an array of id\'s',
       }),
   })
   .openapi('PetIDDelete');

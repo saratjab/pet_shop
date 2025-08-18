@@ -2,6 +2,7 @@
 
 import { Db, MongoClient } from 'mongodb';
 import dotenv from 'dotenv';
+
 import { handleError } from '../utils/handleErrors';
 import { errorType } from '../types/errorType';
 dotenv.config();

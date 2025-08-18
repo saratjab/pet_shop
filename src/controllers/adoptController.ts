@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+
 import { handleError } from '../utils/handleErrors';
 import { formatAdoptResponse } from '../utils/format';
 import {
@@ -20,7 +21,7 @@ export const getAdoptions = async (
 ): Promise<void> => {
   try {
     const query = req.query as unknown as pagination;
-    logger.debug(`Fetching adoptions`);
+    logger.debug('Fetching adoptions');
 
     const skip = (query.page - 1) * query.limit;
     const { adoptions, total } = await findAllAdopts({

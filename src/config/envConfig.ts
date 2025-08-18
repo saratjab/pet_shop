@@ -4,7 +4,7 @@ import path from 'path';
 const node_env = process.env.NODE_ENV || 'development';
 
 dotenv.config({
-  path: path.resolve(process.cwd(), `.env`),
+  path: path.resolve(process.cwd(), '.env'),
 });
 
 dotenv.config({

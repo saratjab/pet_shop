@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
-import User, { IUser } from '../models/userModel';
 import { HydratedDocument } from 'mongoose';
+
+import User, { IUser } from '../models/userModel';
 import { updateUserType } from '../types/userTypes';
 import logger from '../config/logger';
 import { errorType } from '../types/errorType';
@@ -59,13 +60,13 @@ export const findUserByUsername = async (
 export const saveUser = async (
   user: IUser
 ): Promise<HydratedDocument<IUser>> => {
-  logger.debug(`Saving new user to the database`);
+  logger.debug('Saving new user to the database');
 
   const newUser = new User(user);
   const savedUser = await newUser.save();
   if (!savedUser) {
-    logger.error(`Failed to save user`);
-    throw Error(`Error saving user`);
+    logger.error('Failed to save user');
+    throw Error('Error saving user');
   }
 
   logger.debug(`User saved with ID: ${savedUser._id}`);
@@ -81,7 +82,7 @@ export const verifyPassword = async (
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     logger.warn(`Password mismatch for user: ${user.username}`);
-    throw Error(`Wrong Password`);
+    throw Error('Wrong Password');
   }
   logger.debug(`Password verification successful for user: ${user.username}`);
   return isMatch;

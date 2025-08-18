@@ -6,7 +6,7 @@ const client = new BaseClient();
 
 export const getAllPets = async (): Promise<IPet[]> => {
   try {
-    const response = await client.get<IPet[]>(`/pets`);
+    const response = await client.get<IPet[]>('/pets');
     return response.data;
   } catch (err) {
     console.error('Error in getAllPets');

@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+
 import logger from '../config/logger';
 
 export const generateToken = (userId: string) => {

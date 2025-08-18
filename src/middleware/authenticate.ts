@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
+
 import { findUserById } from '../service/userService';
 import { localStorage } from '../utils/localStorage';
 import Blacklist from '../models/blacklistModel';
@@ -19,7 +20,7 @@ export const authenticate = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  logger.debug(`check headers for token`);
+  logger.debug('check headers for token');
   console.log(req.headers);
   const authHeader = req.headers['authorization'];
   const token = authHeader?.split(' ')[1];

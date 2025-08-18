@@ -21,7 +21,7 @@ interface ValidationErrorObject {
 } // ToDo: add the adopt
 
 export const handleError = (error: errorType): ValidationErrorObject => {
-  logger.error(`Handled Error`);
+  logger.error('Handled Error');
   const errorsObj: ValidationErrorObject = {};
   const name: string = error.name;
   if (name === 'ValidationError') {

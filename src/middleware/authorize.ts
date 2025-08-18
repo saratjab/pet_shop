@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+
 import logger from '../config/logger';
 
 export const authorizeRoles = (...roles: string[]) => {
@@ -6,7 +7,7 @@ export const authorizeRoles = (...roles: string[]) => {
     logger.debug(`Allowed roles: [${roles.join(', ')}]`);
 
     if (!req.user || !roles.includes(req.user.role)) {
-      logger.warn(`Access denied for user`);
+      logger.warn('Access denied for user');
       res.status(403).json({
         message: 'Access denied. You are not authorized.',
       });

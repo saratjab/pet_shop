@@ -1,3 +1,5 @@
+import bcrypt from 'bcryptjs';
+
 import logger from '../../config/logger';
 import User, { IUser } from '../../models/userModel';
 import {
@@ -9,7 +11,6 @@ import {
   verifyPassword,
 } from '../../service/userService';
 import { buildUserData } from '../builder/userBuilder';
-import bcrypt from 'bcryptjs';
 import { userFixture } from '../fixture/userFixture';
 import { userType } from '../../types/userTypes';
 
@@ -49,7 +50,7 @@ describe('findAllUsers Service', () => {
     expect(result.users).toEqual(mockUsers);
     expect(result.total).toBe(mockUsers.length);
     expect(logger.debug).toHaveBeenCalledWith(
-      `Fetching users with limit=4, skip=0`
+      'Fetching users with limit=4, skip=0'
     );
     expect(logger.info).toHaveBeenCalledWith(
       `Found ${mockUsers.length} users out of ${mockUsers.length} total active users`
@@ -72,7 +73,7 @@ describe('findAllUsers Service', () => {
     expect(result.users.every((user) => user.isActive)).toBe(true);
     expect(result.total).toBe(activeUsers.length);
     expect(logger.debug).toHaveBeenCalledWith(
-      `Fetching users with limit=10, skip=0`
+      'Fetching users with limit=10, skip=0'
     );
     expect(logger.info).toHaveBeenCalledWith(
       `Found ${activeUsers.length} users out of ${activeUsers.length} total active users`
@@ -96,7 +97,7 @@ describe('findAllUsers Service', () => {
     expect(limitSpy).toHaveBeenCalledWith(3);
     expect(result).toEqual({ users: mockUsers, total: 2 });
     expect(logger.debug).toHaveBeenCalledWith(
-      `Fetching users with limit=3, skip=5`
+      'Fetching users with limit=3, skip=5'
     );
     expect(logger.info).toHaveBeenCalledWith(
       `Found ${mockUsers.length} users out of 2 total active users`
@@ -116,10 +117,10 @@ describe('findAllUsers Service', () => {
     expect(result.users).toEqual([]);
     expect(result.total).toBe(0);
     expect(logger.debug).toHaveBeenCalledWith(
-      `Fetching users with limit=4, skip=0`
+      'Fetching users with limit=4, skip=0'
     );
     expect(logger.info).toHaveBeenCalledWith(
-      `Found 0 users out of 0 total active users`
+      'Found 0 users out of 0 total active users'
     );
   });
 
@@ -168,22 +169,22 @@ describe('findUserById Service', () => {
 
     expect(result).toBe(mockUsers[0]);
     expect(mockedLogger.debug).toHaveBeenCalledWith(
-      `Looking for active user with ID: 1`
+      'Looking for active user with ID: 1'
     );
-    expect(mockedLogger.debug).toHaveBeenCalledWith(`User found with ID: 1`);
+    expect(mockedLogger.debug).toHaveBeenCalledWith('User found with ID: 1');
   });
 
   it('should throw Error when user not exist', async () => {
     await expect(findUserById('4')).rejects.toThrow('User not found');
     expect(mockedLogger.warn).toHaveBeenCalledWith(
-      `User not found or inactive with ID: 4`
+      'User not found or inactive with ID: 4'
     );
   });
 
   it('should throw Error when user not active', async () => {
     await expect(findUserById('3')).rejects.toThrow('User not found');
     expect(mockedLogger.warn).toHaveBeenCalledWith(
-      `User not found or inactive with ID: 3`
+      'User not found or inactive with ID: 3'
     );
   });
 });
@@ -223,14 +224,14 @@ describe('findUserByUsername Service', () => {
       'User not found'
     );
     expect(mockedLogger.warn).toHaveBeenCalledWith(
-      `User not found or inactive: invalid username`
+      'User not found or inactive: invalid username'
     );
   });
 
   it('should throw error when user not active', async () => {
     await expect(findUserByUsername('user2')).rejects.toThrow('User not found');
     expect(mockedLogger.warn).toHaveBeenCalledWith(
-      `User not found or inactive: user2`
+      'User not found or inactive: user2'
     );
   });
 });
@@ -256,10 +257,10 @@ describe('verifyPassword Service', () => {
     expect(result).toBe(true);
     expect(bcrypt.compare).toHaveBeenCalledWith('12345678', mockUser.password);
     expect(mockedLogger.debug).toHaveBeenCalledWith(
-      `Verifying password for user: user1`
+      'Verifying password for user: user1'
     );
     expect(mockedLogger.debug).toHaveBeenCalledWith(
-      `Password verification successful for user: user1`
+      'Password verification successful for user: user1'
     );
   });
 
@@ -267,11 +268,11 @@ describe('verifyPassword Service', () => {
     (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
     await expect(verifyPassword('1234', mockUser)).rejects.toThrow(
-      `Wrong Password`
+      'Wrong Password'
     );
     expect(bcrypt.compare).toHaveBeenCalledWith('1234', mockUser.password);
     expect(mockedLogger.warn).toHaveBeenCalledWith(
-      `Password mismatch for user: user1`
+      'Password mismatch for user: user1'
     );
   });
 });

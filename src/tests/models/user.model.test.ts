@@ -1,5 +1,6 @@
-import User from '../../models/userModel';
 import bcrypt from 'bcryptjs';
+
+import User from '../../models/userModel';
 import { buildUserData } from '../builder/userBuilder';
 import { userType } from '../../types/userTypes';
 

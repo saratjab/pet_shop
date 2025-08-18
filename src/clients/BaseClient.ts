@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 import { localStorage } from '../utils/localStorage';
 import { createPetType } from '../types/petTypes';
 import { userType } from '../types/userTypes';

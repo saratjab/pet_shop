@@ -19,7 +19,7 @@ export const loginInfo = async () => {
   try {
     const username = 'sarat';
     const password = '123';
-    const response = await client.post<TokenTake>(`/login`, {
+    const response = await client.post<TokenTake>('/login', {
       username,
       password,
     });

@@ -1,5 +1,6 @@
-import Pets, { IPet } from '../models/petModel';
 import { FilterQuery, HydratedDocument } from 'mongoose';
+
+import Pets, { IPet } from '../models/petModel';
 import { getPetsQuery, updatePetType } from '../types/petTypes';
 import logger from '../config/logger';
 
@@ -30,13 +31,13 @@ export const findPetByPetTag = async (
 };
 
 export const savePet = async (pet: IPet): Promise<HydratedDocument<IPet>> => {
-  logger.debug(`saving new pet to database`);
+  logger.debug('saving new pet to database');
 
   const newPet = new Pets(pet);
   const savedPet = await newPet.save();
   if (!savedPet) {
     logger.warn('Error saving pet to database');
-    throw Error(`Error saving pet`);
+    throw Error('Error saving pet');
   }
   logger.debug(`Pet saved with ID: ${savedPet._id}`);
   return savedPet;
@@ -61,13 +62,13 @@ export const deletePets = async (
     throw new Error('Either id or petTag must be provided');
   }
   if (id) {
-    logger.info(`Deleting pets by IDs`);
+    logger.info('Deleting pets by IDs');
     await Pets.deleteMany({
       _id: { $in: id },
     });
   }
   if (petTag) {
-    logger.info(`Deleting pets by petTags`);
+    logger.info('Deleting pets by petTags');
     await Pets.deleteMany({
       petTag: { $in: petTag },
     });
@@ -78,7 +79,7 @@ export const deletePets = async (
 export const filter = async (
   query: getPetsQuery
 ): Promise<{ pets: HydratedDocument<IPet>[]; total: number }> => {
-  logger.debug(`Filtering pets with query`);
+  logger.debug('Filtering pets with query');
 
   const newQuery: FilterQuery<IPet> = {};
   if (query.kind) newQuery.kind = query.kind;

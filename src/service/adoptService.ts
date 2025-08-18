@@ -1,6 +1,7 @@
+import { HydratedDocument } from 'mongoose';
+
 import Adopt, { IAdopt } from '../models/adoptModel';
 import Pets, { IPet } from '../models/petModel';
-import { HydratedDocument } from 'mongoose';
 import { findUserById } from '../service/userService';
 import logger from '../config/logger';
 
@@ -13,7 +14,7 @@ type paymentSummary = {
 export const isPetValid = async (
   pets: string[]
 ): Promise<HydratedDocument<IPet>[]> => {
-  logger.debug(`Validation pets`);
+  logger.debug('Validation pets');
   const petsData = await Pets.find({
     _id: { $in: pets },
   });
@@ -173,8 +174,8 @@ export const cancelingPets = async (
   const cancelablePetIds = pets.filter((id) => userAdoptedPets.includes(id));
 
   if (cancelablePetIds.length === 0) {
-    logger.warn(`None of the selected pets are part of the user's pets`);
-    throw Error(`None of the selected pets are part of the user's pets`);
+    logger.warn('None of the selected pets are part of the user\'s pets');
+    throw Error('None of the selected pets are part of the user\'s pets');
   }
 
   const petsToCancel = await Pets.find({
@@ -184,14 +185,14 @@ export const cancelingPets = async (
   const total = await getTotalPrice(petsToCancel);
 
   await makePetsNotAdopted(petsToCancel);
-  logger.info(`Marked pets as not adopted`);
+  logger.info('Marked pets as not adopted');
 
   const newTotal = adopt.total! - total;
 
   if (newTotal === 0) {
     adopt.payMoney = 0;
     adopt.status = 'cancelled';
-    logger.info(`All pets canceled. adoption fully cancelled for user`);
+    logger.info('All pets canceled. adoption fully cancelled for user');
   } else if (adopt.payMoney! >= newTotal) {
     adopt.payMoney = newTotal;
     adopt.status = 'completed';

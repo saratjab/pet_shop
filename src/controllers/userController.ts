@@ -1,4 +1,5 @@
 import { Response, Request } from 'express';
+
 import { handleError } from '../utils/handleErrors';
 import { formatUserResponse } from '../utils/format';
 import { generateRefreshToken, generateToken } from '../utils/jwt';

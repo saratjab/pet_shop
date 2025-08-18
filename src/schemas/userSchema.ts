@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
+
 import { paginationSchema } from './paginationSchema';
 
 extendZodWithOpenApi(z);
@@ -165,7 +166,7 @@ export const usernameParamSchema = z
       .nonempty('must be at least 1 character')
       .openapi({
         example: 'user123',
-        description: `user's username`,
+        description: 'user\'s username',
       }),
   })
   .openapi('UsernameParam');

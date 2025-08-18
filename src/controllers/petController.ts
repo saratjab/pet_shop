@@ -1,5 +1,6 @@
-import { IPet } from '../models/petModel';
 import { Request, Response } from 'express';
+
+import { IPet } from '../models/petModel';
 import { handleError } from '../utils/handleErrors';
 import { formatPetResponse } from '../utils/format';
 import { getPetsQuery } from '../types/petTypes';
@@ -176,7 +177,7 @@ export const deletePetByPetTag = async (
     logger.debug(`requested deletion of pet by ID [${petTag}]`);
 
     await deletePets(undefined, petTag);
-    logger.info(`Pets has been deleted`);
+    logger.info('Pets has been deleted');
     res.status(204).json({ message: 'you deleted pets' });
   } catch (err: unknown) {
     logger.error(
