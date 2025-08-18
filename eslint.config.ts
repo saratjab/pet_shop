@@ -22,14 +22,14 @@ import importPlugin from 'eslint-plugin-import';
 
 export default defineConfig([
   {
-    ignores: ['dist/**', 'node_modules/**', "**config.ts"],
+    ignores: ['dist/**', 'node_modules/**', '**config.ts'],
   },
   {
     files: ['**/*.ts'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: "./tsconfig.json",
+        project: './tsconfig.json',
         sourceType: 'module',
       },
     },
@@ -45,14 +45,21 @@ export default defineConfig([
       'prefer-const': 'error',
 
       // TypeScript
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
+      '@typescript-eslint/no-explicit-any': 'error',
 
       // Import rules
       'import/order': [
         'error',
         {
-          groups: [['builtin', 'external'], ['internal'], ['parent', 'sibling', 'index']],
+          groups: [
+            ['builtin', 'external'],
+            ['internal'],
+            ['parent', 'sibling', 'index'],
+          ],
           'newlines-between': 'always',
         },
       ],
