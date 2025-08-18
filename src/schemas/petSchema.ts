@@ -85,7 +85,7 @@ export const petIdDeleteSchema = z
       .array(z.string(objError).length(24, 'Invalid MongooDB ObjectId'))
       .nonempty('At least one ID is required')
       .openapi({
-        description: 'an array of id\'s',
+        description: "an array of id's",
       }),
   })
   .openapi('PetIDDelete');

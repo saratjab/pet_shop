@@ -16,17 +16,17 @@ const openApiDocument = generator.generateDocument({
   servers:
     env.node_env === 'development'
       ? [
-        {
-          url: 'http://localhost:3000',
-          description: 'development server',
-        },
-      ]
+          {
+            url: 'http://localhost:3000',
+            description: 'development server',
+          },
+        ]
       : [
-        {
-          url: 'http://localhost:8000',
-          description: 'production server',
-        },
-      ],
+          {
+            url: 'http://localhost:8000',
+            description: 'production server',
+          },
+        ],
 });
 
 export const swaggerDocs = {
