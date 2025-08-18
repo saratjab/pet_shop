@@ -205,7 +205,7 @@ describe('savePet service', () => {
     );
 
     expect(saveSpy).toHaveBeenCalled();
-    saveSpy.mockRestore(); // reset the method to it's original behavior
+    saveSpy.mockRestore(); 
   });
 
   it('should call save method on the pet instance', async () => {
