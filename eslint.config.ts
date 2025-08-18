@@ -39,9 +39,9 @@ export default defineConfig([
     },
     rules: {
       // Style
-      indent: ['error', 2],
       quotes: ['error', 'single'],
       semi: ['error', 'always'],
+      indent: ['error', 2],
       'prefer-const': 'error',
 
       // TypeScript
