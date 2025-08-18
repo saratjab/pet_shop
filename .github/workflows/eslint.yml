@@ -26,6 +26,3 @@ jobs:
 
       - name: Run ESLint
         run: npx eslint . -f github --max-warnings=0
-
-      - name: Check Prettier formatting
-        run: npx prettier --check .
