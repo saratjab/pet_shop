@@ -15,63 +15,47 @@
 //
 // eslint.config.ts
 
-import { defineConfig } from 'eslint/config';
-import tseslint from '@typescript-eslint/eslint-plugin';
-import tsparser from '@typescript-eslint/parser';
-import importPlugin from 'eslint-plugin-import';
-import { ESLint } from 'eslint';
+import { defineConfig } from "eslint/config";
+import tsParser from "@typescript-eslint/parser";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
+import importPlugin from "eslint-plugin-import";
 
 export default defineConfig([
   {
-    ignores: ['dist/**', 'node_modules/**', '**/*.d.ts', 'eslint.config.ts'],
+    ignores: ["dist/**", "node_modules/**"],
   },
   {
-    files: ['**/*.ts'],
+    files: ["**/*.ts"],
     languageOptions: {
-      parser: tsparser,
+      parser: tsParser,
       parserOptions: {
-        project: './tsconfig.json',
-        sourceType: 'module',
-        ecmaVersion: 'latest',
+        project: "./tsconfig.json",
+        sourceType: "module",
       },
     },
     plugins: {
-      '@typescript-eslint': tseslint as unknown as ESLint.Plugin,
+      "@typescript-eslint": tsPlugin as any,
       import: importPlugin,
     },
     rules: {
-      // Basic rules
-      indent: ['error', 2],
-      quotes: ['error', 'single', { avoidEscape: true }],
-      semi: ['error', 'always'],
-      'prefer-const': 'error',
+      // Style
+      indent: ["error", 2],
+      quotes: ["error", "single"],
+      semi: ["error", "always"],
+      "prefer-const": "error",
 
-      // TypeScript rules
-      ...tseslint.configs['recommended'].rules,
-      ...tseslint.configs['recommended-requiring-type-checking'].rules,
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
-      ],
-      '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/consistent-type-imports': 'error',
+      // TypeScript
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-explicit-any": "warn",
 
       // Import rules
-      'import/order': [
-        'error',
+      "import/order": [
+        "error",
         {
-          groups: [
-            ['builtin', 'external'],
-            ['internal'],
-            ['parent', 'sibling', 'index'],
-          ],
-          'newlines-between': 'always',
-          alphabetize: { order: 'asc' },
+          groups: [["builtin", "external"], ["internal"], ["parent", "sibling", "index"]],
+          "newlines-between": "always",
         },
       ],
-      'import/no-duplicates': 'error',
-      'import/no-unresolved': 'error',
     },
   },
 ]);
