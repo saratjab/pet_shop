@@ -1,6 +1,7 @@
 import { localStorage } from '../utils/localStorage';
 import { IUser } from '../models/userModel';
 import { BaseClient } from './BaseClient';
+import { userType } from '../types/userTypes';
 
 interface TokenTake {
   token: string;
@@ -31,13 +32,7 @@ export const loginInfo = async () => {
   }
 };
 
-export const register = async (info: {
-  username?: string;
-  role?: 'admin' | 'employee' | 'customer';
-  password?: string;
-  email?: string;
-  address?: string;
-}) => {
+export const register = async (info: userType) => {
   try {
     const newUser = await client.post<IUser>('/user', info);
     return newUser.data;
@@ -71,7 +66,7 @@ export const refreshing = async () => {
   }
 };
 
-export const logingOut = async () => {
+export const logOut = async () => {
   try {
     await client.post('/logout');
     console.log('Success log out');
