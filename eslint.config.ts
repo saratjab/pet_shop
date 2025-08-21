@@ -38,10 +38,6 @@ export default defineConfig([
       import: importPlugin,
     },
     rules: {
-      // Style
-      quotes: ['error', 'single'],
-      semi: ['error', 'always'],
-      indent: ['error', 2],
       'prefer-const': 'error',
 
       // TypeScript

@@ -166,7 +166,7 @@ export const usernameParamSchema = z
       .nonempty('must be at least 1 character')
       .openapi({
         example: 'user123',
-        description: 'user\'s username',
+        description: "user's username",
       }),
   })
   .openapi('UsernameParam');

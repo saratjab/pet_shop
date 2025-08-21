@@ -174,8 +174,8 @@ export const cancelingPets = async (
   const cancelablePetIds = pets.filter((id) => userAdoptedPets.includes(id));
 
   if (cancelablePetIds.length === 0) {
-    logger.warn('None of the selected pets are part of the user\'s pets');
-    throw Error('None of the selected pets are part of the user\'s pets');
+    logger.warn("None of the selected pets are part of the user's pets");
+    throw Error("None of the selected pets are part of the user's pets");
   }
 
   const petsToCancel = await Pets.find({
