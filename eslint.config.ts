@@ -32,7 +32,7 @@ export default defineConfig([
         project: './tsconfig.json',
         sourceType: 'module',
       },
-    },
+    }, 
     plugins: {
       '@typescript-eslint': tsPlugin as any,
       import: importPlugin,
