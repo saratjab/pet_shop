@@ -1,6 +1,8 @@
 import { faker } from '@faker-js/faker';
 
-export const petBuilder = (override = {}): object => {
+import type { createPetType } from '../../types/petTypes';
+
+export const petBuilder = (override = {}): createPetType => {
   return {
     petTag: faker.string.alpha(5).toLowerCase(),
     name: faker.string.alpha(5),
