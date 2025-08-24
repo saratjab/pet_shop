@@ -14,7 +14,7 @@ export const getAllPets = async (): Promise<IPet[]> => {
   }
 };
 
-export const registerPet = async (pet: createPetType) => {
+export const registerPet = async (pet: createPetType): Promise<IPet> => {
   try {
     const savedPet = await client.post<IPet>({ url: '/pets', data: pet });
     return savedPet;

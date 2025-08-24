@@ -16,7 +16,7 @@ interface TokenTake {
 
 const client = new BaseClient();
 
-export const loginInfo = async () => {
+export const loginInfo = async (): Promise<void> => {
   try {
     const username = 'sarat';
     const password = '123';
@@ -32,7 +32,7 @@ export const loginInfo = async () => {
   }
 };
 
-export const register = async (info: userType) => {
+export const register = async (info: userType): Promise<IUser> => {
   try {
     const newUser = await client.post<IUser>({ url: '/user', data: info });
     return newUser;
@@ -42,7 +42,7 @@ export const register = async (info: userType) => {
   }
 };
 
-export const getUserById = async (id: string) => {
+export const getUserById = async (id: string): Promise<IUser> => {
   try {
     const user = await client.get<IUser>(`/user/id/${id}`);
     return user;
@@ -52,7 +52,7 @@ export const getUserById = async (id: string) => {
   }
 };
 
-export const refreshing = async () => {
+export const refreshing = async (): Promise<string> => {
   try {
     const response = await client.post<{ accessToken: string }>({
       url: '/refresh-token',
@@ -66,7 +66,7 @@ export const refreshing = async () => {
   }
 };
 
-export const logOut = async () => {
+export const logOut = async (): Promise<void> => {
   try {
     await client.post({ url: '/logout' });
     console.log('Success log out');
