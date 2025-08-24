@@ -20,9 +20,14 @@ export const isPetValid = async (
   const petsData = await Pets.find({
     _id: { $in: pets },
   });
-  if (petsData.some((p) => !p || p.isAdopted)) {
-    logger.warn('One or more pets not found or already adopted');
-    throw Error('One or more pets not found or already adopted');
+
+  if (pets.length !== petsData.length) {
+    logger.warn('One or more pets not found');
+    throw Error('One or more pets not found');
+  }
+  if (petsData.some((p) => p.isAdopted)) {
+    logger.warn('One or more pets already adopted');
+    throw Error('One or more pets already adopted');
   }
 
   logger.info('All pets are valid and available for adoption');

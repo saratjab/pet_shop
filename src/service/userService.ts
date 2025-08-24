@@ -61,17 +61,18 @@ export const findUserByUsername = async (
 export const saveUser = async (
   user: IUser
 ): Promise<HydratedDocument<IUser>> => {
-  logger.debug('Saving new user to the database');
+  try {
+    logger.debug('Saving new user to the database');
 
-  const newUser = new User(user);
-  const savedUser = await newUser.save();
-  if (!savedUser) {
-    logger.error('Failed to save user');
+    const newUser = new User(user);
+    const savedUser = await newUser.save();
+
+    logger.debug(`User saved with ID: ${savedUser._id}`);
+    return savedUser;
+  } catch (err) {
+    logger.error('Failed to save user', err);
     throw Error('Error saving user');
   }
-
-  logger.debug(`User saved with ID: ${savedUser._id}`);
-  return savedUser;
 };
 
 export const verifyPassword = async (
