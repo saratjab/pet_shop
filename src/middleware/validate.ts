@@ -7,7 +7,7 @@ import type { errorType } from '../types/errorType';
 
 export const validate =
   (body: ZodSchema | null, query: ZodSchema | null, params: ZodSchema | null) =>
-  (req: Request, res: Response, next: NextFunction) => {
+  (req: Request, res: Response, next: NextFunction): void => {
     try {
       logger.debug(`Validating request for ${req.method} ${req.originalUrl}`);
 

@@ -17,7 +17,7 @@ export const authenticate = async (
   console.log(req.headers);
   const authHeader = req.headers['authorization'];
   const token = authHeader?.split(' ')[1];
-  if (!token) {
+  if (token === null || token === undefined || token === '') {
     logger.warn('Authentication failed: Missing or invalid token format');
     res.status(401).json({ message: 'Invalide token format' });
     return;
@@ -52,8 +52,8 @@ export const verifyRefreshToken = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const token = localStorage.getItem('refreshToken') || req.body.refreshToken;
-  if (!token) {
+  const token = localStorage.getItem('refreshToken') ?? req.body.refreshToken;
+  if (token === undefined || token === null || token === '') {
     logger.warn('Refresh token missing in verifyRefreshToken');
     res.status(401).json({ message: 'Refresh Token missing' });
     return;
