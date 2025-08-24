@@ -16,7 +16,7 @@ export const getAllPets = async (): Promise<IPet[]> => {
 
 export const registerPet = async (pet: createPetType) => {
   try {
-    const savedPet = await client.post<IPet>('/pets', pet);
+    const savedPet = await client.post<IPet>({ url: '/pets', data: pet });
     return savedPet.data;
   } catch (err) {
     console.error('Error in registerPet', err);

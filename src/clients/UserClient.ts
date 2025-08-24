@@ -20,9 +20,9 @@ export const loginInfo = async () => {
   try {
     const username = 'sarat';
     const password = '123';
-    const response = await client.post<TokenTake>('/login', {
-      username,
-      password,
+    const response = await client.post<TokenTake>({
+      url: '/login',
+      data: { username, password },
     });
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('refreshToken', response.data.refreshToken);
@@ -34,7 +34,7 @@ export const loginInfo = async () => {
 
 export const register = async (info: userType) => {
   try {
-    const newUser = await client.post<IUser>('/user', info);
+    const newUser = await client.post<IUser>({ url: '/user', data: info });
     return newUser.data;
   } catch (err) {
     console.error('Error in register', err);
@@ -54,9 +54,9 @@ export const getUserById = async (id: string) => {
 
 export const refreshing = async () => {
   try {
-    const response = await client.post<{ accessToken: string }>(
-      '/refresh-token'
-    );
+    const response = await client.post<{ accessToken: string }>({
+      url: '/refresh-token',
+    });
     const accessToken = response.data.accessToken;
     localStorage.setItem('token', accessToken);
     return accessToken;
@@ -68,7 +68,7 @@ export const refreshing = async () => {
 
 export const logOut = async () => {
   try {
-    await client.post('/logout');
+    await client.post({ url: '/logout' });
     console.log('Success log out');
     return;
   } catch (err) {

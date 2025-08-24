@@ -6,7 +6,11 @@ import { userType } from '../types/userTypes';
 
 type AxiosInstance = ReturnType<typeof axios.create>;
 type AxiosRequestConfig = NonNullable<Parameters<typeof axios.get>[1]>;
-
+type params = {
+  url: string;
+  data?: createPetType | userType;
+  config?: AxiosRequestConfig;
+};
 export class BaseClient {
   private client: AxiosInstance;
 
@@ -68,20 +72,12 @@ export class BaseClient {
     return this.client.get<T>(url, config);
   }
 
-  public post<T>(
-    url: string,
-    data?: createPetType | userType,
-    config?: AxiosRequestConfig
-  ) {
-    return this.client.post<T>(url, data, config);
+  public post<T>(params: params) {
+    return this.client.post<T>(params.url, params.data, params.config);
   }
 
-  public put<T>(
-    url: string,
-    data: createPetType | userType,
-    config?: AxiosRequestConfig
-  ) {
-    return this.client.put<T>(url, data, config);
+  public put<T>(params: params) {
+    return this.client.put<T>(params.url, params.data, params.config);
   }
 
   public delete<T>(url: string, config?: AxiosRequestConfig) {
