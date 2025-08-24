@@ -173,21 +173,37 @@ export const filterPetsQueryAndPaginationSchema = filterPetsQuerySchema
   .merge(paginationQuerySchema)
   .strict()
   .superRefine((data, ctx) => {
-    if (data.age && (data.minAge || data.maxAge)) {
+    if (
+      data.age !== null &&
+      data.age !== undefined &&
+      ((data.minAge !== null && data.minAge !== undefined) ||
+        (data.maxAge !== null && data.maxAge !== undefined))
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'Use either age OR minAge/maxAge, not both.',
         path: ['age'],
       });
     }
-    if (data.price && (data.minPrice || data.maxPrice)) {
+    if (
+      data.price !== null &&
+      data.price !== undefined &&
+      ((data.minPrice !== null && data.minPrice !== undefined) ||
+        (data.maxPrice !== null && data.maxPrice !== undefined))
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'Use either price OR minPrice/maxPrice, not both.',
         path: ['price'],
       });
     }
-    if (data.minAge && data.maxAge) {
+
+    if (
+      data.minAge !== null &&
+      data.minAge !== undefined &&
+      data.maxAge !== null &&
+      data.maxAge !== undefined
+    ) {
       if (data.minAge > data.maxAge) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -196,7 +212,12 @@ export const filterPetsQueryAndPaginationSchema = filterPetsQuerySchema
         });
       }
     }
-    if (data.minPrice && data.maxPrice) {
+    if (
+      data.minPrice !== null &&
+      data.minPrice !== undefined &&
+      data.maxPrice !== null &&
+      data.maxPrice !== undefined
+    ) {
       if (data.minPrice > data.maxPrice) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
