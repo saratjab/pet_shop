@@ -9,7 +9,8 @@ import type { errorType } from '../types/errorType';
 dotenv.config();
 
 const mongoUrl = process.env.MONGO_URL;
-if (mongoUrl === null || mongoUrl === undefined || mongoUrl === '') throw Error('Mongo URL is not defined');
+if (mongoUrl === null || mongoUrl === undefined || mongoUrl === '')
+  throw Error('Mongo URL is not defined');
 
 const client = new MongoClient(mongoUrl);
 

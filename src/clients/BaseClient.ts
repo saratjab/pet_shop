@@ -18,7 +18,6 @@ interface AxiosErrorConfig {
   headers: Record<string, string>;
 }
 
-
 export class BaseClient {
   private client: AxiosInstance;
 

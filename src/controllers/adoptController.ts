@@ -52,7 +52,7 @@ export const getAdoptions = async (
 
 export const adoption = async (req: Request, res: Response): Promise<void> => {
   try {
-    const user_id = req.user!.id;
+    const user_id: string = req.user!.id;
     if (!user_id) {
       logger.warn('User ID missing on adoption request');
       throw Error('User not found');
@@ -76,7 +76,7 @@ export const adoption = async (req: Request, res: Response): Promise<void> => {
 export const getMyPets = async (req: Request, res: Response): Promise<void> => {
   try {
     //! test
-    const user_id = req.user!.id;
+    const user_id: string = req.user!.id;
     if (!user_id) {
       logger.warn('User ID missing on getMyPets request');
       throw Error('User not found');
@@ -101,7 +101,7 @@ export const getRemains = async (
   res: Response
 ): Promise<void> => {
   try {
-    const user_id = req.user!.id;
+    const user_id: string = req.user!.id;
     if (!user_id) {
       logger.warn('User ID missing on getRemains request');
       throw Error('User not found');
@@ -124,7 +124,7 @@ export const getRemains = async (
 export const payment = async (req: Request, res: Response): Promise<void> => {
   try {
     const money = req.body.payMoney;
-    const user_id = req.user!.id;
+    const user_id: string = req.user!.id;
     if (!user_id) {
       logger.warn('User ID missing on payment request');
       throw Error('User not found');
@@ -149,7 +149,7 @@ export const cancelPets = async (
 ): Promise<void> => {
   try {
     const pets = req.body.pets;
-    const user_id = req.user!.id;
+    const user_id: string = req.user!.id;
 
     logger.debug(
       `User ${user_id} requested to cancel pets: ${JSON.stringify(pets)}`
