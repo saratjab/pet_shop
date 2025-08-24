@@ -18,7 +18,7 @@ import {
 //! description for response
 const userPath = '/api/users';
 
-export const registerUserDocs = (registry: OpenAPIRegistry) => {
+export const registerUserDocs = (registry: OpenAPIRegistry): void => {
   registry.register('LoginInput', loginSchema);
   registry.register('LoginResponse', loginResponseSchema);
   registry.register('RegisterCustomer', registerCustomerSchema);

@@ -14,7 +14,7 @@ import {
 
 const petPath = '/api/pets';
 
-export const registerPetDocs = (registry: OpenAPIRegistry) => {
+export const registerPetDocs = (registry: OpenAPIRegistry): void => {
   registry.register('RegisterPet', registerPetSchema);
   registry.register('PerResponse', petResponseSchema);
   registry.register('FilterQuery', filterPetsQueryAndPaginationSchema);

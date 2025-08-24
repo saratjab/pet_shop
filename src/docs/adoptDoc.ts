@@ -13,7 +13,7 @@ import {
 
 export const adoptPath = '/api/adopts';
 
-export const registerAdoptDocs = (registry: OpenAPIRegistry) => {
+export const registerAdoptDocs = (registry: OpenAPIRegistry): void => {
   registry.register('Adoption', adoptionSchema);
   registry.register('Pagination', paginationQuerySchema);
   registry.register('AdoptionResponse', adoptResponseSchema);
