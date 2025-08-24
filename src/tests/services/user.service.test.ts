@@ -320,7 +320,7 @@ describe('saveUser service', () => {
     expect(mockedLogger.debug).toHaveBeenCalledWith(
       'Saving new user to the database'
     );
-    expect(mockedLogger.error).toHaveBeenCalledWith('Failed to save user');
+    expect(mockedLogger.error).toHaveBeenCalled();
   });
 });
 

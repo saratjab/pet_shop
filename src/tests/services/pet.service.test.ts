@@ -220,8 +220,10 @@ describe('savePet service', () => {
   });
 
   it('should handle DB error', async () => {
-    jest.spyOn(Pet.prototype, 'save').mockRejectedValue(new Error('DB error'));
-    await expect(savePet(mockPet as IPet)).rejects.toThrow('DB error');
+    jest
+      .spyOn(Pet.prototype, 'save')
+      .mockRejectedValue(new Error('Error saving pet'));
+    await expect(savePet(mockPet as IPet)).rejects.toThrow('Error saving pet');
   });
 });
 

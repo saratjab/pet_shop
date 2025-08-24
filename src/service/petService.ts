@@ -41,7 +41,7 @@ export const savePet = async (pet: IPet): Promise<HydratedDocument<IPet>> => {
     logger.debug(`Pet saved with ID: ${savedPet._id}`);
     return savedPet;
   } catch (err) {
-    logger.warn('Error saving pet to database', err);
+    logger.warn('Error saving pet to database', (err as Error).message);
     throw Error('Error saving pet');
   }
 };
