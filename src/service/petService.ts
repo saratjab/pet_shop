@@ -32,16 +32,18 @@ export const findPetByPetTag = async (
 };
 
 export const savePet = async (pet: IPet): Promise<HydratedDocument<IPet>> => {
-  logger.debug('saving new pet to database');
+  try {
+    logger.debug('saving new pet to database');
 
-  const newPet = new Pets(pet);
-  const savedPet = await newPet.save();
-  if (!savedPet) {
-    logger.warn('Error saving pet to database');
+    const newPet = new Pets(pet);
+    const savedPet = await newPet.save();
+
+    logger.debug(`Pet saved with ID: ${savedPet._id}`);
+    return savedPet;
+  } catch (err) {
+    logger.warn('Error saving pet to database', err);
     throw Error('Error saving pet');
   }
-  logger.debug(`Pet saved with ID: ${savedPet._id}`);
-  return savedPet;
 };
 
 export const updatePets = async (
@@ -83,20 +85,35 @@ export const filter = async (
   logger.debug('Filtering pets with query');
 
   const newQuery: FilterQuery<IPet> = {};
-  if (query.kind) newQuery.kind = query.kind;
-  if (query.gender) newQuery.gender = query.gender;
-  if (query.isAdopted !== undefined) newQuery.isAdopted = query.isAdopted;
-  if (query.age) newQuery.age = query.age;
-  else if (query.minAge || query.maxAge) {
+  //x !== null && x !== undefined
+  if (query.kind !== null && query.kind !== undefined)
+    newQuery.kind = query.kind;
+  if (query.gender !== null && query.gender !== undefined)
+    newQuery.gender = query.gender;
+  if (query.isAdopted !== null && query.isAdopted !== undefined)
+    newQuery.isAdopted = query.isAdopted;
+  if (query.age !== null && query.age !== undefined) newQuery.age = query.age;
+  else if (
+    (query.minAge !== null && query.minAge !== undefined) ||
+    (query.maxAge !== null && query.maxAge !== undefined)
+  ) {
     newQuery.age = {};
-    if (query.minAge) newQuery.age.$gte = query.minAge;
-    if (query.maxAge) newQuery.age.$lte = query.maxAge;
+    if (query.minAge !== null && query.minAge !== undefined)
+      newQuery.age.$gte = query.minAge;
+    if (query.maxAge !== null && query.maxAge !== undefined)
+      newQuery.age.$lte = query.maxAge;
   }
-  if (query.price) newQuery.price = query.price;
-  else if (query.minPrice || query.maxPrice) {
+  if (query.price !== null && query.price !== undefined)
+    newQuery.price = query.price;
+  else if (
+    (query.minPrice !== null && query.minPrice !== undefined) ||
+    (query.maxPrice !== null && query.maxPrice !== undefined)
+  ) {
     newQuery.price = {};
-    if (query.minPrice) newQuery.price.$gte = query.minPrice;
-    if (query.maxPrice) newQuery.price.$lte = query.maxPrice;
+    if (query.minPrice !== null && query.minPrice !== undefined)
+      newQuery.price.$gte = query.minPrice;
+    if (query.maxPrice !== null && query.maxPrice !== undefined)
+      newQuery.price.$lte = query.maxPrice;
   }
 
   const skip = (query.page - 1) * query.limit;
