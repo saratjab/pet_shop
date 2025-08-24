@@ -5,7 +5,7 @@ import { env } from 'process';
 
 const { combine, timestamp, printf, colorize, json } = winston.format;
 
-const node_env = env.node_env || 'development';
+const node_env = env.node_env ?? 'development';
 
 const logFormat = printf(({ level, message, timestamp }) => {
   return `[${timestamp}] ${level}: ${message}`;
