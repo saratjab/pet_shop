@@ -1,8 +1,22 @@
 import axios from 'axios';
+
 import { localStorage } from '../utils/localStorage';
+import type { createPetType } from '../types/petTypes';
+import type { userType } from '../types/userTypes';
 
 type AxiosInstance = ReturnType<typeof axios.create>;
 type AxiosRequestConfig = NonNullable<Parameters<typeof axios.get>[1]>;
+type params = {
+  url: string;
+  data?: createPetType | userType;
+  config?: AxiosRequestConfig;
+};
+
+interface AxiosErrorConfig {
+  url: string;
+  _retry: boolean;
+  headers: Record<string, string>;
+}
 
 export class BaseClient {
   private client: AxiosInstance;
@@ -13,7 +27,9 @@ export class BaseClient {
       timeout: 5000,
       headers: {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(token !== null &&
+          token !== undefined &&
+          token !== '' && { Authorization: `Bearer ${token}` }),
       },
       // withCredentials: true,
     });
@@ -24,7 +40,7 @@ export class BaseClient {
       if (!config.headers) {
         config.headers = {};
       }
-      if (token) {
+      if (token !== null && token !== undefined && token !== '') {
         config.headers['Authorization'] = `Bearer ${token}`;
       }
       return config;
@@ -33,7 +49,7 @@ export class BaseClient {
     this.client.interceptors.response.use(
       (response) => response,
       async (error) => {
-        const config = error.config;
+        const config = error.config as AxiosErrorConfig;
 
         if (config.url?.includes('/refresh-token')) {
           return Promise.reject(error);
@@ -61,19 +77,31 @@ export class BaseClient {
     );
   }
 
-  public get<T>(url: string, config?: AxiosRequestConfig) {
-    return this.client.get<T>(url, config);
+  public async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    const response = await this.client.get<T>(url, config);
+    return response.data;
   }
 
-  public post<T>(url: string, data?: any, config?: AxiosRequestConfig) {
-    return this.client.post<T>(url, data, config);
+  public async post<T>(params: params): Promise<T> {
+    const response = await this.client.post<T>(
+      params.url,
+      params.data,
+      params.config
+    );
+    return response.data;
   }
 
-  public put<T>(url: string, data: any, config?: AxiosRequestConfig) {
-    return this.client.put<T>(url, data, config);
+  public async put<T>(params: params): Promise<T> {
+    const response = await this.client.put<T>(
+      params.url,
+      params.data,
+      params.config
+    );
+    return response.data;
   }
 
-  public delete<T>(url: string, config?: AxiosRequestConfig) {
-    return this.client.delete<T>(url, config);
+  public async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    const response = await this.client.delete<T>(url, config);
+    return response.data;
   }
 }

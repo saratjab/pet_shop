@@ -1,15 +1,15 @@
-import { IUser } from '../models/userModel';
-import { IPet } from '../models/petModel';
-import { IAdopt } from '../models/adoptModel';
+import type { IUser } from '../models/userModel';
+import type { IPet } from '../models/petModel';
+import type { IAdopt } from '../models/adoptModel';
 
-export const formatUserResponse = (user: IUser) => ({
+export const formatUserResponse = (user: IUser): object => ({
   username: user.username,
   role: user.role,
   email: user.email,
   address: user.address,
 });
 
-export const formatPetResponse = (pet: IPet) => ({
+export const formatPetResponse = (pet: IPet): object => ({
   petTag: pet.petTag,
   name: pet.name,
   kind: pet.kind,
@@ -20,7 +20,7 @@ export const formatPetResponse = (pet: IPet) => ({
   isAdopted: pet.isAdopted ? 'Yes' : 'No',
 });
 
-export const formatAdoptResponse = (adopt: IAdopt) => ({
+export const formatAdoptResponse = (adopt: IAdopt): object => ({
   user_id: adopt.user_id,
   pets: adopt.pets,
   payMoney: adopt.payMoney,

@@ -1,9 +1,11 @@
-import User from '../../models/userModel';
 import bcrypt from 'bcryptjs';
+
+import User from '../../models/userModel';
 import { buildUserData } from '../builder/userBuilder';
+import type { userType } from '../../types/userTypes';
 
 describe('User Model', () => {
-  let userData: any;
+  let userData: userType;
   beforeEach(() => {
     userData = buildUserData();
   });
@@ -15,7 +17,7 @@ describe('User Model', () => {
     expect(user.username).toBeDefined();
     expect(user.role).toBeDefined();
     expect(user.password).toBeDefined();
-    expect(user.password).toBeDefined;
+    expect(user.password).toBeDefined();
     expect(user.createdAt).toBeDefined();
     expect(user.updatedAt).toBeDefined();
   });

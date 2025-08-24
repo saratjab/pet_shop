@@ -1,4 +1,5 @@
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
+
 import { registerUserDocs } from './userDoc';
 import { registerPetDocs } from './petDoc';
 import { registerAdoptDocs } from './adoptDoc';

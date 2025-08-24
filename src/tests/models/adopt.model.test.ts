@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
-import Adopt, { IAdopt } from '../../models/adoptModel';
-import { createAdopt } from '../../types/adoptTypes';
+import type { IAdopt } from '../../models/adoptModel';
+import Adopt from '../../models/adoptModel';
+import type { createAdopt } from '../../types/adoptTypes';
 import { adoptBuilder } from '../builder/adoptBuilder';
 
 describe('Adopt model', () => {

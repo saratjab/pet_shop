@@ -1,6 +1,9 @@
-import Adopt, { IAdopt } from '../models/adoptModel';
-import Pets, { IPet } from '../models/petModel';
-import { HydratedDocument } from 'mongoose';
+import type { HydratedDocument } from 'mongoose';
+
+import type { IAdopt } from '../models/adoptModel';
+import Adopt from '../models/adoptModel';
+import type { IPet } from '../models/petModel';
+import Pets from '../models/petModel';
 import { findUserById } from '../service/userService';
 import logger from '../config/logger';
 
@@ -13,13 +16,18 @@ type paymentSummary = {
 export const isPetValid = async (
   pets: string[]
 ): Promise<HydratedDocument<IPet>[]> => {
-  logger.debug(`Validation pets`);
+  logger.debug('Validation pets');
   const petsData = await Pets.find({
     _id: { $in: pets },
   });
-  if (petsData.some((p) => !p || p.isAdopted)) {
-    logger.warn('One or more pets not found or already adopted');
-    throw Error('One or more pets not found or already adopted');
+
+  if (pets.length !== petsData.length) {
+    logger.warn('One or more pets not found');
+    throw Error('One or more pets not found');
+  }
+  if (petsData.some((p) => p.isAdopted)) {
+    logger.warn('One or more pets already adopted');
+    throw Error('One or more pets already adopted');
   }
 
   logger.info('All pets are valid and available for adoption');
@@ -81,7 +89,7 @@ export const saveAdopt = async (
   } else if (adoptDoc.payMoney === adoptDoc.total!) {
     adoptDoc.status = 'completed';
   } else {
-    let remaining = adoptDoc.payMoney! - adoptDoc.total!;
+    const remaining = adoptDoc.payMoney! - adoptDoc.total!;
     logger.warn(`Overpayment detected, Refunding remaining: ${remaining}`);
     adoptDoc.payMoney = adoptDoc.total!;
     throw Error(`remining ${remaining}$`);
@@ -173,8 +181,8 @@ export const cancelingPets = async (
   const cancelablePetIds = pets.filter((id) => userAdoptedPets.includes(id));
 
   if (cancelablePetIds.length === 0) {
-    logger.warn(`None of the selected pets are part of the user's pets`);
-    throw Error(`None of the selected pets are part of the user's pets`);
+    logger.warn("None of the selected pets are part of the user's pets");
+    throw Error("None of the selected pets are part of the user's pets");
   }
 
   const petsToCancel = await Pets.find({
@@ -184,14 +192,14 @@ export const cancelingPets = async (
   const total = await getTotalPrice(petsToCancel);
 
   await makePetsNotAdopted(petsToCancel);
-  logger.info(`Marked pets as not adopted`);
+  logger.info('Marked pets as not adopted');
 
-  let newTotal = adopt.total! - total;
+  const newTotal = adopt.total! - total;
 
   if (newTotal === 0) {
     adopt.payMoney = 0;
     adopt.status = 'cancelled';
-    logger.info(`All pets canceled. adoption fully cancelled for user`);
+    logger.info('All pets canceled. adoption fully cancelled for user');
   } else if (adopt.payMoney! >= newTotal) {
     adopt.payMoney = newTotal;
     adopt.status = 'completed';

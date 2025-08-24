@@ -1,26 +1,28 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
+
 import { generateToken } from '../utils/jwt';
 import { handleError } from '../utils/handleErrors';
 import { localStorage } from '../utils/localStorage';
 import Blacklist from '../models/blacklistModel';
 import logger from '../config/logger';
+import type { errorType } from '../types/errorType';
 
 export const refreshToken = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    logger.info(`Generating new access token for user: ${req.user.id}`);
+    logger.info(`Generating new access token for user: ${req.user!.id}`);
 
-    const accessToken = generateToken(req.user.id);
-    logger.info(`New access token generated for user: ${req.user.id}`);
+    const accessToken = generateToken(req.user!.id);
+    logger.info(`New access token generated for user: ${req.user!.id}`);
 
     res.status(200).json({ accessToken });
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.error(
-      `Failed to generate access token for user ${req.user?.id}: ${err.message}`
+      `Failed to generate access token for user ${req.user?.id}: ${(err as errorType).message}`
     );
-    const errors = handleError(err);
+    const errors = handleError(err as errorType);
     res.status(401).json(errors);
   }
 };
@@ -37,9 +39,11 @@ export const logOut = async (req: Request, res: Response): Promise<void> => {
     );
 
     res.status(200).json({ message: 'Logged out successfully' });
-  } catch (err: any) {
-    logger.error(`Logout failed for user ${req.user?.id}: ${err.message}`);
-    const errors = handleError(err);
+  } catch (err: unknown) {
+    logger.error(
+      `Logout failed for user ${req.user?.id}: ${(err as errorType).message}`
+    );
+    const errors = handleError(err as errorType);
     res.status(500).json(errors);
   }
 };

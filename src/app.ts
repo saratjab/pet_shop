@@ -5,7 +5,6 @@ import cors from 'cors';
 import userRoutes from './routes/userRoutes';
 import petRoutes from './routes/petRoutes';
 import adoptRoutes from './routes/adoptRoutes';
-
 import { swaggerDocs } from './config/swaggerConfig';
 import { env } from './config/envConfig';
 import logger from './config/logger';
@@ -39,7 +38,7 @@ if (!mongoUrl) throw new Error('Mongo Url is not define');
 
 mongoose
   .connect(mongoUrl)
-  .then((data) =>
+  .then(() =>
     app.listen(parseInt(env.PORT), () => console.log('Server started'))
   )
   .catch((err) => new Error(err));

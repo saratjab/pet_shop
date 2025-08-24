@@ -1,29 +1,23 @@
 import jwt from 'jsonwebtoken';
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
+
 import { findUserById } from '../service/userService';
 import { localStorage } from '../utils/localStorage';
 import Blacklist from '../models/blacklistModel';
 import { accessTokenSecret, refresshTokenSecret } from '../app';
 import logger from '../config/logger';
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: any;
-    }
-  }
-}
+import type { errorType } from '../types/errorType';
 
 export const authenticate = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  logger.debug(`check headers for token`);
+  logger.debug('check headers for token');
   console.log(req.headers);
   const authHeader = req.headers['authorization'];
   const token = authHeader?.split(' ')[1];
-  if (!token) {
+  if (token === null || token === undefined || token === '') {
     logger.warn('Authentication failed: Missing or invalid token format');
     res.status(401).json({ message: 'Invalide token format' });
     return;
@@ -45,8 +39,8 @@ export const authenticate = async (
     req.user = user;
     logger.info(`Authenticated user: ${user.username}`);
     next();
-  } catch (err: any) {
-    logger.error(`Authentication error: ${err.message}`);
+  } catch (err: unknown) {
+    logger.error(`Authentication error: ${(err as errorType).message}`);
     res.status(401).json({
       message: 'Authentication required. Please log in',
     });
@@ -58,8 +52,8 @@ export const verifyRefreshToken = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const token = localStorage.getItem('refreshToken') || req.body.refreshToken;
-  if (!token) {
+  const token = localStorage.getItem('refreshToken') ?? req.body.refreshToken;
+  if (token === undefined || token === null || token === '') {
     logger.warn('Refresh token missing in verifyRefreshToken');
     res.status(401).json({ message: 'Refresh Token missing' });
     return;
@@ -81,8 +75,10 @@ export const verifyRefreshToken = async (
     req.user = user;
     logger.info(`Verified refresh token for user: ${user.username}`);
     next();
-  } catch (err: any) {
-    logger.error(`Refresh token verification failed: ${err.message}`);
+  } catch (err: unknown) {
+    logger.error(
+      `Refresh token verification failed: ${(err as errorType).message}`
+    );
     res.status(401).json({
       message: 'Authentication required. Please log in',
     });

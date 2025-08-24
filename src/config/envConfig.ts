@@ -1,10 +1,10 @@
 import dotenv from 'dotenv';
 import path from 'path';
 
-const node_env = process.env.NODE_ENV || 'development';
+const node_env = process.env.NODE_ENV ?? 'development';
 
 dotenv.config({
-  path: path.resolve(process.cwd(), `.env`),
+  path: path.resolve(process.cwd(), '.env'),
 });
 
 dotenv.config({
@@ -12,8 +12,11 @@ dotenv.config({
 });
 
 const required = (key: string): string => {
+  if (key in process.env) {
+    throw new Error(`Missing required environment variable: ${key}`);
+  }
   const value = process.env[key];
-  if (!value) {
+  if (value === undefined || value === null || value === '') {
     throw new Error(`Missing required environment variable: ${key}`);
   }
   return value;

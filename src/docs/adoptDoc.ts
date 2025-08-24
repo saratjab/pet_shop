@@ -1,4 +1,5 @@
-import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
+import type { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
+
 import { paginationQuerySchema } from '../schemas/paginationSchema';
 import {
   adoptIdParamSchema,
@@ -12,7 +13,7 @@ import {
 
 export const adoptPath = '/api/adopts';
 
-export const registerAdoptDocs = (registry: OpenAPIRegistry) => {
+export const registerAdoptDocs = (registry: OpenAPIRegistry): void => {
   registry.register('Adoption', adoptionSchema);
   registry.register('Pagination', paginationQuerySchema);
   registry.register('AdoptionResponse', adoptResponseSchema);
@@ -175,7 +176,7 @@ export const registerAdoptDocs = (registry: OpenAPIRegistry) => {
   registry.registerPath({
     path: `${adoptPath}/show`,
     method: 'get',
-    summary: `get user's adoption`,
+    summary: "get user's adoption",
     tags: ['Adoption'],
     security: [{ bearerAuth: [] }],
     description: `Retrieves the authenticated user's adoption record. 
@@ -244,7 +245,7 @@ export const registerAdoptDocs = (registry: OpenAPIRegistry) => {
   registry.registerPath({
     path: `${adoptPath}/pays`,
     method: 'get',
-    summary: `show user's info pay`,
+    summary: "show user's info pay",
     tags: ['Adoption'],
     description: `Retrieves the authenticated user's payment information related to pet adoptions. 
         \nThis includes details such as payment total, paymoney and remaining. 
@@ -396,7 +397,7 @@ export const registerAdoptDocs = (registry: OpenAPIRegistry) => {
     summary: 'delete pets',
     tags: ['Adoption'],
     security: [{ bearerAuth: [] }],
-    description: ``,
+    description: '',
     request: {
       body: {
         required: true,

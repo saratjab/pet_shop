@@ -1,6 +1,6 @@
 export const userFixture = {
   username: 'sarat',
-  role: 'admin',
+  role: 'admin' as const,
   password: '12345678',
   email: 'sarat@gmail.com',
   address: 'Hebron',

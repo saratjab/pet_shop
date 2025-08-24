@@ -1,11 +1,13 @@
-import { ZodSchema } from 'zod';
+import type { ZodSchema } from 'zod';
+import type { Request, Response, NextFunction } from 'express';
+
 import { handleError } from '../utils/handleErrors';
-import { Request, Response, NextFunction } from 'express';
 import logger from '../config/logger';
+import type { errorType } from '../types/errorType';
 
 export const validate =
   (body: ZodSchema | null, query: ZodSchema | null, params: ZodSchema | null) =>
-  (req: Request, res: Response, next: NextFunction) => {
+  (req: Request, res: Response, next: NextFunction): void => {
     try {
       logger.debug(`Validating request for ${req.method} ${req.originalUrl}`);
 
@@ -22,11 +24,11 @@ export const validate =
         req.params = parsed;
       }
 
-      logger.debug(`Validatoin passed and parsed`);
+      logger.debug('Validatoin passed and parsed');
       next();
-    } catch (err: any) {
-      logger.warn(`Validation failed: ${err.message}`);
-      const errors = handleError(err);
+    } catch (err: unknown) {
+      logger.warn(`Validation failed: ${(err as errorType).message}`);
+      const errors = handleError(err as errorType);
       res.status(400).json(errors);
     }
   };
