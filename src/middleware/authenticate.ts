@@ -7,13 +7,6 @@ import Blacklist from '../models/blacklistModel';
 import { accessTokenSecret, refresshTokenSecret } from '../app';
 import logger from '../config/logger';
 import { errorType } from '../types/errorType';
-import { IUser } from '../models/userModel';
-
-declare module 'express-serve-static-core' {
-  interface Request {
-    user?: IUser;
-  }
-}
 
 export const authenticate = async (
   req: Request,
