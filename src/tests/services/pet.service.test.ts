@@ -1,10 +1,12 @@
-import mongoose, { DeleteResult, HydratedDocument } from 'mongoose';
+import type { DeleteResult, HydratedDocument } from 'mongoose';
+import mongoose from 'mongoose';
 
 import logger from '../../config/logger';
-import Pet, { IPet } from '../../models/petModel';
+import type { IPet } from '../../models/petModel';
+import Pet from '../../models/petModel';
 import { petFixture } from '../fixture/petFixture';
 import { petBuilder } from '../builder/petBuilder';
-import { createPetType, updatePetType } from '../../types/petTypes';
+import type { createPetType, updatePetType } from '../../types/petTypes';
 import {
   findPetById,
   findPetByPetTag,

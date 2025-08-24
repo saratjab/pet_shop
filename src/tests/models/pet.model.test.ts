@@ -1,5 +1,6 @@
-import Pet, { IPet } from '../../models/petModel';
-import { createPetType } from '../../types/petTypes';
+import type { IPet } from '../../models/petModel';
+import Pet from '../../models/petModel';
+import type { createPetType } from '../../types/petTypes';
 import { petBuilder } from '../builder/petBuilder';
 
 describe('Pet Model', () => {

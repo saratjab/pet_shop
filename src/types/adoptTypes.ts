@@ -1,5 +1,5 @@
-import { z } from 'zod';
+import type { z } from 'zod';
 
-import { adoptionSchema } from '../schemas/adoptSchema';
+import type { adoptionSchema } from '../schemas/adoptSchema';
 
 export type adopt = z.infer<typeof adoptionSchema>;

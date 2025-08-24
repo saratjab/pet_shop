@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
-import { errorType } from '../types/errorType';
+import type { errorType } from '../types/errorType';
 
 let mongo: MongoMemoryServer;
 

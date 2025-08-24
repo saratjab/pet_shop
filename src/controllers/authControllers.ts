@@ -1,11 +1,11 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import { generateToken } from '../utils/jwt';
 import { handleError } from '../utils/handleErrors';
 import { localStorage } from '../utils/localStorage';
 import Blacklist from '../models/blacklistModel';
 import logger from '../config/logger';
-import { errorType } from '../types/errorType';
+import type { errorType } from '../types/errorType';
 
 export const refreshToken = async (
   req: Request,

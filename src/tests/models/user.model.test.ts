@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 
 import User from '../../models/userModel';
 import { buildUserData } from '../builder/userBuilder';
-import { userType } from '../../types/userTypes';
+import type { userType } from '../../types/userTypes';
 
 describe('User Model', () => {
   let userData: userType;

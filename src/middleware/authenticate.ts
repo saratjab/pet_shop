@@ -1,12 +1,12 @@
 import jwt from 'jsonwebtoken';
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 
 import { findUserById } from '../service/userService';
 import { localStorage } from '../utils/localStorage';
 import Blacklist from '../models/blacklistModel';
 import { accessTokenSecret, refresshTokenSecret } from '../app';
 import logger from '../config/logger';
-import { errorType } from '../types/errorType';
+import type { errorType } from '../types/errorType';
 
 export const authenticate = async (
   req: Request,

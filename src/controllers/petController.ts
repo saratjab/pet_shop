@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
-import { IPet } from '../models/petModel';
+import type { IPet } from '../models/petModel';
 import { handleError } from '../utils/handleErrors';
 import { formatPetResponse } from '../utils/format';
-import { getPetsQuery } from '../types/petTypes';
+import type { getPetsQuery } from '../types/petTypes';
 import {
   savePet,
   findPetById,
@@ -13,7 +13,7 @@ import {
   deletePets,
 } from '../service/petService';
 import logger from '../config/logger';
-import { errorType } from '../types/errorType';
+import type { errorType } from '../types/errorType';
 
 export const registerPet = async (
   req: Request,

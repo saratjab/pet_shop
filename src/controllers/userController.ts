@@ -1,4 +1,4 @@
-import { Response, Request } from 'express';
+import type { Response, Request } from 'express';
 
 import { handleError } from '../utils/handleErrors';
 import { formatUserResponse } from '../utils/format';
@@ -11,9 +11,9 @@ import {
   verifyPassword,
   update,
 } from '../service/userService';
-import { pagination } from '../types/paginationTypes';
+import type { pagination } from '../types/paginationTypes';
 import logger from '../config/logger';
-import { errorType } from '../types/errorType';
+import type { errorType } from '../types/errorType';
 
 export const registerUser = async (
   req: Request,

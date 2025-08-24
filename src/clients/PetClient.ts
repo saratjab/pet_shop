@@ -1,5 +1,5 @@
-import { IPet } from '../models/petModel';
-import { createPetType } from '../types/petTypes';
+import type { IPet } from '../models/petModel';
+import type { createPetType } from '../types/petTypes';
 import { BaseClient } from './BaseClient';
 
 const client = new BaseClient();

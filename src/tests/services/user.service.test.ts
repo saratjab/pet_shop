@@ -1,7 +1,8 @@
 import bcrypt from 'bcryptjs';
 
 import logger from '../../config/logger';
-import User, { IUser } from '../../models/userModel';
+import type { IUser } from '../../models/userModel';
+import User from '../../models/userModel';
 import {
   findAllUsers,
   findUserById,
@@ -12,7 +13,7 @@ import {
 } from '../../service/userService';
 import { buildUserData } from '../builder/userBuilder';
 import { userFixture } from '../fixture/userFixture';
-import { mockUser } from '../../types/userTypes';
+import type { mockUser } from '../../types/userTypes';
 
 jest.mock('../../models/userModel');
 jest.mock('../../config/logger');

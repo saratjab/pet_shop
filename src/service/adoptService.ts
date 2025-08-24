@@ -1,7 +1,9 @@
-import { HydratedDocument } from 'mongoose';
+import type { HydratedDocument } from 'mongoose';
 
-import Adopt, { IAdopt } from '../models/adoptModel';
-import Pets, { IPet } from '../models/petModel';
+import type { IAdopt } from '../models/adoptModel';
+import Adopt from '../models/adoptModel';
+import type { IPet } from '../models/petModel';
+import Pets from '../models/petModel';
 import { findUserById } from '../service/userService';
 import logger from '../config/logger';
 

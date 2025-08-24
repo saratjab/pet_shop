@@ -1,7 +1,8 @@
-import { FilterQuery, HydratedDocument } from 'mongoose';
+import type { FilterQuery, HydratedDocument } from 'mongoose';
 
-import Pets, { IPet } from '../models/petModel';
-import { getPetsQuery, updatePetType } from '../types/petTypes';
+import type { IPet } from '../models/petModel';
+import Pets from '../models/petModel';
+import type { getPetsQuery, updatePetType } from '../types/petTypes';
 import logger from '../config/logger';
 
 export const findPetById = async (

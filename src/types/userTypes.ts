@@ -1,6 +1,6 @@
-import { z } from 'zod';
+import type { z } from 'zod';
 
-import { registerSchema, updateUserSchema } from '../schemas/userSchema';
+import type { registerSchema, updateUserSchema } from '../schemas/userSchema';
 
 export type mockUser = {
   _id?: string;

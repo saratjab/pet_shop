@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import { handleError } from '../utils/handleErrors';
 import { formatAdoptResponse } from '../utils/format';
@@ -11,9 +11,9 @@ import {
   cancelingPets,
   findAdoptById,
 } from '../service/adoptService';
-import { pagination } from '../types/paginationTypes';
+import type { pagination } from '../types/paginationTypes';
 import logger from '../config/logger';
-import { errorType } from '../types/errorType';
+import type { errorType } from '../types/errorType';
 
 export const getAdoptions = async (
   req: Request,

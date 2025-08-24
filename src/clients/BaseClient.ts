@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 import { localStorage } from '../utils/localStorage';
-import { createPetType } from '../types/petTypes';
-import { userType } from '../types/userTypes';
+import type { createPetType } from '../types/petTypes';
+import type { userType } from '../types/userTypes';
 
 type AxiosInstance = ReturnType<typeof axios.create>;
 type AxiosRequestConfig = NonNullable<Parameters<typeof axios.get>[1]>;

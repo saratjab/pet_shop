@@ -1,5 +1,5 @@
 import logger from '../config/logger';
-import { errorType } from '../types/errorType';
+import type { errorType } from '../types/errorType';
 
 interface ValidationErrorObject {
   username?: string;

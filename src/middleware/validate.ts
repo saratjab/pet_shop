@@ -1,9 +1,9 @@
-import { ZodSchema } from 'zod';
-import { Request, Response, NextFunction } from 'express';
+import type { ZodSchema } from 'zod';
+import type { Request, Response, NextFunction } from 'express';
 
 import { handleError } from '../utils/handleErrors';
 import logger from '../config/logger';
-import { errorType } from '../types/errorType';
+import type { errorType } from '../types/errorType';
 
 export const validate =
   (body: ZodSchema | null, query: ZodSchema | null, params: ZodSchema | null) =>

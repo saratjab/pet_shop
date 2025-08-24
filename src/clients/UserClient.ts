@@ -1,7 +1,7 @@
 import { localStorage } from '../utils/localStorage';
-import { IUser } from '../models/userModel';
+import type { IUser } from '../models/userModel';
 import { BaseClient } from './BaseClient';
-import { userType } from '../types/userTypes';
+import type { userType } from '../types/userTypes';
 
 interface TokenTake {
   token: string;

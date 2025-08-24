@@ -1,10 +1,11 @@
 //! not used yet
 
-import { Db, MongoClient } from 'mongodb';
+import type { Db } from 'mongodb';
+import { MongoClient } from 'mongodb';
 import dotenv from 'dotenv';
 
 import { handleError } from '../utils/handleErrors';
-import { errorType } from '../types/errorType';
+import type { errorType } from '../types/errorType';
 dotenv.config();
 
 const mongoUrl = process.env.MONGO_URL;
