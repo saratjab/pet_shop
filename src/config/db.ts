@@ -9,13 +9,13 @@ import type { errorType } from '../types/errorType';
 dotenv.config();
 
 const mongoUrl = process.env.MONGO_URL;
-if (!mongoUrl) throw Error('Mongo URL is not defined');
+if (mongoUrl === null || mongoUrl === undefined || mongoUrl === '') throw Error('Mongo URL is not defined');
 
 const client = new MongoClient(mongoUrl);
 
 let db: Db;
 
-async function connectDB() {
+async function connectDB(): Promise<void> {
   try {
     await client.connect();
     db = client.db('PET_SHOP');
