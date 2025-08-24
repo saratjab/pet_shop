@@ -24,8 +24,8 @@ export const loginInfo = async () => {
       url: '/login',
       data: { username, password },
     });
-    localStorage.setItem('token', response.data.token);
-    localStorage.setItem('refreshToken', response.data.refreshToken);
+    localStorage.setItem('token', response.token);
+    localStorage.setItem('refreshToken', response.refreshToken);
   } catch (err) {
     console.error('Error in register', err);
     throw err;
@@ -35,7 +35,7 @@ export const loginInfo = async () => {
 export const register = async (info: userType) => {
   try {
     const newUser = await client.post<IUser>({ url: '/user', data: info });
-    return newUser.data;
+    return newUser;
   } catch (err) {
     console.error('Error in register', err);
     throw err;
@@ -45,7 +45,7 @@ export const register = async (info: userType) => {
 export const getUserById = async (id: string) => {
   try {
     const user = await client.get<IUser>(`/user/id/${id}`);
-    return user.data;
+    return user;
   } catch (err) {
     console.error('Error in register', err);
     throw err;
@@ -57,7 +57,7 @@ export const refreshing = async () => {
     const response = await client.post<{ accessToken: string }>({
       url: '/refresh-token',
     });
-    const accessToken = response.data.accessToken;
+    const accessToken = response.accessToken;
     localStorage.setItem('token', accessToken);
     return accessToken;
   } catch (err) {
