@@ -29,7 +29,5 @@ afterEach(async () => {
 
 afterAll(async () => {
   await mongoose.disconnect();
-  if (mongo) {
-    await mongo.stop();
-  }
+  await mongo.stop();
 });
