@@ -13,6 +13,8 @@ services:
     env_file:
       - .env
       - .env.development
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/PET_SHOP
     depends_on:
       - mongo # ensure that docker starts mongo before starting backend
 
