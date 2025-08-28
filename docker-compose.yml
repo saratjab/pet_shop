@@ -10,9 +10,10 @@ services:
     container_name: pet-shop-backend
     ports:
       - '3000:3000' # maps port 3000 on your machine - to port 3000 inside the contianer.
-    environment:
-      - MONGO_URI=mongodb://mongo:27017/PET_SHOP
-      - NODE_ENV=development
+    env_file:
+      - .env
+      - .env.development
+      - .env.production
     depends_on:
       - mongo # ensure that docker starts mongo before starting backend
 
