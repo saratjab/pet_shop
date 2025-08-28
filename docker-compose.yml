@@ -13,13 +13,13 @@ services:
     env_file:
       - .env
       - .env.development
-      - .env.production
     depends_on:
       - mongo # ensure that docker starts mongo before starting backend
 
   mongo:
     image: mongo:7
     container_name: pet-shop-mongo
+    command: ["mongod", "--quiet"]
     restart: always
     ports:
       - '27017:27017' # expose mongo's default port 27017 from container -> host
