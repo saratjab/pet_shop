@@ -33,7 +33,7 @@ export const accessTokenSecret = env.ACCESS_TOKEN_SECRET;
 if (!refresshTokenSecret || !accessTokenSecret)
   throw Error('JWT secrets are not defined in .env');
 
-const mongoUrl = env.DATABASE_URL;
+const mongoUrl = env.MONGO_URL;
 if (!mongoUrl) throw new Error('Mongo Url is not define');
 
 mongoose
