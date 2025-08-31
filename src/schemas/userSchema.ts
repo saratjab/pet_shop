@@ -166,7 +166,7 @@ export const usernameParamSchema = z
       .nonempty('must be at least 1 character')
       .openapi({
         example: 'user123',
-        description: `user's username`,
+        description: "user's username",
       }),
   })
   .openapi('UsernameParam');
@@ -177,8 +177,3 @@ export const paginatedUsersResponseSchema = z
     pagination: paginationSchema,
   })
   .openapi('PaginatedUsersResponse');
-
-const x = { a: 1, b: 2 };
-function sayHi(name: string) {
-  console.log('hi', name);
-}
