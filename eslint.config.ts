@@ -53,6 +53,7 @@ export default defineConfig([
         { prefer: 'type-imports' },
       ],
 
+
       '@typescript-eslint/no-floating-promises': 'error', // ensure awaited promises
       '@typescript-eslint/strict-boolean-expressions': 'error', // safer boolean checks
       '@typescript-eslint/no-misused-promises': 'error',
