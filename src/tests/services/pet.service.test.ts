@@ -428,7 +428,6 @@ describe('deletePets service', () => {
   });
 });
 
-
 const match = (pets: createPetType, mockPets: createPetType): void => {
   expect(mockPets).toMatchObject({
     name: pets.name,
