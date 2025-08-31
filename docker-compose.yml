@@ -24,7 +24,7 @@ services:
     image: mongo:7
     container_name: pet-shop-mongo
     command: ['mongod', '--quiet']
-    restart: always
+    restart: unless-stopped # if manullay stopped docker container, docker remember and doesn't restart it after reboot/ but if it crashes docker still restart it automatically
     environment:
       - MONGO_INITDB_ROOT_USERNAME: root
       - MONGO_INITDB_ROOT_PASSWORD: example
