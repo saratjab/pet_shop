@@ -1,21 +1,15 @@
-# instead of starting containers one by one, Compose lets you spin up everything with one command
-# also handling networking between services
-
 version: '3.9'
 
-# list of services (containers) which want to run together
 services:
   backend:
-    build: . # build an image for backend serviec using dockerfile in the current direcitory ., not prebuilt image, builds Node.js app
+    build: .
     container_name: pet-shop-backend
     ports:
-      - '3000:3000' # maps port 3000 on your machine - to port 3000 inside the contianer.
+      - '3000:3000'
     env_file:
       - .env.development
     environment:
       - MONGO_URI=mongodb://mongo:27017/PET_SHOP
-    # depends_on
-    #   - mongo # ensure that docker starts mongo container before starting backend
     depends_on:
       mongo:
         condition: service_started
@@ -24,15 +18,15 @@ services:
     image: mongo:7
     container_name: pet-shop-mongo
     command: ['mongod', '--quiet']
-    restart: unless-stopped # if manullay stopped docker container, docker remember and doesn't restart it after reboot/ but if it crashes docker still restart it automatically
+    restart: unless-stopped
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=example
       - MONGO_INITDB_DATABASE=PET_SHOP
     ports:
-      - '27017:27017' # expose mongo's default port 27017 from container -> host
+      - '27017:27017'
     volumes:
-      - mongo-data:/data/db #! mounts a named volume `mongo-data` to `data/db` inside Mongo, this means your Mongo data presists even if hte container is stopped or delted
+      - mongo-data:/data/db
     healthcheck:
       test:
         [
