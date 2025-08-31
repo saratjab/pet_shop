@@ -18,7 +18,7 @@ import {
 //! description for response
 const userPath = '/api/users';
 
-export const registerUserDocs = (registry: OpenAPIRegistry) => {
+export const registerUserDocs = (registry: OpenAPIRegistry): void => {
   registry.register('LoginInput', loginSchema);
   registry.register('LoginResponse', loginResponseSchema);
   registry.register('RegisterCustomer', registerCustomerSchema);
@@ -69,7 +69,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
               properties: {
                 message: {
                   type: 'string',
-                  example: `Passwrod doesn't match`,
+                  example: "Passwrod doesn't match",
                 },
               },
             },
@@ -177,7 +177,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     },
     responses: {
       200: {
-        description: `refresh token is valid then generate new access token`,
+        description: 'refresh token is valid then generate new access token',
         content: {
           'application/json': {
             schema: {
@@ -286,7 +286,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
     method: 'post',
     summary: 'Register a new employee',
     tags: ['Auth'],
-    description: ``,
+    description: '',
     request: {
       body: {
         required: true,
@@ -537,7 +537,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
   registry.registerPath({
     path: `${userPath}/role/{username}`,
     method: 'patch',
-    summary: `update role by admin using users's username`,
+    summary: "update role by admin using users's username",
     tags: ['Users'],
     description: `Allows an admin to update the role of a specific user using their username.
         \nThe new role must be one of the allowed roles (e.g., admin, employee, or customer).
@@ -630,7 +630,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
   registry.registerPath({
     path: `${userPath}/username/{username}`,
     method: 'get',
-    summary: `Get a user's public profile by their username`,
+    summary: "Get a user's public profile by their username",
     tags: ['Users'],
     description: `Retrieves public profile data of a user by their unique username.
         \nThis endpoint is typically used to display user information in public or semi-public contexts.  
@@ -792,7 +792,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
   registry.registerPath({
     path: `${userPath}/me`,
     method: 'patch',
-    summary: `Delete the authenticated user's account`,
+    summary: "Delete the authenticated user's account",
     tags: ['Users'],
     description: `Allows an authenticated user to delete their own account.
         \nThis operation is irreversible and will remove all user data from the system.
@@ -853,7 +853,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
   registry.registerPath({
     path: `${userPath}/{id}`,
     method: 'delete',
-    summary: `Delete user's account by admin using id`,
+    summary: "Delete user's account by admin using id",
     tags: ['Users'],
     description: `Allows an administrator to permanently delete a user's account using their MongoDB ObjectId.
         \nThis action is irreversible and can only be performed by users with the 'admin' role.
@@ -949,7 +949,7 @@ export const registerUserDocs = (registry: OpenAPIRegistry) => {
   registry.registerPath({
     path: `${userPath}/username/{username}`,
     method: 'delete',
-    summary: `Delete user's account by admin using username`,
+    summary: "Delete user's account by admin using username",
     tags: ['Users'],
     description: `Allows an administrator to permanently delete a user's account using their username.
         \nThis action is irreversible and can only be performed by users with the 'admin' role.
