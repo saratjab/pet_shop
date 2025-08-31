@@ -7,7 +7,6 @@ import { petBuilder } from '../builder/petBuilder';
 import { getAllPets } from '../../service/petService';
 import type { createPetType } from '../../types/petTypes';
 
-
 jest.mock('../../config/logger');
 
 const match = (pets: createPetType, mockPets: createPetType): void => {
