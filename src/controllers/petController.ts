@@ -7,7 +7,7 @@ import {
   savePet,
   findPetById,
   findPetByPetTag,
-  filter,
+  getAllPets,
   updatePets,
   deletePets,
 } from '../service/petService';
@@ -41,7 +41,7 @@ export const filterPets = async (
     const query = req.query as unknown as getPetsQuery;
     logger.debug(`Filter pets called with query: ${JSON.stringify(query)}`);
 
-    const { pets, total } = await filter(query);
+    const { pets, total } = await getAllPets(query);
     logger.info(
       `Filter result: ${pets.length} pets found out of ${total} total`
     );

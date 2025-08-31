@@ -5,5 +5,6 @@ export const petFixture = {
   age: 2,
   price: 100,
   gender: 'F',
+  isAdopted: false,
   description: 'A friendly test pet',
 };
