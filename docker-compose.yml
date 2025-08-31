@@ -18,7 +18,7 @@ services:
     #   - mongo # ensure that docker starts mongo container before starting backend
     depends_on:
       mongo:
-        condition: service_healthy
+        condition: service_started
 
   mongo:
     image: mongo:7
@@ -26,9 +26,9 @@ services:
     command: ['mongod', '--quiet']
     restart: unless-stopped # if manullay stopped docker container, docker remember and doesn't restart it after reboot/ but if it crashes docker still restart it automatically
     environment:
-      - MONGO_INITDB_ROOT_USERNAME: root
-      - MONGO_INITDB_ROOT_PASSWORD: example
-      - MONGO_INITDB_DATABASE: PET_SHOP
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+      - MONGO_INITDB_DATABASE=PET_SHOP
     ports:
       - '27017:27017' # expose mongo's default port 27017 from container -> host
     volumes:

@@ -15,9 +15,9 @@ COPY package*.json ./
 #! they get installed inside the container's filesystem under src/app/node_modules
 RUN npm ci
 
-RUN npm run build
 # Copy the rest of the project files from my machine into the container 
 COPY . . 
+RUN npm run build
 
 EXPOSE 3000
 CMD [ "npm", "run", "start" ]
