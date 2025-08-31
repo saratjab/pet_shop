@@ -1,4 +1,5 @@
 import logger from '../config/logger';
+import type { errorType } from '../types/errorType';
 
 interface ValidationErrorObject {
   username?: string;
@@ -19,13 +20,8 @@ interface ValidationErrorObject {
   [key: string]: string | number | boolean | undefined | string[]; //? to handle dynamic key
 } // ToDo: add the adopt
 
-export const handleError = (error: {
-  name: string;
-  errors: { path: string; message: string; received: string }[];
-  message?: string;
-  keyValue?: string;
-}): ValidationErrorObject => {
-  logger.error(`Handled Error`);
+export const handleError = (error: errorType): ValidationErrorObject => {
+  logger.error('Handled Error');
   const errorsObj: ValidationErrorObject = {};
   const name: string = error.name;
   if (name === 'ValidationError') {
@@ -35,7 +31,6 @@ export const handleError = (error: {
       errorsObj[key] = msg;
     });
   } else if (name === 'MongoServerError') {
-    const unique = 'keyValue';
     errorsObj[Object.keys(error.keyValue!)[0]] = 'should be unique';
   } else if (name === 'Error') {
     errorsObj['Error'] = error.message;
