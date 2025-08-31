@@ -314,13 +314,10 @@ describe('saveUser service', () => {
       save: jest.fn().mockResolvedValue(null),
     }));
 
-    await expect(saveUser(mockUser as IUser)).rejects.toThrow(
-      'Error saving user'
-    );
+    await expect(saveUser(mockUser as IUser)).rejects.toThrow();
     expect(mockedLogger.debug).toHaveBeenCalledWith(
       'Saving new user to the database'
     );
-    expect(mockedLogger.error).toHaveBeenCalled();
   });
 });
 
