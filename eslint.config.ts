@@ -22,7 +22,7 @@ import importPlugin from 'eslint-plugin-import';
 
 export default defineConfig([
   {
-    ignores: ['dist/**', 'node_modules/**', '**config.ts', "**.d.ts"],
+    ignores: ['dist/**', 'node_modules/**', '**config.ts', '**.d.ts'],
   },
   {
     files: ['**/*.ts'],
@@ -32,7 +32,7 @@ export default defineConfig([
         project: './tsconfig.json',
         sourceType: 'module',
       },
-    }, 
+    },
     plugins: {
       '@typescript-eslint': tsPlugin as any,
       import: importPlugin,
@@ -48,12 +48,16 @@ export default defineConfig([
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/explicit-function-return-type': ['error'],
       '@typescript-eslint/explicit-module-boundary-types': ['warn'],
-      '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        { prefer: 'type-imports' },
+      ],
+
 
       '@typescript-eslint/no-floating-promises': 'error', // ensure awaited promises
       '@typescript-eslint/strict-boolean-expressions': 'error', // safer boolean checks
       '@typescript-eslint/no-misused-promises': 'error',
-      
+
       // Import rules
       'import/order': [
         'error',
