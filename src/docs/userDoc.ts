@@ -1,4 +1,5 @@
-import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
+import type { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
+
 import { paginationQuerySchema } from '../schemas/paginationSchema';
 import {
   loginSchema,

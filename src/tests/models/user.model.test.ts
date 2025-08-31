@@ -1,5 +1,6 @@
-import User, { IUser } from '../../models/userModel';
 import bcrypt from 'bcryptjs';
+
+import User, { IUser } from '../../models/userModel';
 import { buildUserData } from '../builder/userBuilder';
 
 describe('User Model', () => {

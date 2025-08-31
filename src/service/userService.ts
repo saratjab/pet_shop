@@ -1,7 +1,9 @@
 import bcrypt from 'bcryptjs';
-import User, { IUser } from '../models/userModel';
-import { HydratedDocument } from 'mongoose';
-import { updateUserType } from '../types/userTypes';
+import type { HydratedDocument } from 'mongoose';
+
+import type { IUser } from '../models/userModel';
+import User from '../models/userModel';
+import type { updateUserType } from '../types/userTypes';
 import logger from '../config/logger';
 
 export const findAllUsers = async (pagination: {

@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { paginationQuerySchema, paginationSchema } from './paginationSchema';
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
+
+import { paginationQuerySchema, paginationSchema } from './paginationSchema';
 import { registerPet } from '../controllers/petController';
 
 extendZodWithOpenApi(z);

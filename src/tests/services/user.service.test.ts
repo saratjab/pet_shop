@@ -1,3 +1,5 @@
+import bcrypt from 'bcryptjs';
+
 import logger from '../../config/logger';
 import User from '../../models/userModel';
 import {
@@ -8,7 +10,6 @@ import {
   verifyPassword,
 } from '../../service/userService';
 import { buildUserData } from '../builder/userBuilder';
-import bcrypt from 'bcryptjs';
 
 jest.mock('../../models/userModel');
 jest.mock('../../config/logger');
@@ -143,7 +144,7 @@ describe('findAllUsers Service', () => {
 
 describe('findUserById Service', () => {
   let mockUsers: any[];
-  let mockedLogger = logger as jest.Mocked<typeof logger>;
+  const mockedLogger = logger as jest.Mocked<typeof logger>;
 
   beforeEach(() => {
     jest.resetAllMocks();

@@ -26,7 +26,7 @@ export const handleError = (error: {
   keyValue?: string;
 }): ValidationErrorObject => {
   logger.error(`Handled Error`);
-  let errorsObj: ValidationErrorObject = {};
+  const errorsObj: ValidationErrorObject = {};
   const name: string = error.name;
   if (name === 'ValidationError') {
     Object.values(error.errors).forEach((err) => {

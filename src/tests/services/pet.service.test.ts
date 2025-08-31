@@ -1,11 +1,16 @@
-import Pet, { IPet } from '../../models/petModel';
+import type { Query } from 'mongoose';
+
+import type { IPet } from '../../models/petModel';
+import Pet from '../../models/petModel';
 import logger from '../../config/logger';
 import { petBuilder } from '../builder/petBuilder';
 import { getAllPets } from '../../service/petService';
 import type { createPetType } from '../../types/petTypes';
 
+
 jest.mock('../../config/logger');
-const match = (pets: createPetType, mockPets: createPetType) => {
+
+const match = (pets: createPetType, mockPets: createPetType): void => {
   expect(mockPets).toMatchObject({
     name: pets.name,
     kind: pets.kind,
@@ -15,6 +20,7 @@ const match = (pets: createPetType, mockPets: createPetType) => {
     isAdopted: pets.isAdopted,
   });
 };
+
 describe('getAllPets service', () => {
   let mockPets: createPetType[];
   let mockPagination: {
@@ -56,6 +62,15 @@ describe('getAllPets service', () => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
     await Pet.deleteMany({});
+  });
+
+  it('should call find and countdocuments', async () => {
+    jest.spyOn(Pet, 'find');
+    jest.spyOn(Pet, 'countDocuments');
+
+    await getAllPets(mockPagination);
+    expect(Pet.find).toHaveBeenCalled();
+    expect(Pet.countDocuments).toHaveBeenCalled();
   });
 
   it('should getAllPets based on their kind', async () => {
@@ -219,12 +234,12 @@ describe('getAllPets service', () => {
 
   it('should getAllPets based on their price range with min', async () => {
     const filteredPets = mockPets.filter(
-      (pet: createPetType) => pet.price >= 50
+      (pet: createPetType) => pet.price >= 150
     );
 
     const { pets, total } = await getAllPets({
       ...mockPagination,
-      minPrice: 50,
+      minPrice: 150,
     });
     match(pets[0], filteredPets[0]);
     expect(total).toBe(mockPets.length);
@@ -258,9 +273,9 @@ describe('getAllPets service', () => {
       sort: jest.fn().mockReturnThis(),
       skip: jest.fn().mockReturnThis(),
       limit: jest.fn().mockResolvedValue(mockPets),
-    };
+    } as unknown as jest.Mocked<Query<IPet[], IPet>>;
 
-    jest.spyOn(Pet, 'find').mockReturnValue(mockQuery as any);
+    jest.spyOn(Pet, 'find').mockReturnValue(mockQuery);
     jest.spyOn(Pet, 'countDocuments').mockResolvedValue(mockPets.length);
 
     const { pets, total } = await getAllPets({
@@ -285,9 +300,9 @@ describe('getAllPets service', () => {
       sort: jest.fn().mockReturnThis(),
       skip: jest.fn().mockReturnThis(),
       limit: jest.fn().mockResolvedValue(expectedPets),
-    };
+    } as unknown as jest.Mocked<Query<IPet[], IPet>>;
 
-    jest.spyOn(Pet, 'find').mockReturnValue(mockQuery as any);
+    jest.spyOn(Pet, 'find').mockReturnValue(mockQuery);
     jest.spyOn(Pet, 'countDocuments').mockResolvedValue(mockPets.length);
 
     const { pets, total } = await getAllPets({
@@ -333,9 +348,9 @@ describe('getAllPets service', () => {
       sort: jest.fn().mockReturnThis(),
       skip: jest.fn().mockReturnThis(),
       limit: jest.fn().mockRejectedValue(new Error('Database error')),
-    };
+    } as unknown as jest.Mocked<Query<IPet[], IPet>>;
 
-    jest.spyOn(Pet, 'find').mockReturnValue(mockQuery as any);
+    jest.spyOn(Pet, 'find').mockReturnValue(mockQuery);
     jest.spyOn(Pet, 'countDocuments').mockResolvedValue(0);
 
     await expect(getAllPets(mockPagination)).rejects.toThrow('Database error');

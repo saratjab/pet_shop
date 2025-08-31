@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 import { localStorage } from '../utils/localStorage';
 
 type AxiosInstance = ReturnType<typeof axios.create>;

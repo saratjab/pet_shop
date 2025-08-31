@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
+
 import { findUserById } from '../service/userService';
 import { localStorage } from '../utils/localStorage';
 import Blacklist from '../models/blacklistModel';

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
+
 import { paginationSchema } from './paginationSchema';
 
 extendZodWithOpenApi(z);

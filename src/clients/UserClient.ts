@@ -1,7 +1,8 @@
-import { localStorage } from '../utils/localStorage';
-import { IUser } from '../models/userModel';
-import { BaseClient } from './BaseClient';
 import { resolveTypeReferenceDirective } from 'typescript';
+
+import { localStorage } from '../utils/localStorage';
+import type { IUser } from '../models/userModel';
+import { BaseClient } from './BaseClient';
 
 interface TokenTake {
   token: string;
@@ -18,8 +19,8 @@ const client = new BaseClient();
 
 export const loginInfo = async () => {
   try {
-    let username = 'sarat';
-    let password = '123';
+    const username = 'sarat';
+    const password = '123';
     const response = await client.post<TokenTake>(`/login`, {
       username,
       password,

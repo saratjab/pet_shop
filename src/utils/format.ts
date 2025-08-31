@@ -1,6 +1,6 @@
-import { IUser } from '../models/userModel';
-import { IPet } from '../models/petModel';
-import { IAdopt } from '../models/adoptModel';
+import type { IUser } from '../models/userModel';
+import type { IPet } from '../models/petModel';
+import type { IAdopt } from '../models/adoptModel';
 
 export const formatUserResponse = (user: IUser) => ({
   username: user.username,

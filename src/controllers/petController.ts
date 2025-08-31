@@ -1,8 +1,9 @@
-import { IPet } from '../models/petModel';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
+
+import type { IPet } from '../models/petModel';
 import { handleError } from '../utils/handleErrors';
 import { formatPetResponse } from '../utils/format';
-import { getPetsQuery } from '../types/petTypes';
+import type { getPetsQuery } from '../types/petTypes';
 import {
   savePet,
   findPetById,
@@ -74,7 +75,7 @@ export const getPetById = async (
     const id = req.params.id;
     logger.debug(`Fetching pet by ID: ${id}`);
 
-    let pet = await findPetById(id);
+    const pet = await findPetById(id);
     logger.info(`Pet found: ${pet.petTag}`);
     res.status(200).json(formatPetResponse(pet));
   } catch (err: any) {
@@ -92,7 +93,7 @@ export const getPetByPetTag = async (
     const petTag = req.params.petTag;
     logger.debug(`Fetching pet by petTag: ${petTag}`);
 
-    let pet = await findPetByPetTag(petTag);
+    const pet = await findPetByPetTag(petTag);
     logger.info(`Pet found: ${petTag}`);
     res.status(200).json(formatPetResponse(pet));
   } catch (err: any) {

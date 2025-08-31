@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
+
 import { generateToken } from '../utils/jwt';
 import { handleError } from '../utils/handleErrors';
 import { localStorage } from '../utils/localStorage';

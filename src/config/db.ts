@@ -1,7 +1,9 @@
 //! not used yet
 
-import { Db, MongoClient } from 'mongodb';
+import type { Db } from 'mongodb';
+import { MongoClient } from 'mongodb';
 import dotenv from 'dotenv';
+
 import { handleError } from '../utils/handleErrors';
 dotenv.config();
 

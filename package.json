@@ -11,6 +11,8 @@
     "start:dev": "npm run build && cross-env NODE_ENV=development npm start",
     "start:prod": "npm run build && cross-env NODE_ENV=production npm start",
     "start:watch": "tsc-watch --onSuccess \"npm start\"",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write ."
   },
   "dependencies": {
