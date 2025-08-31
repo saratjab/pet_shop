@@ -14,18 +14,40 @@ services:
       - .env.development
     environment:
       - MONGO_URI=mongodb://mongo:27017/PET_SHOP
+    # depends_on
+    #   - mongo # ensure that docker starts mongo container before starting backend
     depends_on:
-      - mongo # ensure that docker starts mongo before starting backend
+      mongo:
+        condition: service_healthy
 
   mongo:
     image: mongo:7
     container_name: pet-shop-mongo
     command: ['mongod', '--quiet']
     restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME: root
+      - MONGO_INITDB_ROOT_PASSWORD: example
+      - MONGO_INITDB_DATABASE: PET_SHOP
     ports:
       - '27017:27017' # expose mongo's default port 27017 from container -> host
     volumes:
       - mongo-data:/data/db #! mounts a named volume `mongo-data` to `data/db` inside Mongo, this means your Mongo data presists even if hte container is stopped or delted
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mongosh',
+          '--username',
+          'root',
+          '--password',
+          'example',
+          '--eval',
+          "db.adminCommand('ping')",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   mongo-data:
